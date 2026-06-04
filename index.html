@@ -1576,17 +1576,30 @@
         left: 0;
         right: 0;
         bottom: 0;
-        gap: 0.55rem;
-        padding: 0.7rem;
+        gap: 0.6rem;
+        padding: 0.7rem 0.85rem calc(0.7rem + env(safe-area-inset-bottom, 0px));
         border-top: 1px solid var(--line);
-        background: rgba(255, 247, 232, 0.94);
+        background: rgba(255, 247, 232, 0.96);
         backdrop-filter: blur(18px);
+        box-shadow: 0 -12px 30px rgba(75, 38, 27, 0.12);
+        transform: translateY(120%);
+        visibility: hidden;
+        transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s linear 300ms;
+      }
+
+      .mobile-actions.is-visible {
+        transform: translateY(0);
+        visibility: visible;
+        transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s;
       }
 
       .mobile-actions .button {
         flex: 1;
-        min-height: 46px;
-        font-size: 0.82rem;
+        min-width: 0;
+        min-height: 48px;
+        padding-inline: 0.9rem;
+        font-size: 0.85rem;
+        white-space: nowrap;
       }
 
       .reveal {
@@ -1705,6 +1718,22 @@
 
         .hero h1 {
           font-size: clamp(3.2rem, 16vw, 4.8rem);
+        }
+
+        .hero-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .hero-actions .button,
+        .event-actions .button,
+        .sponsor-banner > .button,
+        .event-intro > .button {
+          width: 100%;
+        }
+
+        .event-actions {
+          flex-direction: column;
         }
 
         .hero-visual {
@@ -2678,5 +2707,57 @@
       <a class="button button-primary" href="#contact">Talk With Andrew</a>
       <a class="button button-secondary" href="#events">Events</a>
     </div>
+
+    <script>
+      (function () {
+        var bar = document.querySelector(".mobile-actions");
+        var hero = document.querySelector(".hero");
+        var contact = document.getElementById("contact");
+        if (!bar) return;
+
+        var ticking = false;
+        var trigger = 0;
+        var contactOffsetTop = 0;
+
+        // Cache layout-triggering measurements so the scroll handler never
+        // forces a reflow. These only change on resize/load.
+        function measure() {
+          trigger = (hero ? hero.offsetHeight : 480) * 0.6;
+          contactOffsetTop = contact
+            ? contact.getBoundingClientRect().top + window.scrollY
+            : Infinity;
+        }
+
+        function update() {
+          ticking = false;
+          var scrollY = window.scrollY || window.pageYOffset;
+          // Reveal once the visitor scrolls past most of the hero (where the
+          // primary CTAs already live), and tuck it away while the contact
+          // form is on screen so it never covers the form's own actions.
+          var pastHero = scrollY > trigger;
+          var contactVisible = contactOffsetTop - scrollY < window.innerHeight * 0.85;
+          bar.classList.toggle("is-visible", pastHero && !contactVisible);
+        }
+
+        function onScroll() {
+          if (!ticking) {
+            window.requestAnimationFrame(update);
+            ticking = true;
+          }
+        }
+
+        function onResize() {
+          measure();
+          onScroll();
+        }
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onResize, { passive: true });
+        window.addEventListener("load", measure);
+
+        measure();
+        update();
+      })();
+    </script>
   </body>
 </html>
