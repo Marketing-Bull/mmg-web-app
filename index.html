@@ -1583,11 +1583,14 @@
         backdrop-filter: blur(18px);
         box-shadow: 0 -12px 30px rgba(75, 38, 27, 0.12);
         transform: translateY(120%);
-        transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+        visibility: hidden;
+        transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s linear 300ms;
       }
 
       .mobile-actions.is-visible {
         transform: translateY(0);
+        visibility: visible;
+        transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s;
       }
 
       .mobile-actions .button {
@@ -2713,16 +2716,26 @@
         if (!bar) return;
 
         var ticking = false;
+        var trigger = 0;
+        var contactOffsetTop = 0;
+
+        // Cache layout-triggering measurements so the scroll handler never
+        // forces a reflow. These only change on resize/load.
+        function measure() {
+          trigger = (hero ? hero.offsetHeight : 480) * 0.6;
+          contactOffsetTop = contact
+            ? contact.getBoundingClientRect().top + window.scrollY
+            : Infinity;
+        }
 
         function update() {
           ticking = false;
+          var scrollY = window.scrollY || window.pageYOffset;
           // Reveal once the visitor scrolls past most of the hero (where the
           // primary CTAs already live), and tuck it away while the contact
           // form is on screen so it never covers the form's own actions.
-          var trigger = (hero ? hero.offsetHeight : 480) * 0.6;
-          var pastHero = window.scrollY > trigger;
-          var contactVisible =
-            contact && contact.getBoundingClientRect().top < window.innerHeight * 0.85;
+          var pastHero = scrollY > trigger;
+          var contactVisible = contactOffsetTop - scrollY < window.innerHeight * 0.85;
           bar.classList.toggle("is-visible", pastHero && !contactVisible);
         }
 
@@ -2733,8 +2746,16 @@
           }
         }
 
+        function onResize() {
+          measure();
+          onScroll();
+        }
+
         window.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("resize", onScroll, { passive: true });
+        window.addEventListener("resize", onResize, { passive: true });
+        window.addEventListener("load", measure);
+
+        measure();
         update();
       })();
     </script>
