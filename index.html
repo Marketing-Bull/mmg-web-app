@@ -1,0 +1,2682 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Miller's Marketing Group brings Florida's personal injury attorneys, medical providers, and trusted partners together through events, marketing, and sponsorships."
+    />
+    <title>Miller's Marketing Group | Meaningful Connections Across Florida</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --red: #a52e2a;
+        --red-dark: #76211f;
+        --coral: #d5523f;
+        --gold: #f2c94c;
+        --mango: #d99a28;
+        --cream: #fff7e8;
+        --paper: #fffdf8;
+        --sand: #eadbc4;
+        --sand-light: #f4eadd;
+        --espresso: #261d19;
+        --muted: #6c5e56;
+        --teal: #2e7772;
+        --teal-dark: #195651;
+        --line: rgba(38, 29, 25, 0.13);
+        --shadow: 0 24px 70px rgba(75, 38, 27, 0.14);
+        --serif: "Fraunces", Georgia, serif;
+        --sans: "DM Sans", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        overflow-x: hidden;
+        color: var(--espresso);
+        background: var(--cream);
+        font-family: var(--sans);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      :focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 4px;
+      }
+
+      .container {
+        width: min(1180px, calc(100% - 40px));
+        margin-inline: auto;
+      }
+
+      .announcement {
+        padding: 0.68rem 1rem;
+        color: #fff;
+        background: var(--red-dark);
+        text-align: center;
+        font-size: 0.86rem;
+        font-weight: 600;
+        letter-spacing: 0.015em;
+      }
+
+      .announcement a {
+        margin-left: 0.45rem;
+        color: var(--gold);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        border-bottom: 1px solid rgba(38, 29, 25, 0.08);
+        background: rgba(255, 247, 232, 0.9);
+        backdrop-filter: blur(18px);
+      }
+
+      .topbar-inner {
+        min-height: 82px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.78rem;
+        min-width: max-content;
+      }
+
+      .brand-logo {
+        width: 54px;
+        height: 54px;
+        padding: 0.3rem;
+        border-radius: 15px;
+        object-fit: contain;
+        background: var(--red);
+        box-shadow: 0 10px 30px rgba(165, 46, 42, 0.24);
+      }
+
+      .brand-copy {
+        display: grid;
+        gap: 0.05rem;
+      }
+
+      .brand-copy strong {
+        font-size: 0.98rem;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-copy small {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+      }
+
+      .nav > a:not(.button) {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .nav > a:not(.button):hover {
+        color: var(--red);
+      }
+
+      .button {
+        min-height: 50px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        padding: 0.78rem 1.15rem;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        font-weight: 700;
+        transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button-primary {
+        color: #fff;
+        background: var(--red);
+        box-shadow: 0 14px 30px rgba(165, 46, 42, 0.22);
+      }
+
+      .button-primary:hover {
+        background: var(--red-dark);
+      }
+
+      .button-secondary {
+        border-color: rgba(38, 29, 25, 0.18);
+        background: rgba(255, 253, 248, 0.72);
+      }
+
+      .button-secondary:hover {
+        background: #fff;
+        box-shadow: 0 12px 28px rgba(75, 38, 27, 0.1);
+      }
+
+      .button-light {
+        color: var(--red-dark);
+        background: var(--gold);
+        box-shadow: 0 14px 30px rgba(242, 201, 76, 0.2);
+      }
+
+      .button-ghost {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.28);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .arrow {
+        font-size: 1.15em;
+        line-height: 1;
+      }
+
+      .hero {
+        position: relative;
+        padding: 4.3rem 0 5.2rem;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 88% 20%, rgba(242, 201, 76, 0.3), transparent 26%),
+          radial-gradient(circle at 12% 82%, rgba(213, 82, 63, 0.11), transparent 25%),
+          var(--cream);
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        width: 580px;
+        height: 580px;
+        right: -360px;
+        bottom: -390px;
+        border: 90px solid rgba(165, 46, 42, 0.07);
+        border-radius: 50%;
+      }
+
+      .hero-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 0.96fr 1.04fr;
+        gap: clamp(2rem, 5vw, 5rem);
+        align-items: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        color: var(--red);
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 2.25rem;
+        height: 2px;
+        background: var(--gold);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      .hero h1 {
+        max-width: 10ch;
+        margin: 1rem 0 1.2rem;
+        font-family: var(--serif);
+        font-size: clamp(3.6rem, 7vw, 6.6rem);
+        font-weight: 600;
+        line-height: 0.92;
+        letter-spacing: -0.055em;
+      }
+
+      .hero h1 em {
+        color: var(--red);
+        font-style: normal;
+      }
+
+      .hero-copy > p {
+        max-width: 58ch;
+        color: var(--muted);
+        font-size: 1.08rem;
+        line-height: 1.75;
+      }
+
+      .hero-actions {
+        margin-top: 1.7rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .hero-mantra {
+        margin-top: 1.8rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem 1.2rem;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .hero-mantra span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .hero-mantra span::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--gold);
+      }
+
+      .hero-visual {
+        position: relative;
+        min-height: 590px;
+      }
+
+      .hero-photo {
+        position: absolute;
+        inset: 0 3.4rem 2rem 2rem;
+        overflow: hidden;
+        border-radius: 160px 160px 32px 32px;
+        background: var(--sand);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: saturate(0.88) sepia(0.08);
+      }
+
+      .hero-photo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 45%, rgba(65, 20, 16, 0.28));
+      }
+
+      .event-float {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: min(350px, 76%);
+        padding: 1.2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 24px;
+        color: #fff;
+        background: rgba(118, 33, 31, 0.94);
+        box-shadow: 0 24px 60px rgba(72, 29, 21, 0.3);
+        backdrop-filter: blur(18px);
+      }
+
+      .event-float-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        color: #f9dc94;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .event-float h2 {
+        margin: 0.65rem 0 0.45rem;
+        font-family: var(--serif);
+        font-size: 1.55rem;
+        line-height: 1.05;
+      }
+
+      .event-float p {
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.86rem;
+        line-height: 1.55;
+      }
+
+      .event-float .button {
+        min-height: 42px;
+        padding: 0.58rem 0.85rem;
+        font-size: 0.82rem;
+      }
+
+      .sun-note {
+        position: absolute;
+        top: 2rem;
+        left: -1.2rem;
+        width: 130px;
+        height: 130px;
+        display: grid;
+        place-items: center;
+        padding: 1rem;
+        border-radius: 50%;
+        color: var(--red-dark);
+        background: var(--gold);
+        box-shadow: 0 18px 50px rgba(217, 154, 40, 0.28);
+        text-align: center;
+        font-family: var(--serif);
+        font-size: 0.95rem;
+        line-height: 1.2;
+        transform: rotate(-8deg);
+      }
+
+      .sun-note::after {
+        content: "";
+        position: absolute;
+        inset: 9px;
+        border: 1px dashed rgba(118, 33, 31, 0.35);
+        border-radius: 50%;
+      }
+
+      .relationship-strip {
+        position: relative;
+        z-index: 2;
+        margin-top: -1rem;
+      }
+
+      .strip-inner {
+        display: grid;
+        grid-template-columns: 1.25fr repeat(3, 1fr);
+        border: 1px solid rgba(38, 29, 25, 0.08);
+        border-radius: 24px;
+        background: var(--paper);
+        box-shadow: 0 18px 50px rgba(75, 38, 27, 0.08);
+        overflow: hidden;
+      }
+
+      .strip-intro,
+      .strip-item {
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 1.2rem;
+      }
+
+      .strip-intro {
+        color: #fff;
+        background: var(--teal-dark);
+      }
+
+      .strip-intro strong {
+        max-width: 14ch;
+        font-family: var(--serif);
+        font-size: 1.3rem;
+        line-height: 1.1;
+      }
+
+      .strip-item {
+        border-left: 1px solid var(--line);
+      }
+
+      .strip-item strong {
+        margin-bottom: 0.2rem;
+        color: var(--red);
+        font-size: 0.92rem;
+      }
+
+      .strip-item span {
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      .section {
+        padding: 6rem 0;
+      }
+
+      .section-paper {
+        background: var(--paper);
+      }
+
+      .section-dark {
+        color: #fff;
+        background:
+          radial-gradient(circle at 88% 20%, rgba(242, 201, 76, 0.14), transparent 24%),
+          var(--espresso);
+      }
+
+      .section-head {
+        max-width: 760px;
+        margin-bottom: 2rem;
+      }
+
+      .section-title {
+        margin: 0.8rem 0 0.8rem;
+        font-family: var(--serif);
+        font-size: clamp(2.4rem, 5vw, 4.4rem);
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: -0.045em;
+      }
+
+      .section-title span {
+        color: var(--red);
+      }
+
+      .section-copy {
+        max-width: 66ch;
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.75;
+      }
+
+      .section-dark .section-copy {
+        color: rgba(255, 255, 255, 0.66);
+      }
+
+      .offer-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .offer-card {
+        min-height: 370px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: var(--cream);
+        overflow: hidden;
+        transition: transform 220ms ease, box-shadow 220ms ease;
+      }
+
+      .offer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 24px 55px rgba(75, 38, 27, 0.12);
+      }
+
+      .offer-card::after {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -110px;
+        top: -110px;
+        border: 32px solid rgba(165, 46, 42, 0.07);
+        border-radius: 50%;
+      }
+
+      .offer-number {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: var(--red-dark);
+        background: var(--gold);
+        font-family: var(--serif);
+        font-weight: 600;
+      }
+
+      .offer-card h3 {
+        margin: 2.4rem 0 0.7rem;
+        font-family: var(--serif);
+        font-size: 1.8rem;
+        line-height: 1.08;
+      }
+
+      .offer-card p {
+        color: var(--muted);
+        line-height: 1.68;
+      }
+
+      .text-link {
+        margin-top: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--red);
+        font-weight: 700;
+      }
+
+      .audience-wrap {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 1rem;
+        align-items: stretch;
+      }
+
+      .audience-image {
+        min-height: 590px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 30px;
+        background: var(--sand);
+      }
+
+      .audience-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .audience-image::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 55%, rgba(55, 20, 16, 0.55));
+      }
+
+      .image-caption {
+        position: absolute;
+        z-index: 2;
+        left: 1.4rem;
+        right: 1.4rem;
+        bottom: 1.35rem;
+        color: #fff;
+      }
+
+      .image-caption span {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--gold);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .image-caption strong {
+        max-width: 20ch;
+        display: block;
+        font-family: var(--serif);
+        font-size: 1.7rem;
+        line-height: 1.1;
+      }
+
+      .audience-list {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      .audience-card {
+        padding: 1.4rem;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--paper);
+      }
+
+      .audience-card-top {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 0.55rem;
+      }
+
+      .audience-icon {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        color: var(--red-dark);
+        background: rgba(242, 201, 76, 0.46);
+        font-weight: 700;
+      }
+
+      .audience-card h3 {
+        margin: 0;
+        font-size: 1.02rem;
+      }
+
+      .audience-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.65;
+      }
+
+      .event-layout {
+        display: block;
+      }
+
+      .event-intro {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 2rem;
+        align-items: end;
+        margin-bottom: 1.2rem;
+        padding: 2rem;
+        border-radius: 30px;
+        color: #fff;
+        background: var(--red);
+      }
+
+      .event-intro .eyebrow {
+        color: var(--gold);
+      }
+
+      .event-intro h2 {
+        max-width: 11ch;
+        margin: 1rem 0;
+        font-family: var(--serif);
+        font-size: clamp(3rem, 6vw, 5.2rem);
+        font-weight: 600;
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+      }
+
+      .event-intro p {
+        max-width: 65ch;
+        color: rgba(255, 255, 255, 0.74);
+        line-height: 1.72;
+      }
+
+      .upcoming-events-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .event-card {
+        display: grid;
+        grid-template-rows: 330px 1fr;
+        overflow: hidden;
+        border-radius: 30px;
+        color: var(--espresso);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .event-card-image {
+        position: relative;
+        min-height: 320px;
+        overflow: hidden;
+      }
+
+      .event-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .event-card-image.flyer {
+        padding: 1.2rem;
+        background:
+          radial-gradient(circle at 80% 14%, rgba(242, 201, 76, 0.24), transparent 24%),
+          #141f21;
+      }
+
+      .event-card-image.flyer img {
+        object-fit: contain;
+        filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.24));
+      }
+
+      .flyer-label {
+        position: absolute;
+        right: 1.2rem;
+        top: 1.2rem;
+        padding: 0.45rem 0.7rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        color: #fff;
+        background: rgba(38, 29, 25, 0.72);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        backdrop-filter: blur(12px);
+      }
+
+      .event-date {
+        position: absolute;
+        left: 1.2rem;
+        top: 1.2rem;
+        width: 76px;
+        padding: 0.7rem;
+        border-radius: 18px;
+        background: var(--gold);
+        color: var(--red-dark);
+        text-align: center;
+        box-shadow: 0 12px 30px rgba(48, 22, 17, 0.2);
+      }
+
+      .event-date strong,
+      .event-date span {
+        display: block;
+      }
+
+      .event-date strong {
+        font-family: var(--serif);
+        font-size: 1.8rem;
+        line-height: 1;
+      }
+
+      .event-date span {
+        margin-top: 0.2rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .event-card-body {
+        padding: 1.5rem;
+      }
+
+      .event-card-body small {
+        color: var(--teal);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .event-card-body h3 {
+        margin: 0.5rem 0 0.55rem;
+        font-family: var(--serif);
+        font-size: 1.7rem;
+        line-height: 1.05;
+      }
+
+      .event-card-body p {
+        margin-bottom: 1rem;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .event-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+      }
+
+      .event-series-label {
+        position: absolute;
+        left: 1.2rem;
+        top: 1.2rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 999px;
+        color: var(--red-dark);
+        background: var(--gold);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        box-shadow: 0 10px 26px rgba(38, 29, 25, 0.22);
+      }
+
+      .swipe-hint {
+        display: none;
+      }
+
+      .past-events-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .past-event-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: var(--paper);
+        box-shadow: 0 18px 45px rgba(75, 38, 27, 0.08);
+      }
+
+      .past-event-media {
+        display: grid;
+        grid-template-columns: 0.8fr 1.2fr;
+        min-height: 270px;
+      }
+
+      .past-flyer {
+        position: relative;
+        padding: 0.8rem;
+        background: var(--espresso);
+      }
+
+      .past-flyer img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.24));
+      }
+
+      .past-video {
+        position: relative;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background: var(--sand);
+      }
+
+      .past-video img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .past-video::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(38, 29, 25, 0.08), rgba(38, 29, 25, 0.46));
+      }
+
+      .play-button {
+        position: relative;
+        z-index: 2;
+        width: 66px;
+        height: 66px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50%;
+        color: var(--red-dark);
+        background: var(--gold);
+        font-size: 1.15rem;
+        box-shadow: 0 18px 34px rgba(38, 29, 25, 0.25);
+      }
+
+      .video-label {
+        position: absolute;
+        z-index: 2;
+        left: 1rem;
+        bottom: 0.9rem;
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+      }
+
+      .past-event-body {
+        padding: 1.35rem;
+      }
+
+      .past-event-body small {
+        color: var(--teal);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .past-event-body h3 {
+        margin: 0.5rem 0 0.6rem;
+        font-family: var(--serif);
+        font-size: 1.65rem;
+        line-height: 1.08;
+      }
+
+      .past-event-body p {
+        margin-bottom: 1rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.65;
+      }
+
+      .recap-meta {
+        margin-bottom: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+      }
+
+      .recap-meta span {
+        padding: 0.42rem 0.68rem;
+        border-radius: 999px;
+        color: var(--red-dark);
+        background: rgba(242, 201, 76, 0.24);
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+
+      .experience-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 2.4rem;
+      }
+
+      .experience-item {
+        position: relative;
+        grid-column: span 4;
+        min-height: 255px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 1.35rem;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 28px;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(242, 201, 76, 0.12), transparent 42%),
+          rgba(255, 255, 255, 0.045);
+        transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+      }
+
+      .experience-item:nth-child(-n + 2) {
+        grid-column: span 6;
+        min-height: 285px;
+      }
+
+      .experience-item:nth-child(2) {
+        background:
+          radial-gradient(circle at 100% 0%, rgba(213, 82, 63, 0.23), transparent 44%),
+          rgba(255, 255, 255, 0.045);
+      }
+
+      .experience-item:nth-child(4) {
+        background:
+          radial-gradient(circle at 100% 0%, rgba(46, 119, 114, 0.32), transparent 44%),
+          rgba(255, 255, 255, 0.045);
+      }
+
+      .experience-item:hover {
+        transform: translateY(-5px);
+        border-color: rgba(242, 201, 76, 0.34);
+        background-color: rgba(255, 255, 255, 0.075);
+      }
+
+      .experience-item::after {
+        content: "";
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        right: -80px;
+        bottom: -95px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.025);
+      }
+
+      .experience-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: auto;
+      }
+
+      .experience-number {
+        color: var(--gold);
+        font-family: var(--serif);
+        font-size: 1.3rem;
+        line-height: 1;
+      }
+
+      .experience-icon {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 16px;
+        color: var(--gold);
+        background: rgba(255, 255, 255, 0.055);
+      }
+
+      .experience-icon svg {
+        width: 23px;
+        height: 23px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.7;
+      }
+
+      .experience-body {
+        position: relative;
+        z-index: 1;
+        margin-top: 2rem;
+      }
+
+      .experience-kicker {
+        display: block;
+        margin-bottom: 0.55rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.67rem;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .experience-item h3 {
+        max-width: 16ch;
+        margin-bottom: 0.55rem;
+        font-family: var(--serif);
+        font-size: clamp(1.35rem, 2.3vw, 2rem);
+        line-height: 1.08;
+      }
+
+      .experience-item p {
+        max-width: 42ch;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 0.84rem;
+        line-height: 1.6;
+      }
+
+      .andrew-layout {
+        display: grid;
+        grid-template-columns: 0.82fr 1.18fr;
+        gap: clamp(1.5rem, 4vw, 4rem);
+        align-items: center;
+      }
+
+      .andrew-portrait {
+        position: relative;
+        min-height: 610px;
+        overflow: hidden;
+        border-radius: 160px 160px 28px 28px;
+        color: #fff;
+        background:
+          radial-gradient(circle at 50% 18%, rgba(242, 201, 76, 0.38), transparent 22%),
+          linear-gradient(155deg, var(--red) 0%, var(--red-dark) 52%, var(--teal-dark) 100%);
+      }
+
+      .andrew-portrait::before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        width: 410px;
+        height: 410px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 70px rgba(255, 255, 255, 0.035),
+          0 0 0 140px rgba(255, 255, 255, 0.025);
+      }
+
+      .andrew-portrait::after {
+        content: "KINGSTON  •  SOUTH FLORIDA  •  CONNECTIONS";
+        position: absolute;
+        z-index: 2;
+        left: 1.4rem;
+        right: 1.4rem;
+        bottom: 1.4rem;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+        text-align: center;
+      }
+
+      .andrew-photo {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        filter: saturate(0.92) contrast(1.03);
+      }
+
+      .andrew-portrait-overlay {
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 48%, rgba(38, 29, 25, 0.72));
+      }
+
+      .andrew-copy .section-title {
+        max-width: 10ch;
+      }
+
+      .andrew-copy > p {
+        max-width: 60ch;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      .quote {
+        margin: 1.6rem 0;
+        padding: 1.4rem 0 1.4rem 1.4rem;
+        border-left: 3px solid var(--gold);
+        font-family: var(--serif);
+        font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+        line-height: 1.25;
+      }
+
+      .quote small {
+        display: block;
+        margin-top: 0.7rem;
+        color: var(--red);
+        font-family: var(--sans);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .community-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        margin-top: 1.8rem;
+      }
+
+      .partners-section {
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 6% 18%, rgba(213, 82, 63, 0.13), transparent 24%),
+          radial-gradient(circle at 92% 84%, rgba(242, 201, 76, 0.24), transparent 28%),
+          linear-gradient(135deg, #f1dfc9 0%, #fff8e9 52%, #efd9c4 100%);
+      }
+
+      .partners-section::before {
+        content: "";
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        right: -250px;
+        top: -270px;
+        border: 70px solid rgba(165, 46, 42, 0.06);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      .partners-intro {
+        position: relative;
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 4rem;
+        align-items: end;
+        margin-bottom: 2.4rem;
+      }
+
+      .partners-intro .section-title {
+        max-width: 8ch;
+        margin-bottom: 0;
+      }
+
+      .partners-copy {
+        max-width: 58ch;
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.75;
+      }
+
+      .partners-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 1rem;
+        color: var(--red-dark);
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .partners-note::before {
+        content: "";
+        width: 34px;
+        height: 2px;
+        background: var(--gold);
+      }
+
+      .partners-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.8rem;
+      }
+
+      .partner-card {
+        min-width: 0;
+        min-height: 150px;
+        display: grid;
+        grid-template-rows: 1fr auto;
+        gap: 0.75rem;
+        align-items: center;
+        margin: 0;
+        padding: 1.1rem 1rem 0.85rem;
+        border: 1px solid rgba(118, 33, 31, 0.11);
+        border-radius: 20px;
+        background: rgba(255, 253, 248, 0.86);
+        box-shadow: 0 14px 34px rgba(75, 38, 27, 0.08);
+        transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      }
+
+      .partner-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(165, 46, 42, 0.25);
+        box-shadow: 0 20px 42px rgba(75, 38, 27, 0.13);
+      }
+
+      .partner-card:nth-child(16) {
+        grid-column: 2;
+      }
+
+      .partner-card img {
+        width: 100%;
+        height: 76px;
+        object-fit: contain;
+      }
+
+      .partner-card figcaption {
+        overflow: hidden;
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-align: center;
+        text-overflow: ellipsis;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .community-card {
+        min-height: 180px;
+        padding: 1.2rem;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: var(--cream);
+      }
+
+      .community-card strong {
+        display: block;
+        margin-bottom: 0.45rem;
+        color: var(--red);
+        font-family: var(--serif);
+        font-size: 1.18rem;
+      }
+
+      .community-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.87rem;
+        line-height: 1.6;
+      }
+
+      .sponsor-banner {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 2rem;
+        align-items: center;
+        padding: 2.2rem;
+        border-radius: 30px;
+        color: #fff;
+        background:
+          radial-gradient(circle at 88% 10%, rgba(242, 201, 76, 0.22), transparent 28%),
+          var(--teal-dark);
+        box-shadow: var(--shadow);
+      }
+
+      .sponsor-banner h2 {
+        margin-bottom: 0.65rem;
+        font-family: var(--serif);
+        font-size: clamp(2.4rem, 5vw, 4.2rem);
+        line-height: 1;
+        letter-spacing: -0.045em;
+      }
+
+      .sponsor-banner p {
+        max-width: 64ch;
+        margin-bottom: 0;
+        color: rgba(255, 255, 255, 0.72);
+        line-height: 1.7;
+      }
+
+      .consultation {
+        position: relative;
+        overflow: hidden;
+        background: var(--red-dark);
+      }
+
+      .consultation::before {
+        content: "";
+        position: absolute;
+        width: 560px;
+        height: 560px;
+        right: -270px;
+        top: -320px;
+        border: 92px solid rgba(242, 201, 76, 0.1);
+        border-radius: 50%;
+      }
+
+      .consultation-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 0.82fr 1.18fr;
+        gap: 2rem;
+        align-items: start;
+      }
+
+      .consultation-copy {
+        color: #fff;
+      }
+
+      .consultation-copy .eyebrow {
+        color: var(--gold);
+      }
+
+      .consultation-copy h2 {
+        margin: 0.9rem 0 1rem;
+        font-family: var(--serif);
+        font-size: clamp(3rem, 6vw, 5rem);
+        line-height: 0.96;
+        letter-spacing: -0.05em;
+      }
+
+      .consultation-copy p {
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.75;
+      }
+
+      .contact-links {
+        margin-top: 1.4rem;
+        display: grid;
+        gap: 0.65rem;
+      }
+
+      .contact-links a {
+        width: fit-content;
+        color: #fff;
+        font-weight: 600;
+        text-decoration: underline;
+        text-decoration-color: rgba(242, 201, 76, 0.7);
+        text-underline-offset: 4px;
+      }
+
+      .form-card {
+        padding: 1.3rem;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(16px);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+      }
+
+      .field {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .field-full {
+        grid-column: 1 / -1;
+      }
+
+      .field label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 15px;
+        color: var(--espresso);
+        background: rgba(255, 253, 248, 0.96);
+      }
+
+      .field textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .form-footer {
+        margin-top: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .form-footer small {
+        max-width: 36ch;
+        color: rgba(255, 255, 255, 0.58);
+        line-height: 1.5;
+      }
+
+      .footer {
+        padding: 3.2rem 0 7rem;
+        color: #fff;
+        background: var(--espresso);
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1.45fr 0.75fr 0.9fr 1.1fr;
+        gap: 2rem;
+      }
+
+      .footer .brand-copy small {
+        color: rgba(255, 255, 255, 0.56);
+      }
+
+      .footer-about {
+        max-width: 44ch;
+        margin-top: 1.25rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.88rem;
+        line-height: 1.7;
+      }
+
+      .footer h3 {
+        margin-bottom: 0.85rem;
+        color: var(--gold);
+        font-size: 0.74rem;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .footer ul {
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.5rem;
+        list-style: none;
+      }
+
+      .footer li,
+      .footer li a {
+        color: rgba(255, 255, 255, 0.66);
+        font-size: 0.86rem;
+        line-height: 1.55;
+      }
+
+      .footer-bottom {
+        margin-top: 2rem;
+        padding-top: 1.3rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 0.75rem;
+        line-height: 1.55;
+      }
+
+      .footer-bottom span:first-child {
+        max-width: 84ch;
+      }
+
+      .mobile-actions {
+        display: none;
+        position: fixed;
+        z-index: 60;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        gap: 0.55rem;
+        padding: 0.7rem;
+        border-top: 1px solid var(--line);
+        background: rgba(255, 247, 232, 0.94);
+        backdrop-filter: blur(18px);
+      }
+
+      .mobile-actions .button {
+        flex: 1;
+        min-height: 46px;
+        font-size: 0.82rem;
+      }
+
+      .reveal {
+        animation: rise 720ms ease both;
+      }
+
+      .reveal-delay {
+        animation: rise 780ms ease 120ms both;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 1040px) {
+        .nav > a:not(.button) {
+          display: none;
+        }
+
+        .hero-grid,
+        .audience-wrap,
+        .event-layout,
+        .andrew-layout,
+        .consultation-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero h1,
+        .andrew-copy .section-title {
+          max-width: 12ch;
+        }
+
+        .hero-visual {
+          min-height: 620px;
+        }
+
+        .audience-image,
+        .andrew-portrait {
+          min-height: 520px;
+        }
+
+        .experience-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .experience-item,
+        .experience-item:nth-child(-n + 2) {
+          grid-column: auto;
+        }
+
+        .upcoming-events-grid,
+        .past-events-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .community-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .partners-intro {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .partners-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .partner-card:nth-child(16) {
+          grid-column: auto;
+        }
+
+        .footer-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 760px) {
+        .container {
+          width: min(100% - 24px, 1180px);
+        }
+
+        .announcement {
+          font-size: 0.72rem;
+        }
+
+        .brand-copy small {
+          display: none;
+        }
+
+        .brand-logo {
+          width: 48px;
+          height: 48px;
+        }
+
+        .topbar-inner {
+          min-height: 70px;
+        }
+
+        .topbar .button {
+          min-height: 44px;
+          padding: 0.65rem 0.8rem;
+          font-size: 0.77rem;
+        }
+
+        .hero {
+          padding-top: 3.2rem;
+        }
+
+        .hero h1 {
+          font-size: clamp(3.2rem, 16vw, 4.8rem);
+        }
+
+        .hero-visual {
+          min-height: 520px;
+        }
+
+        .hero-photo {
+          inset: 0 1rem 3rem 0;
+          border-radius: 110px 110px 24px 24px;
+        }
+
+        .sun-note {
+          left: auto;
+          right: 0;
+          top: -1rem;
+          width: 105px;
+          height: 105px;
+          font-size: 0.78rem;
+        }
+
+        .event-float {
+          left: 1rem;
+          right: 0;
+          width: auto;
+        }
+
+        .strip-inner,
+        .offer-grid,
+        .community-grid,
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .experience-grid {
+          width: calc(100% + 12px);
+          display: grid;
+          grid-auto-flow: column;
+          grid-auto-columns: minmax(82%, 1fr);
+          grid-template-columns: none;
+          gap: 0.85rem;
+          padding: 0.25rem 12px 1rem 0;
+          overflow-x: auto;
+          overscroll-behavior-inline: contain;
+          scroll-snap-type: inline mandatory;
+          scrollbar-width: none;
+        }
+
+        .experience-grid::-webkit-scrollbar {
+          display: none;
+        }
+
+        .experience-item,
+        .experience-item:nth-child(-n + 2) {
+          min-height: 270px;
+          scroll-snap-align: start;
+        }
+
+        .partners-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.65rem;
+        }
+
+        .partner-card {
+          min-height: 128px;
+          padding: 0.85rem 0.7rem 0.7rem;
+          border-radius: 16px;
+        }
+
+        .partner-card img {
+          height: 64px;
+        }
+
+        .partner-card figcaption {
+          font-size: 0.58rem;
+        }
+
+        .strip-item {
+          min-height: 90px;
+          border-top: 1px solid var(--line);
+          border-left: 0;
+        }
+
+        .section {
+          padding: 4.5rem 0;
+        }
+
+        .audience-image,
+        .andrew-portrait {
+          min-height: 440px;
+        }
+
+        .event-intro {
+          grid-template-columns: 1fr;
+          min-height: auto;
+        }
+
+        .upcoming-events-grid,
+        .past-events-grid {
+          width: calc(100% + 12px);
+          display: grid;
+          grid-auto-flow: column;
+          grid-auto-columns: minmax(86%, 1fr);
+          grid-template-columns: none;
+          gap: 0.85rem;
+          padding: 0.25rem 12px 1.2rem 0;
+          overflow-x: auto;
+          overscroll-behavior-inline: contain;
+          scroll-padding-inline: 0;
+          scroll-snap-type: inline mandatory;
+          scrollbar-width: none;
+        }
+
+        .upcoming-events-grid::-webkit-scrollbar,
+        .past-events-grid::-webkit-scrollbar {
+          display: none;
+        }
+
+        .event-card,
+        .past-event-card {
+          scroll-snap-align: start;
+        }
+
+        .event-card {
+          grid-template-rows: 300px auto;
+        }
+
+        .past-event-media {
+          grid-template-columns: 0.82fr 1.18fr;
+          min-height: 270px;
+        }
+
+        .swipe-hint {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin: -0.8rem 0 1rem;
+          color: rgba(255, 255, 255, 0.62);
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .section-paper .swipe-hint {
+          color: var(--muted);
+        }
+
+        .sponsor-banner {
+          grid-template-columns: 1fr;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-footer,
+        .footer-bottom {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .mobile-actions {
+          display: flex;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="announcement">
+      Next up: Personal Injury Professionals Bowling Mixer in Dania Beach.
+      <a href="https://www.eventbrite.com/e/personal-injury-professionals-networking-bowling-mixer-tickets-1990647189330" target="_blank" rel="noreferrer">Register on Eventbrite</a>
+    </div>
+
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="brand" href="#top" aria-label="Miller's Marketing Group home">
+          <img class="brand-logo" src="assets/brand/mmg-official-logo.png" alt="" />
+          <div class="brand-copy">
+            <strong>Miller's Marketing Group</strong>
+            <small>Connections across Florida</small>
+          </div>
+        </a>
+
+        <nav class="nav" aria-label="Primary navigation">
+          <a href="#marketing">Marketing</a>
+          <a href="#sponsorships">Sponsorships</a>
+          <a href="#events">Events</a>
+          <a href="#about">About</a>
+          <a href="#partners">Partners</a>
+          <a class="button button-primary" href="#contact">Talk With Andrew <span class="arrow">→</span></a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy reveal">
+            <div class="eyebrow">Florida's personal injury professional community</div>
+            <h1>The right <em>room</em> can change everything.</h1>
+            <p>
+              Miller's Marketing Group brings personal injury attorneys, medical providers, and trusted industry
+              partners together through curated events, strategic marketing partnerships, and sponsorship
+              opportunities across Florida.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#contact">Talk With Andrew <span class="arrow">→</span></a>
+              <a class="button button-secondary" href="#events">View Upcoming Events</a>
+            </div>
+            <div class="hero-mantra" aria-label="MMG brand promise">
+              <span>Good people</span>
+              <span>Meaningful connections</span>
+              <span>Real opportunity</span>
+            </div>
+          </div>
+
+          <div class="hero-visual reveal-delay">
+            <div class="hero-photo">
+              <img
+                src="assets/brand/networking-hero.png"
+                alt="Professionals connecting at a Miller's Marketing Group event"
+              />
+            </div>
+            <div class="sun-note">Enough opportunity for everyone.</div>
+            <article class="event-float">
+              <div class="event-float-top">
+                <span>Next gathering</span>
+                <span>June 25</span>
+              </div>
+              <h2>Bowling Networking Mixer</h2>
+              <p>Personal injury attorneys, medical professionals, and trusted partners. Lucky Strike, Dania Beach.</p>
+              <a
+                class="button button-light"
+                href="https://www.eventbrite.com/e/personal-injury-professionals-networking-bowling-mixer-tickets-1990647189330"
+                target="_blank"
+                rel="noreferrer"
+              >Register on Eventbrite</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <aside class="relationship-strip" aria-label="Who MMG serves">
+        <div class="container strip-inner">
+          <div class="strip-intro">
+            <strong>We bring the right people into the same room.</strong>
+          </div>
+          <div class="strip-item">
+            <strong>Personal Injury Attorneys</strong>
+            <span>Build relationships with providers and industry partners.</span>
+          </div>
+          <div class="strip-item">
+            <strong>Medical Providers</strong>
+            <span>Stay visible and connected across South Florida.</span>
+          </div>
+          <div class="strip-item">
+            <strong>Sponsors &amp; Vendors</strong>
+            <span>Support the community and put your brand in the room.</span>
+          </div>
+        </div>
+      </aside>
+
+      <section class="section section-paper" id="marketing">
+        <div class="container">
+          <div class="section-head">
+            <div class="eyebrow">What MMG does</div>
+            <h2 class="section-title">We create opportunities to meet. <span>Strong relationships grow from there.</span></h2>
+            <p class="section-copy">
+              MMG helps professionals become more visible, enter the right rooms, and build genuine relationships
+              within Florida's personal injury community. Andrew begins by understanding who you want to reach and
+              what kind of relationship you want to build.
+            </p>
+          </div>
+
+          <div class="offer-grid">
+            <article class="offer-card">
+              <div class="offer-number">01</div>
+              <h3>Marketing Partnerships</h3>
+              <p>
+                Stay visible and connected with ongoing marketing support built around your goals, audience, and
+                professional relationships.
+              </p>
+              <a class="text-link" href="#contact">Explore marketing <span class="arrow">→</span></a>
+            </article>
+
+            <article class="offer-card" id="sponsorships">
+              <div class="offer-number">02</div>
+              <h3>Event Sponsorships</h3>
+              <p>
+                Put your brand in the room and support the experiences that bring Florida's personal injury
+                community together.
+              </p>
+              <a class="text-link" href="#contact">Explore sponsorships <span class="arrow">→</span></a>
+            </article>
+
+            <article class="offer-card">
+              <div class="offer-number">03</div>
+              <h3>Curated Events</h3>
+              <p>
+                Meet attorneys, medical providers, and trusted vendors through relaxed mixers, lunch and learns, and
+                memorable experiences.
+              </p>
+              <a class="text-link" href="#events">See upcoming events <span class="arrow">→</span></a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container audience-wrap">
+          <div class="audience-image">
+            <img
+              src="assets/brand/relationship-conversation.png"
+              alt="Guests having a conversation at an MMG networking event"
+            />
+            <div class="image-caption">
+              <span>Relationships first</span>
+              <strong>Real conversations in rooms people enjoy returning to.</strong>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-head">
+              <div class="eyebrow">Who we bring together</div>
+              <h2 class="section-title">A stronger community starts with <span>stronger relationships.</span></h2>
+              <p class="section-copy">
+                MMG creates welcoming spaces where professionals can move beyond introductions and begin building
+                relationships that last.
+              </p>
+            </div>
+
+            <div class="audience-list">
+              <article class="audience-card">
+                <div class="audience-card-top">
+                  <div class="audience-icon">PI</div>
+                  <h3>Personal Injury Attorneys</h3>
+                </div>
+                <p>Meet medical providers, vendors, and fellow professionals who understand the personal injury community.</p>
+              </article>
+              <article class="audience-card">
+                <div class="audience-card-top">
+                  <div class="audience-icon">MD</div>
+                  <h3>Medical Providers</h3>
+                </div>
+                <p>Build visibility and professional relationships with attorneys and industry partners across South Florida.</p>
+              </article>
+              <article class="audience-card">
+                <div class="audience-card-top">
+                  <div class="audience-icon">VP</div>
+                  <h3>Sponsors and Vendors</h3>
+                </div>
+                <p>Support memorable events and introduce your brand to a focused professional audience.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-dark" id="events">
+        <div class="container event-layout">
+          <div class="event-intro">
+            <div>
+              <div class="eyebrow">Upcoming events</div>
+              <h2>Come meet the community.</h2>
+              <p>
+                MMG events are designed to make professional networking feel natural. Expect a welcoming room, real
+                conversation, and an experience people enjoy returning to.
+              </p>
+            </div>
+            <a
+              class="button button-ghost"
+              href="https://www.eventbrite.com/o/millers-marketing-group-68684991773"
+              target="_blank"
+              rel="noreferrer"
+            >Follow MMG on Eventbrite <span class="arrow">→</span></a>
+          </div>
+
+          <div class="swipe-hint" aria-hidden="true">Swipe to explore events <span class="arrow">→</span></div>
+
+          <div class="upcoming-events-grid">
+            <article class="event-card">
+              <div class="event-card-image flyer">
+                <img
+                  src="assets/events/upcoming/bowling-mixer-flyer.jpg"
+                  alt="Flyer for the June 25, 2026 Personal Injury Professionals Bowling Mixer"
+                />
+                <div class="event-date">
+                  <strong>25</strong>
+                  <span>June</span>
+                </div>
+                <span class="flyer-label">Event flyer</span>
+              </div>
+              <div class="event-card-body">
+                <small>Networking mixer • Dania Beach</small>
+                <h3>Personal Injury Professionals Bowling Mixer</h3>
+                <p>
+                  Bring your bowling skills and your networking skills for a relaxed evening of strikes, spares, and
+                  meaningful connections at Lucky Strike.
+                </p>
+                <div class="event-actions">
+                  <a
+                    class="button button-primary"
+                    href="https://www.eventbrite.com/e/personal-injury-professionals-networking-bowling-mixer-tickets-1990647189330"
+                    target="_blank"
+                    rel="noreferrer"
+                  >Register on Eventbrite</a>
+                  <a class="button button-secondary" href="#contact">Ask About Sponsorship</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="event-card">
+              <div class="event-card-image flyer">
+                <img
+                  src="assets/events/series/pi-mixer-schedule.png"
+                  alt="MMG Personal Injury Networking Mixer monthly schedule"
+                />
+                <span class="event-series-label">Monthly series</span>
+              </div>
+              <div class="event-card-body">
+                <small>Last Thursday each month</small>
+                <h3>PI Networking Mixers</h3>
+                <p>
+                  Evening events bringing attorneys, medical providers, and industry professionals together for
+                  relationship-building and community.
+                </p>
+                <div class="event-actions">
+                  <a
+                    class="button button-primary"
+                    href="https://www.eventbrite.com/o/millers-marketing-group-68684991773"
+                    target="_blank"
+                    rel="noreferrer"
+                  >View Dates on Eventbrite</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="event-card">
+              <div class="event-card-image flyer">
+                <img
+                  src="assets/events/series/lunch-and-learn-schedule.png"
+                  alt="MMG Lunch and Learn monthly schedule"
+                />
+                <span class="event-series-label">Monthly series</span>
+              </div>
+              <div class="event-card-body">
+                <small>Second Friday each month</small>
+                <h3>Lunch &amp; Learn</h3>
+                <p>
+                  Midday educational gatherings focused on useful conversations, collaboration, and actionable
+                  takeaways for the personal injury community.
+                </p>
+                <div class="event-actions">
+                  <a
+                    class="button button-primary"
+                    href="https://www.eventbrite.com/o/millers-marketing-group-68684991773"
+                    target="_blank"
+                    rel="noreferrer"
+                  >View Dates on Eventbrite</a>
+                  <a class="button button-secondary" href="#contact">Ask About Speaking</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="container" style="margin-top: 5rem;">
+          <div class="section-head">
+            <div class="eyebrow">The MMG experience</div>
+            <h2 class="section-title">Professional networking <span style="color: var(--gold);">without the pressure.</span></h2>
+            <p class="section-copy">
+              The best relationships grow when people feel comfortable enough to have a real conversation.
+            </p>
+          </div>
+          <div class="swipe-hint" aria-hidden="true">Swipe through the experience <span class="arrow">→</span></div>
+          <div class="experience-grid">
+            <article class="experience-item">
+              <div class="experience-top">
+                <span class="experience-number">01</span>
+                <span class="experience-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M4 19v-7a8 8 0 0 1 16 0v7" /><path d="M8 19v-7a4 4 0 0 1 8 0v7" /><path d="M2 19h20" /></svg>
+                </span>
+              </div>
+              <div class="experience-body">
+                <span class="experience-kicker">The right room</span>
+                <h3>Welcoming, curated gatherings</h3>
+                <p>MMG brings together people with shared professional interests, then makes it easy to begin a real conversation.</p>
+              </div>
+            </article>
+
+            <article class="experience-item">
+              <div class="experience-top">
+                <span class="experience-number">02</span>
+                <span class="experience-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M8 8h8" /><path d="M8 16h8" /><circle cx="4" cy="12" r="2" /><circle cx="20" cy="12" r="2" /></svg>
+                </span>
+              </div>
+              <div class="experience-body">
+                <span class="experience-kicker">Comfort creates connection</span>
+                <h3>Relaxed, memorable settings</h3>
+                <p>From bowling to lunch and learns, each setting gives relationships room to develop naturally without forced networking.</p>
+              </div>
+            </article>
+
+            <article class="experience-item">
+              <div class="experience-top">
+                <span class="experience-number">03</span>
+                <span class="experience-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M3 11v2" /><path d="m6 9 9-4v14l-9-4z" /><path d="M18 9a4 4 0 0 1 0 6" /><path d="m7 15 1 5h3" /></svg>
+                </span>
+              </div>
+              <div class="experience-body">
+                <span class="experience-kicker">Be seen with purpose</span>
+                <h3>Thoughtful sponsor visibility</h3>
+                <p>Sponsors support the experience while gaining relevant, respectful visibility with the professionals in the room.</p>
+              </div>
+            </article>
+
+            <article class="experience-item">
+              <div class="experience-top">
+                <span class="experience-number">04</span>
+                <span class="experience-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M4 5h11a3 3 0 0 1 3 3v11H7a3 3 0 0 1-3-3z" /><path d="M18 8h2v11H7" /><path d="M8 9h6" /><path d="M8 13h6" /></svg>
+                </span>
+              </div>
+              <div class="experience-body">
+                <span class="experience-kicker">Share what you know</span>
+                <h3>Opportunities to learn together</h3>
+                <p>Panels, speakers, and peer conversations turn each gathering into a chance to exchange useful knowledge and perspective.</p>
+              </div>
+            </article>
+
+            <article class="experience-item">
+              <div class="experience-top">
+                <span class="experience-number">05</span>
+                <span class="experience-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6" /><path d="M4 4v5h5" /><path d="m9 12 2 2 4-5" /></svg>
+                </span>
+              </div>
+              <div class="experience-body">
+                <span class="experience-kicker">Relationships take time</span>
+                <h3>Consistent follow-through</h3>
+                <p>Andrew stays connected after the event, helping conversations continue and professional relationships grow over time.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-paper" id="past-events">
+        <div class="container">
+          <div class="section-head">
+            <div class="eyebrow">Past events</div>
+            <h2 class="section-title">The flyer starts the invitation. <span>The recap shows the connection.</span></h2>
+            <p class="section-copy">
+              Past event pages preserve the original flyer and bring the gathering back to life through video,
+              photos, sponsor recognition, and a short recap of the conversations and community created in the room.
+            </p>
+          </div>
+
+          <div class="swipe-hint" aria-hidden="true">Swipe through event recaps <span class="arrow">→</span></div>
+
+          <div class="past-events-grid">
+            <article class="past-event-card">
+              <div class="past-event-media">
+                <div class="past-flyer">
+                  <img
+                    src="assets/events/past/april-mixer-flyer.jpg"
+                    alt="Flyer for the April 30, 2026 Personal Injury Attorneys and Medical Professionals Mixer"
+                  />
+                  <span class="flyer-label">Original flyer</span>
+                </div>
+                <a
+                  class="past-video"
+                  href="https://www.instagram.com/millers_marketing_group34/reel/DX4IjeDOhYF/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Watch the April personal injury mixer recap video on Instagram"
+                >
+                  <img src="assets/events/recaps/networking-mixer-still.png" alt="" />
+                  <span class="play-button" aria-hidden="true">▶</span>
+                  <span class="video-label">Watch recap video</span>
+                </a>
+              </div>
+              <div class="past-event-body">
+                <small>April 30, 2026 • Plantation</small>
+                <h3>Personal Injury Attorneys &amp; Medical Professionals Mixer</h3>
+                <p>
+                  An evening built around cigars, organic connections, and relaxed conversation for attorneys,
+                  medical providers, sponsors, and community partners.
+                </p>
+                <div class="recap-meta">
+                  <span>Flyer archive</span>
+                  <span>Video recap</span>
+                  <span>Sponsor recognition</span>
+                </div>
+                <a class="text-link" href="#events">See the next gathering <span class="arrow">→</span></a>
+              </div>
+            </article>
+
+            <article class="past-event-card">
+              <div class="past-event-media">
+                <div class="past-flyer">
+                  <img
+                    src="assets/events/past/lunch-and-learn-flyer.jpg"
+                    alt="Flyer for the May 8, 2026 PI Lunch and Learn"
+                  />
+                  <span class="flyer-label">Original flyer</span>
+                </div>
+                <a
+                  class="past-video"
+                  href="https://www.instagram.com/millers_marketing_group34/reel/DYKnPleRFrx/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Watch the PI Lunch and Learn recap video on Instagram"
+                >
+                  <img src="assets/events/recaps/lunch-and-learn-still.png" alt="" />
+                  <span class="play-button" aria-hidden="true">▶</span>
+                  <span class="video-label">Watch recap video</span>
+                </a>
+              </div>
+              <div class="past-event-body">
+                <small>May 8, 2026 • Miami</small>
+                <h3>PI Lunch &amp; Learn</h3>
+                <p>
+                  A focused afternoon for attorneys, case managers, paralegals, and personal injury physicians to
+                  share knowledge, strengthen relationships, and learn together.
+                </p>
+                <div class="recap-meta">
+                  <span>Flyer archive</span>
+                  <span>Video recap</span>
+                  <span>Learning highlights</span>
+                </div>
+                <a class="text-link" href="#events">See the next gathering <span class="arrow">→</span></a>
+              </div>
+            </article>
+
+            <article class="past-event-card">
+              <div class="past-event-media">
+                <div class="past-flyer">
+                  <img
+                    src="assets/events/past/february-mixer-flyer.jpg"
+                    alt="Flyer for the February 26, 2026 Personal Injury Professionals Networking Mixer"
+                  />
+                  <span class="flyer-label">Original flyer</span>
+                </div>
+                <a
+                  class="past-video"
+                  href="https://www.instagram.com/millers_marketing_group34/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Explore MMG event recap videos on Instagram"
+                >
+                  <img src="assets/events/recaps/february-mixer-recap.png" alt="" />
+                  <span class="play-button" aria-hidden="true">▶</span>
+                  <span class="video-label">Watch event recaps</span>
+                </a>
+              </div>
+              <div class="past-event-body">
+                <small>February 26, 2026 • Coral Gables</small>
+                <h3>Personal Injury Professionals Networking Mixer</h3>
+                <p>
+                  An evening at Yard House centered on new introductions, sponsor visibility, and stronger
+                  relationships across South Florida's personal injury community.
+                </p>
+                <div class="recap-meta">
+                  <span>Flyer archive</span>
+                  <span>Video recap</span>
+                  <span>Sponsor recognition</span>
+                </div>
+                <a class="text-link" href="#events">See the next gathering <span class="arrow">→</span></a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-paper" id="about">
+        <div class="container andrew-layout">
+          <div class="andrew-portrait">
+            <img class="andrew-photo" src="assets/brand/andrew-miller-portrait.webp" alt="Andrew Miller, founder of Miller's Marketing Group" />
+            <div class="andrew-portrait-overlay" aria-hidden="true"></div>
+          </div>
+
+          <div class="andrew-copy">
+            <div class="eyebrow">Meet Andrew Miller</div>
+            <h2 class="section-title">A connector <span>by nature.</span></h2>
+            <p>
+              Andrew grew up in Kingston, Jamaica, where he learned early that opportunity often begins with
+              resourcefulness, trust, and people willing to help one another. That belief still shapes MMG today.
+            </p>
+            <p>
+              Part strategist, part host, and part connector, Andrew listens, makes thoughtful introductions, and
+              keeps showing up for Florida's personal injury professional community.
+            </p>
+            <blockquote class="quote">
+              “Marketing is more than ads. It is about alignment, connection, and clarity.”
+              <small>Andrew Miller, Founder</small>
+            </blockquote>
+            <a class="button button-secondary" href="#contact">Start a conversation <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section partners-section" id="partners">
+        <div class="container">
+          <div class="partners-intro">
+            <div>
+              <div class="eyebrow">They Trust Us</div>
+              <h2 class="section-title">Partners who help ideas <span>move.</span></h2>
+            </div>
+            <div>
+              <p class="partners-copy">
+                Collaborating with industry-leading partners to deliver exceptional marketing solutions and drive
+                your business success.
+              </p>
+              <div class="partners-note">Current clients and sponsors featured by MMG</div>
+            </div>
+          </div>
+
+          <div class="partners-grid" aria-label="Miller's Marketing Group clients and sponsors">
+            <figure class="partner-card">
+              <img src="assets/partners/the-mri-guys.jpg" alt="The MRI Guys" loading="lazy" />
+              <figcaption>The MRI Guys</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/better-wellness-clinic.jpg" alt="Better Wellness Clinic" loading="lazy" />
+              <figcaption>Better Wellness Clinic</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/in-check.png" alt="In Check" loading="lazy" />
+              <figcaption>In Check</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/back-in-action.png" alt="Back in Action" loading="lazy" />
+              <figcaption>Back in Action</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/ae-law.png" alt="AE Law" loading="lazy" />
+              <figcaption>AE Law</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/abogado-raimundo.png" alt="Abogado Raimundo" loading="lazy" />
+              <figcaption>Abogado Raimundo</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/xpress.png" alt="Xpress" loading="lazy" />
+              <figcaption>Xpress</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/mario-lopez.jpg" alt="Mario Lopez" loading="lazy" />
+              <figcaption>Mario Lopez</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/new-river-funding-group.png" alt="New River Funding Group" loading="lazy" />
+              <figcaption>New River Funding Group</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/linder-diaz-logo.png" alt="Linder Diaz" loading="lazy" />
+              <figcaption>Linder Diaz</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/visionary-solutions.png" alt="Visionary Solutions" loading="lazy" />
+              <figcaption>Visionary Solutions</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/optimal-salud-chiropractic.webp" alt="Optimal Salud Chiropractic" loading="lazy" />
+              <figcaption>Optimal Salud Chiropractic</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/marketing-bull.jpg" alt="Marketing Bull" loading="lazy" />
+              <figcaption>Marketing Bull</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/align-the-spine-chiropractic.webp" alt="Align the Spine Chiropractic" loading="lazy" />
+              <figcaption>Align the Spine Chiropractic</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/the-crash-queen.png" alt="The Crash Queen" loading="lazy" />
+              <figcaption>The Crash Queen</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/horizon.png" alt="Horizon" loading="lazy" />
+              <figcaption>Horizon</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/sobe-rehab.png" alt="SoBe Rehab" loading="lazy" />
+              <figcaption>SoBe Rehab</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/lince-digital-marketing.png" alt="Lince Digital Marketing" loading="lazy" />
+              <figcaption>Lince Digital Marketing</figcaption>
+            </figure>
+            <figure class="partner-card">
+              <img src="assets/partners/raymond-james.png" alt="Raymond James" loading="lazy" />
+              <figcaption>Raymond James</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <div class="eyebrow">Community</div>
+            <h2 class="section-title">Made possible by the people who <span>show up.</span></h2>
+            <p class="section-copy">
+              MMG is grateful to the clients, sponsors, speakers, venues, and attendees who continue to support these
+              events and strengthen Florida's personal injury community.
+            </p>
+          </div>
+
+          <div class="community-grid">
+            <article class="community-card">
+              <strong>Attorneys</strong>
+              <p>Professionals who bring experience, conversation, and collaboration into the room.</p>
+            </article>
+            <article class="community-card">
+              <strong>Medical Providers</strong>
+              <p>Providers who share knowledge and build trusted professional relationships.</p>
+            </article>
+            <article class="community-card">
+              <strong>Sponsors</strong>
+              <p>Partners whose support makes thoughtful, memorable events possible.</p>
+            </article>
+            <article class="community-card">
+              <strong>Venues &amp; Speakers</strong>
+              <p>Hosts and educators who help every gathering feel useful and welcoming.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-paper">
+        <div class="container">
+          <div class="sponsor-banner">
+            <div>
+              <div class="eyebrow" style="color: var(--gold);">Sponsorship opportunities</div>
+              <h2>Put your brand in the room.</h2>
+              <p>
+                Support the personal injury community while building recognition through event presence,
+                promotional visibility, and meaningful conversations with attendees.
+              </p>
+            </div>
+            <a class="button button-light" href="#contact">Talk About Sponsorship <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section consultation" id="contact">
+        <div class="container consultation-grid">
+          <div class="consultation-copy">
+            <div class="eyebrow">Start with a conversation</div>
+            <h2>Who do you want to meet?</h2>
+            <p>
+              Tell Andrew about your business, the relationships you want to build, and the opportunities you are
+              exploring. He will follow up to schedule a conversation and recommend the right next step.
+            </p>
+            <div class="contact-links">
+              <a href="tel:5618889450">561-888-9450</a>
+              <a href="mailto:contact@millersmarketinggroup.com">contact@millersmarketinggroup.com</a>
+              <a href="https://www.instagram.com/millers_marketing_group34/" target="_blank" rel="noreferrer">@millers_marketing_group34</a>
+            </div>
+          </div>
+
+          <form class="form-card" onsubmit="return false;">
+            <div class="form-grid">
+              <div class="field">
+                <label for="name">Full name</label>
+                <input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" />
+              </div>
+              <div class="field">
+                <label for="company">Company</label>
+                <input id="company" name="company" type="text" autocomplete="organization" placeholder="Company name" />
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" />
+              </div>
+              <div class="field">
+                <label for="interest">Area of interest</label>
+                <select id="interest" name="interest">
+                  <option>Marketing partnership</option>
+                  <option>Event sponsorship</option>
+                  <option>General consultation</option>
+                </select>
+              </div>
+              <div class="field field-full">
+                <label for="message">Tell Andrew a little more</label>
+                <textarea id="message" name="message" placeholder="What relationships or opportunities are you exploring?"></textarea>
+              </div>
+            </div>
+            <div class="form-footer">
+              <small>Andrew personally reviews consultation requests and follows up to schedule a conversation.</small>
+              <a class="button button-light" href="mailto:contact@millersmarketinggroup.com">Send Request <span class="arrow">→</span></a>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <a class="brand" href="#top" aria-label="Miller's Marketing Group home">
+              <img class="brand-logo" src="assets/brand/mmg-official-logo.png" alt="" />
+              <div class="brand-copy">
+                <strong>Miller's Marketing Group</strong>
+                <small>Good people. Meaningful connections.</small>
+              </div>
+            </a>
+            <p class="footer-about">
+              Marketing, sponsorship, and networking opportunities for Florida's personal injury professional community.
+            </p>
+          </div>
+          <div>
+            <h3>Explore</h3>
+            <ul>
+              <li><a href="#marketing">Marketing</a></li>
+              <li><a href="#sponsorships">Sponsorships</a></li>
+              <li><a href="#events">Events</a></li>
+              <li><a href="#about">About Andrew</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Contact</h3>
+            <ul>
+              <li><a href="tel:5618889450">561-888-9450</a></li>
+              <li><a href="tel:9548698435">954-869-8435</a></li>
+              <li><a href="mailto:contact@millersmarketinggroup.com">Email MMG</a></li>
+              <li>Plantation, Florida</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Connect</h3>
+            <ul>
+              <li><a href="https://www.instagram.com/millers_marketing_group34/" target="_blank" rel="noreferrer">Instagram</a></li>
+              <li><a href="https://www.eventbrite.com/o/millers-marketing-group-68684991773" target="_blank" rel="noreferrer">Eventbrite</a></li>
+              <li><a href="https://us21.campaign-archive.com/?e=__test_email__&amp;u=2102fd3b9a354ec9fef50a91d&amp;id=d7ff8628eb" target="_blank" rel="noreferrer">Newsletter archive</a></li>
+              <li>Privacy Policy</li>
+              <li>Terms &amp; Disclaimer</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>
+            MMG is not a law firm or medical provider and does not provide legal or medical advice. Participation in
+            MMG marketing programs or events does not guarantee referrals, clients, cases, or business outcomes.
+          </span>
+          <span>© 2026 Miller's Marketing Group</span>
+        </div>
+      </div>
+    </footer>
+
+    <div class="mobile-actions" aria-label="Mobile quick actions">
+      <a class="button button-primary" href="#contact">Talk With Andrew</a>
+      <a class="button button-secondary" href="#events">Events</a>
+    </div>
+  </body>
+</html>
