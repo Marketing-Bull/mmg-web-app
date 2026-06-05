@@ -5,6 +5,9 @@ Static homepage mockup for Miller's Marketing Group.
 ## Project Structure
 
 - `index.html` - deployable GitHub Pages homepage
+- `faq.html` - frequently asked questions
+- `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages (drafts pending legal review)
+- `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
 - `assets/brand/` - brand and relationship imagery
 - `assets/events/upcoming/` - current event flyers
 - `assets/events/past/` - archived event flyers
