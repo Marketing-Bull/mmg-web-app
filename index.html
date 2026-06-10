@@ -1385,6 +1385,95 @@
         line-height: 1.7;
       }
 
+      .newsletter {
+        background: var(--paper);
+      }
+
+      .newsletter-card {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: clamp(1.5rem, 4vw, 3rem);
+        align-items: center;
+        padding: clamp(1.8rem, 4vw, 2.8rem);
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        background:
+          radial-gradient(circle at 90% 12%, rgba(242, 201, 76, 0.3), transparent 32%),
+          radial-gradient(circle at 6% 92%, rgba(46, 119, 114, 0.12), transparent 30%),
+          var(--cream);
+        box-shadow: var(--shadow);
+      }
+
+      .newsletter-card::after {
+        content: "";
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        right: -120px;
+        bottom: -130px;
+        border: 36px solid rgba(165, 46, 42, 0.06);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      .newsletter-copy h2 {
+        margin: 0.7rem 0 0.6rem;
+        font-family: var(--serif);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+
+      .newsletter-copy p {
+        max-width: 46ch;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .newsletter-action {
+        position: relative;
+        z-index: 1;
+      }
+
+      .newsletter-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+      }
+
+      .newsletter-form input[type="email"] {
+        flex: 1;
+        min-width: 0;
+        min-height: 52px;
+        padding: 0.9rem 1.1rem;
+        border: 1px solid rgba(38, 29, 25, 0.18);
+        border-radius: 14px;
+        color: var(--espresso);
+        background: var(--paper);
+      }
+
+      .newsletter-form .button {
+        flex: none;
+      }
+
+      .newsletter-fine {
+        margin: 0.9rem 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.55;
+      }
+
+      .newsletter-fine a {
+        color: var(--red);
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
       .consultation {
         position: relative;
         overflow: hidden;
@@ -1901,6 +1990,18 @@
 
         .sponsor-banner {
           grid-template-columns: 1fr;
+        }
+
+        .newsletter-card {
+          grid-template-columns: 1fr;
+        }
+
+        .newsletter-form {
+          flex-direction: column;
+        }
+
+        .newsletter-form .button {
+          width: 100%;
         }
 
         .form-grid {
@@ -2616,7 +2717,7 @@
                 contact@millersmarketinggroup.com
               </a>
               <a href="https://www.instagram.com/millers_marketing_group34/" target="_blank" rel="noreferrer">
-                <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none" /></svg>
+                <svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1.1" style="fill: currentColor; stroke: none;" /></svg>
                 Follow on Instagram
               </a>
             </div>
@@ -2654,6 +2755,57 @@
               <a class="button button-light" href="mailto:contact@millersmarketinggroup.com">Send Request <span class="arrow">→</span></a>
             </div>
           </form>
+        </div>
+      </section>
+
+      <section class="section newsletter" id="newsletter">
+        <div class="container">
+          <div class="newsletter-card">
+            <div class="newsletter-copy">
+              <div class="eyebrow">Stay in the loop</div>
+              <h2>Subscribe to our newsletter.</h2>
+              <p>
+                Upcoming events, sponsor spotlights, and community updates from Florida's personal injury
+                professional network — a few times a month, straight to your inbox.
+              </p>
+            </div>
+            <div class="newsletter-action">
+              <!--
+                Mailchimp embedded form. Replace AUDIENCE_ID and the action
+                subdomain with the values from MMG's Mailchimp account
+                (Audience > Signup forms > Embedded forms). Account: us21,
+                u=2102fd3b9a354ec9fef50a91d.
+              -->
+              <form
+                class="newsletter-form"
+                action="https://millersmarketinggroup.us21.list-manage.com/subscribe/post?u=2102fd3b9a354ec9fef50a91d&amp;id=AUDIENCE_ID"
+                method="post"
+                target="_blank"
+                rel="noreferrer"
+                novalidate
+              >
+                <input
+                  type="email"
+                  name="EMAIL"
+                  placeholder="you@company.com"
+                  autocomplete="email"
+                  aria-label="Email address"
+                  required
+                />
+                <!-- Mailchimp anti-bot honeypot; do not remove -->
+                <div aria-hidden="true" style="position: absolute; left: -5000px;">
+                  <input type="text" name="b_2102fd3b9a354ec9fef50a91d_AUDIENCE_ID" tabindex="-1" value="" />
+                </div>
+                <button class="button button-primary" type="submit" name="subscribe">
+                  Subscribe <span class="arrow">→</span>
+                </button>
+              </form>
+              <p class="newsletter-fine">
+                No spam — just useful updates. Unsubscribe anytime. See the
+                <a href="https://us21.campaign-archive.com/?e=__test_email__&amp;u=2102fd3b9a354ec9fef50a91d&amp;id=d7ff8628eb" target="_blank" rel="noreferrer">newsletter archive</a>.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </main>
