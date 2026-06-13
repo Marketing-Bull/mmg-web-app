@@ -8,7 +8,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `faq.html` - frequently asked questions
 - `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages (drafts pending legal review)
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
-- `assets/js/site.js` - Google Tag Manager loader, contact/newsletter form handling, and analytics events
+- `assets/js/site.js` - Google Analytics 4 (gtag.js) loader, contact/newsletter form handling, and analytics events
 - `api/lead.js` - Vercel serverless function that forwards contact + newsletter submissions to the GHL webhook
 - `package.json` - marks the repo as a Vercel project (Node serverless functions)
 - `assets/brand/` - brand and relationship imagery
@@ -43,7 +43,7 @@ read server-side only and is never exposed to the browser.
 
 | Item | Where | Notes |
 | --- | --- | --- |
-| Google Tag Manager container ID | `GTM_ID` constant in `assets/js/site.js` | Replace the `GTM-XXXXXXX` placeholder with MMG's real container. GTM IDs are public by design. The loader skips the placeholder so nothing breaks until it's set. |
+| Google Analytics 4 measurement ID | `GA_ID` constant in `assets/js/site.js` (`G-D3DW5X6G2T`) | Loads gtag.js and sends events (`lead_submit`, `eventbrite_click`, `cta_click`). GA4 measurement IDs are public. |
 | Eventbrite | links in `index.html` | Public event/organizer URLs. |
 | Instagram | contact + footer links | Public profile URL. |
 | Contact email | `contact@millersmarketinggroup.com` in `index.html` | Public address; GHL handles lead routing/notifications. |

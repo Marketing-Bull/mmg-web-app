@@ -2,42 +2,37 @@
   Miller's Marketing Group — site script.
 
   Responsibilities:
-    1. Load Google Tag Manager (one place to set the container ID).
+    1. Load Google Analytics 4 (gtag.js) — one place to set the measurement ID.
     2. Submit the contact + newsletter forms to /api/lead (GHL webhook proxy).
-    3. Push analytics events to the GTM dataLayer (lead submits, Eventbrite
-       clicks, primary CTA clicks).
+    3. Send GA4 events (lead submits, Eventbrite clicks, primary CTA clicks).
 */
 (function () {
   "use strict";
 
-  // --- Google Tag Manager ---------------------------------------------------
-  // Public container ID. Replace GTM-XXXXXXX with MMG's real GTM container.
-  var GTM_ID = "GTM-XXXXXXX";
+  // --- Google Analytics 4 (gtag.js) -----------------------------------------
+  // Public measurement ID.
+  var GA_ID = "G-D3DW5X6G2T";
 
   window.dataLayer = window.dataLayer || [];
-
-  function track(event, params) {
-    var entry = { event: event };
-    if (params) {
-      for (var key in params) {
-        if (Object.prototype.hasOwnProperty.call(params, key)) entry[key] = params[key];
-      }
-    }
-    window.dataLayer.push(entry);
+  function gtag() {
+    window.dataLayer.push(arguments);
   }
 
-  function initGTM(id) {
-    // Don't load an unconfigured/placeholder container (avoids 404s).
-    if (!id || id.indexOf("GTM-") !== 0 || id === "GTM-XXXXXXX") return;
-    window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-    var first = document.getElementsByTagName("script")[0];
+  function loadGA(id) {
+    if (!id) return;
     var s = document.createElement("script");
     s.async = true;
-    s.src = "https://www.googletagmanager.com/gtm.js?id=" + id;
-    first.parentNode.insertBefore(s, first);
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
+    document.head.appendChild(s);
+    gtag("js", new Date());
+    gtag("config", id);
   }
 
-  initGTM(GTM_ID);
+  function track(event, params) {
+    gtag("event", event, params || {});
+  }
+
+  loadGA(GA_ID);
 
   // --- Lead forms (contact + newsletter) → /api/lead ------------------------
   function serialize(form) {
