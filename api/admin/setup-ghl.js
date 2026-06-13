@@ -40,10 +40,13 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "GHL_API_TOKEN / GHL_LOCATION_ID not set" });
   }
 
+  let cachedObjects = null;
   async function listObjects() {
+    if (cachedObjects) return cachedObjects;
     const r = await ghl("GET", `/objects/?locationId=${encodeURIComponent(locationId)}`);
     push(`GET /objects/ -> ${r.status}`);
-    return asArray(r.json, "objects", "data", "results");
+    cachedObjects = asArray(r.json, "objects", "data", "results");
+    return cachedObjects;
   }
 
   async function ensureObject(key, singular, plural, primaryName) {
@@ -60,16 +63,20 @@ export default async function handler(req, res) {
       locationId,
       primaryDisplayPropertyDetails: { key: `${key}.name`, name: primaryName, dataType: "TEXT" },
     });
+    if (r.ok && cachedObjects) cachedObjects.push({ key });
     push(`POST /objects/ ${key} -> ${r.status}${r.ok ? "" : " " + JSON.stringify(r.json).slice(0, 300)}`);
   }
 
+  const propertiesCache = {};
   async function properties(key) {
+    if (propertiesCache[key]) return propertiesCache[key];
     const r = await ghl(
       "GET",
       `/objects/${encodeURIComponent(key)}?locationId=${encodeURIComponent(locationId)}&fetchProperties=true`
     );
     const obj = (r.json && (r.json.object || r.json)) || {};
-    return asArray(obj, "properties", "customFields", "fields");
+    propertiesCache[key] = asArray(obj, "properties", "customFields", "fields");
+    return propertiesCache[key];
   }
 
   async function ensureField(objectKey, field) {
@@ -90,6 +97,9 @@ export default async function handler(req, res) {
     if (!r.ok && field.dataType === "FILE_UPLOAD") {
       body.dataType = "TEXT";
       r = await ghl("POST", "/custom-fields/", body);
+    }
+    if (r.ok && propertiesCache[objectKey]) {
+      propertiesCache[objectKey].push({ fieldKey: `${objectKey}.${field.key}`, key: field.key, name: field.name });
     }
     push(`  ${r.ok ? "＋" : "✗"} field ${field.key} (${body.dataType}) -> ${r.status}${r.ok ? "" : " " + JSON.stringify(r.json).slice(0, 200)}`);
   }
