@@ -36,14 +36,29 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "A valid email is required." });
   }
 
+  const isNewsletter = body.form === "newsletter";
+
+  // Split the single name field into first/last for GHL contact creation.
+  const name = (body.name || "").trim();
+  const gap = name.indexOf(" ");
+  const firstName = gap === -1 ? name : name.slice(0, gap);
+  const lastName = gap === -1 ? "" : name.slice(gap + 1);
+
+  // Tags GHL can use to segment the lead.
+  const tags = ["MMG Website", isNewsletter ? "Newsletter Signup" : "Website Contact Form"];
+  if (!isNewsletter && body.interest) tags.push(String(body.interest));
+
   const payload = {
-    form: body.form === "newsletter" ? "newsletter" : "contact",
-    name: body.name || "",
+    form: isNewsletter ? "newsletter" : "contact",
+    name,
+    first_name: firstName,
+    last_name: lastName,
     company: body.company || "",
     email,
     phone: body.phone || "",
     interest: body.interest || "",
     message: body.message || "",
+    tags,
     source: "millersmarketinggroup.com",
     page: body.page || "",
     submitted_at: new Date().toISOString(),
