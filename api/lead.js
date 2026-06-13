@@ -38,6 +38,10 @@ export default async function handler(req, res) {
 
   const isNewsletter = body.form === "newsletter";
 
+  if (!isNewsletter && !(body.phone || "").trim()) {
+    return res.status(400).json({ error: "A mobile phone number is required." });
+  }
+
   // Split the single name field into first/last for GHL contact creation.
   const name = (body.name || "").trim();
   const gap = name.indexOf(" ");
