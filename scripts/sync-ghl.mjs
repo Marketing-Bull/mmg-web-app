@@ -59,6 +59,12 @@ function recordProps(record) {
   return record.properties || record.customFields || record || {};
 }
 
+// Robust boolean parse — GHL may return booleans as strings ("false", "0", …).
+function toBool(value) {
+  if (typeof value === "string") value = value.trim().toLowerCase();
+  return value === true || value === 1 || value === "true" || value === "1" || value === "yes";
+}
+
 function mapEvent(record) {
   const p = recordProps(record);
   return {
@@ -74,7 +80,7 @@ function mapEvent(record) {
     image: pick(p, "image_url", "image"),
     registerUrl: pick(p, "register_url", "registerUrl"),
     registerLabel: pick(p, "register_label") || "Register on Eventbrite",
-    featured: Boolean(pick(p, "featured")),
+    featured: toBool(pick(p, "featured")),
     sortOrder: Number(pick(p, "sort_order")) || 0,
   };
 }

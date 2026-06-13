@@ -21,20 +21,28 @@
     return "";
   }
 
-  function monthName(iso) {
-    var d = new Date(iso + "T00:00:00");
-    if (isNaN(d)) return "";
-    return d.toLocaleString("en-US", { month: "long" });
+  // Parse from the YYYY-MM-DD prefix as a local date. Handles plain dates and
+  // full ISO date-times (e.g. "2026-06-25T00:00:00Z") without timezone drift.
+  function parseDate(value) {
+    var m = String(value == null ? "" : value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return null;
+    var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return isNaN(d.getTime()) ? null : d;
   }
 
-  function dayNumber(iso) {
-    var d = new Date(iso + "T00:00:00");
-    return isNaN(d) ? "" : String(d.getDate());
+  function monthName(value) {
+    var d = parseDate(value);
+    return d ? d.toLocaleString("en-US", { month: "long" }) : "";
+  }
+
+  function dayNumber(value) {
+    var d = parseDate(value);
+    return d ? String(d.getDate()) : "";
   }
 
   function eventCard(ev) {
     var img = safeUrl(ev.image);
-    var dated = !!ev.date && !!monthName(ev.date);
+    var dated = !!parseDate(ev.date);
     var badge = dated
       ? '<div class="event-date"><strong>' +
         esc(dayNumber(ev.date)) +
@@ -43,7 +51,10 @@
         "</span></div><span class=\"flyer-label\">Event flyer</span>"
       : '<span class="event-series-label">' + esc(ev.type || "Monthly series") + "</span>";
 
-    var meta = [ev.type, ev.city].filter(Boolean).map(esc).join(" &bull; ");
+    // Dated events show type • city; recurring events show their cadence.
+    var meta = dated
+      ? [ev.type, ev.city].filter(Boolean).map(esc).join(" &bull; ")
+      : esc(ev.cadence || ev.type || "");
     var register = safeUrl(ev.registerUrl);
     var actions = register
       ? '<div class="event-actions"><a class="button button-primary" href="' +
