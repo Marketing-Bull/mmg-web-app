@@ -109,8 +109,13 @@ async function ensureField(objectKey, field) {
   if (field.options) {
     body.options = field.options.map((o) => ({ key: o.toLowerCase().replace(/\s+/g, "_"), label: o }));
   }
-  const r = await api("POST", "/custom-fields/", body);
-  if (r.ok) console.log(`  ＋ field "${field.key}"`);
+  let r = await api("POST", "/custom-fields/", body);
+  if (!r.ok && field.dataType === "FILE_UPLOAD") {
+    console.log(`  …retrying "${field.key}" as TEXT (file upload not accepted)`);
+    body.dataType = "TEXT";
+    r = await api("POST", "/custom-fields/", body);
+  }
+  if (r.ok) console.log(`  ＋ field "${field.key}" (${body.dataType})`);
   else console.log(`  ✗ field "${field.key}" failed (${r.status})`);
 }
 
@@ -122,18 +127,17 @@ const EVENT_FIELDS = [
   { key: "venue", name: "Venue", dataType: "TEXT" },
   { key: "type", name: "Type", dataType: "TEXT" },
   { key: "summary", name: "Summary", dataType: "LARGE_TEXT" },
-  { key: "image_url", name: "Image URL", dataType: "TEXT" },
+  { key: "image_url", name: "Flyer", dataType: "FILE_UPLOAD" },
   { key: "register_url", name: "Register URL", dataType: "TEXT" },
   { key: "register_label", name: "Register Label", dataType: "TEXT" },
   { key: "featured", name: "Featured", dataType: "CHECKBOX" },
-  { key: "sort_order", name: "Sort Order", dataType: "NUMERICAL" },
+  { key: "sort_order", name: "Priority", dataType: "NUMERICAL" },
 ];
 
+// Sponsors only need name (primary) + logo + a priority for ordering.
 const SPONSOR_FIELDS = [
-  { key: "logo_url", name: "Logo URL", dataType: "TEXT" },
-  { key: "website_url", name: "Website URL", dataType: "TEXT" },
-  { key: "tier", name: "Tier", dataType: "SINGLE_OPTIONS", options: ["Lead", "Featured", "Community"] },
-  { key: "sort_order", name: "Sort Order", dataType: "NUMERICAL" },
+  { key: "logo_url", name: "Logo", dataType: "FILE_UPLOAD" },
+  { key: "sort_order", name: "Priority", dataType: "NUMERICAL" },
 ];
 
 async function main() {

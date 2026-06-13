@@ -26,11 +26,11 @@ site reads at runtime.
 | Venue | `venue` | Text | e.g. "Lucky Strike" |
 | Type | `type` | Text | e.g. "Networking mixer", "Lunch & Learn" |
 | Summary | `summary` | Large text | 1–2 sentence description |
-| Image URL | `image_url` | Text/URL | Flyer image URL (hosted in GHL media or elsewhere) |
+| Flyer | `image_url` | File upload | Upload the flyer image directly in GHL (its URL is stored) |
 | Register URL | `register_url` | Text/URL | Eventbrite (or other) registration link |
 | Register label | `register_label` | Text | Optional button text (defaults to "Register on Eventbrite") |
 | Featured | `featured` | Checkbox | Optional; featured event |
-| Sort order | `sort_order` | Number | Optional manual ordering |
+| Priority | `sort_order` | Number | Lower number shows first |
 
 ## 2. Sponsor (custom object)
 
@@ -40,10 +40,8 @@ site reads at runtime.
 | Field label | Key | Type | Notes |
 | --- | --- | --- | --- |
 | Name | `name` | Text | Sponsor/partner name (primary field) |
-| Logo URL | `logo_url` | Text/URL | Logo image URL |
-| Website URL | `website_url` | Text/URL | Optional link |
-| Tier | `tier` | Single option | Optional, e.g. "Lead", "Featured", "Community" |
-| Sort order | `sort_order` | Number | Optional manual ordering |
+| Logo | `logo_url` | File upload | Upload the logo directly in GHL (its URL is stored) |
+| Priority | `sort_order` | Number | Lower number shows first on the page |
 
 ## 3. Output JSON shape (what the site reads)
 
