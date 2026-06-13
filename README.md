@@ -39,10 +39,17 @@ settings — never commit) or **🌐 public** (safe to expose; lives in client c
 
 | Variable | Where to set | Used by | Secret? |
 | --- | --- | --- | --- |
-| `GHL_WEBHOOK_URL` | Vercel → Project → Settings → Environment Variables | `api/lead.js` — forwards every contact + newsletter submission to the GoHighLevel inbound webhook | 🔒 secret |
+| `GHL_WEBHOOK_URL` | Vercel env | `api/lead.js` — forwards every contact + newsletter submission to the GoHighLevel inbound webhook | 🔒 secret |
+| `GHL_API_TOKEN` | Vercel env | `api/events`, `api/sponsors`, `api/admin/setup-ghl` — reads GHL custom objects (needs `objects/record.readonly`; `objects/schema.write` for setup) | 🔒 secret |
+| `GHL_LOCATION_ID` | Vercel env | same as above — the GHL sub-account location id | 🔒 secret |
+| `SETUP_SECRET` | Vercel env | guards `api/admin/setup-ghl` (the one-time object-creation route) | 🔒 secret |
 
-Without `GHL_WEBHOOK_URL` the forms return a configuration error. The value is
-read server-side only and is never exposed to the browser.
+All are read server-side only and never exposed to the browser. Without the GHL
+vars, `api/events`/`api/sponsors` return empty and the site falls back to the
+committed `data/*.json`; the forms need `GHL_WEBHOOK_URL`.
+
+Optional: `GHL_EVENTS_OBJECT_KEY` (default `custom_objects.event`),
+`GHL_SPONSORS_OBJECT_KEY` (default `custom_objects.sponsor`).
 
 ### Public identifiers (not env vars — set directly in code)
 
@@ -58,27 +65,29 @@ read server-side only and is never exposed to the browser.
 
 ### Events & Sponsors content sync (GHL Custom Objects)
 
-Events and Sponsors are read from `data/events.json` / `data/sponsors.json`,
-which the homepage renders via `assets/js/content.js` (with the static cards as
-fallback). Those files are refreshed by a scheduled GitHub Action
-(`.github/workflows/sync-ghl.yml`) that runs `scripts/sync-ghl.mjs` to pull the
-GHL **Event** and **Sponsor** custom objects. No token is used at request time —
-the site only serves the committed JSON.
+`assets/js/content.js` renders the Events and Sponsors on the homepage. It loads
+them in this order, using the first that returns data:
 
-**Setup:** create the custom objects per
-[`docs/strategy/ghl-content-model.md`](docs/strategy/ghl-content-model.md), then
-add these **GitHub Actions secrets** (Settings → Secrets and variables → Actions):
+1. **`/api/events` and `/api/sponsors`** — Vercel functions that read the GHL
+   **Event** / **Sponsor** custom objects live (token from Vercel env), cached
+   ~5 min at the edge.
+2. **`data/events.json` / `data/sponsors.json`** — committed seed (offline fallback).
+3. The static cards already in `index.html`.
 
-| Secret | Required | Notes |
-| --- | --- | --- |
-| `GHL_API_TOKEN` 🔒 | yes | GHL Private Integration token with `objects/record.readonly` scope |
-| `GHL_LOCATION_ID` | yes | Sub-account location id |
-| `GHL_EVENTS_OBJECT_KEY` | no | Defaults to `custom_objects.event` |
-| `GHL_SPONSORS_OBJECT_KEY` | no | Defaults to `custom_objects.sponsor` |
+**Setup (one time):**
 
-Until the secrets are set, the sync is a no-op and the seeded JSON is served.
-The GHL API request/field mapping in `scripts/sync-ghl.mjs` should be validated
-against a live response once the objects and token exist.
+1. Run the setup route to create the GHL custom objects + fields:
+   `GET /api/admin/setup-ghl?key=<SETUP_SECRET>` (idempotent; returns a JSON
+   log). It builds the schema in
+   [`docs/strategy/ghl-content-model.md`](docs/strategy/ghl-content-model.md) —
+   flyer/logo are file-upload fields; sponsors are name + logo + priority. The
+   token needs `objects/schema.write` for this step.
+2. Add Events/Sponsors as records in GHL. `/api/events` and `/api/sponsors` pick
+   them up automatically within the cache window.
+
+> The `.github/workflows/*` + `scripts/sync-ghl.mjs` are an **alternative**
+> sync-to-static-JSON path (requires GitHub Actions to be enabled). With the
+> Vercel functions above, they are not needed.
 
 When new variables are added, document them and keep this section in sync.
 
