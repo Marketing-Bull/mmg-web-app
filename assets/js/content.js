@@ -104,36 +104,45 @@
     });
   }
 
+  // Try the live GHL-backed API first, then the committed JSON. Returns the
+  // first source that yields a non-empty array under `key`.
+  function loadFirst(urls, key) {
+    var i = 0;
+    function tryNext() {
+      if (i >= urls.length) return Promise.reject(new Error("no data"));
+      var url = urls[i++];
+      return fetchJSON(url).then(function (data) {
+        var list = data && Array.isArray(data[key]) ? data[key] : [];
+        return list.length ? list : tryNext();
+      }, tryNext);
+    }
+    return tryNext();
+  }
+
   function renderEvents() {
     var grid = document.querySelector(".upcoming-events-grid");
     if (!grid) return;
-    fetchJSON("data/events.json")
-      .then(function (data) {
-        var list = (data && data.events ? data.events : []).filter(function (e) {
-          return (e.status || "upcoming") === "upcoming" && e.title;
-        });
-        if (!list.length) return; // keep static fallback
-        grid.innerHTML = list.map(eventCard).join("");
-      })
-      .catch(function () {
-        /* keep static cards */
+    loadFirst(["/api/events", "data/events.json"], "events").then(function (list) {
+      var up = list.filter(function (e) {
+        return (e.status || "upcoming") === "upcoming" && e.title;
       });
+      if (up.length) grid.innerHTML = up.map(eventCard).join("");
+    }, function () {
+      /* keep static cards */
+    });
   }
 
   function renderSponsors() {
     var grid = document.querySelector(".partners-grid");
     if (!grid) return;
-    fetchJSON("data/sponsors.json")
-      .then(function (data) {
-        var list = (data && data.sponsors ? data.sponsors : []).filter(function (s) {
-          return s.name;
-        });
-        if (!list.length) return;
-        grid.innerHTML = list.map(sponsorCard).join("");
-      })
-      .catch(function () {
-        /* keep static cards */
+    loadFirst(["/api/sponsors", "data/sponsors.json"], "sponsors").then(function (list) {
+      var s = list.filter(function (x) {
+        return x.name;
       });
+      if (s.length) grid.innerHTML = s.map(sponsorCard).join("");
+    }, function () {
+      /* keep static cards */
+    });
   }
 
   function ready(fn) {
