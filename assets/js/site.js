@@ -13,7 +13,16 @@
   // GA4 (gtag.js) is loaded from the <head> snippet on every page; here we only
   // send custom events through the global gtag.
   function track(event, params) {
-    if (typeof window.gtag === "function") window.gtag("event", event, params || {});
+    // gtag.js is loaded from each page's <head> snippet. If it's missing
+    // (blocked, failed, or a future page omits it), define the standard
+    // fallback that queues onto dataLayer so events aren't silently dropped.
+    if (typeof window.gtag !== "function") {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () {
+        window.dataLayer.push(arguments);
+      };
+    }
+    window.gtag("event", event, params || {});
   }
 
   // --- Lead forms (contact + newsletter) → /api/lead ------------------------
