@@ -1,0 +1,23 @@
+{
+  "updated": "2026-06-13T00:00:00Z",
+  "sponsors": [
+    { "id": "seed-the-mri-guys", "name": "The MRI Guys", "logo": "assets/partners/the-mri-guys.jpg", "url": "", "tier": "" },
+    { "id": "seed-better-wellness-clinic", "name": "Better Wellness Clinic", "logo": "assets/partners/better-wellness-clinic.jpg", "url": "", "tier": "" },
+    { "id": "seed-in-check", "name": "In Check", "logo": "assets/partners/in-check.png", "url": "", "tier": "" },
+    { "id": "seed-back-in-action", "name": "Back in Action", "logo": "assets/partners/back-in-action.png", "url": "", "tier": "" },
+    { "id": "seed-ae-law", "name": "AE Law", "logo": "assets/partners/ae-law.png", "url": "", "tier": "" },
+    { "id": "seed-xpress", "name": "Xpress", "logo": "assets/partners/xpress.png", "url": "", "tier": "" },
+    { "id": "seed-mario-lopez", "name": "Mario Lopez", "logo": "assets/partners/mario-lopez.jpg", "url": "", "tier": "" },
+    { "id": "seed-new-river-funding-group", "name": "New River Funding Group", "logo": "assets/partners/new-river-funding-group.png", "url": "", "tier": "" },
+    { "id": "seed-linder-diaz", "name": "Linder Diaz", "logo": "assets/partners/linder-diaz-logo.png", "url": "", "tier": "" },
+    { "id": "seed-visionary-solutions", "name": "Visionary Solutions", "logo": "assets/partners/visionary-solutions.png", "url": "", "tier": "" },
+    { "id": "seed-optimal-salud-chiropractic", "name": "Optimal Salud Chiropractic", "logo": "assets/partners/optimal-salud-chiropractic.webp", "url": "", "tier": "" },
+    { "id": "seed-marketing-bull", "name": "Marketing Bull", "logo": "assets/partners/marketing-bull.jpg", "url": "", "tier": "" },
+    { "id": "seed-align-the-spine-chiropractic", "name": "Align the Spine Chiropractic", "logo": "assets/partners/align-the-spine-chiropractic.webp", "url": "", "tier": "" },
+    { "id": "seed-the-crash-queen", "name": "The Crash Queen", "logo": "assets/partners/the-crash-queen.png", "url": "", "tier": "" },
+    { "id": "seed-horizon", "name": "Horizon", "logo": "assets/partners/horizon.png", "url": "", "tier": "" },
+    { "id": "seed-sobe-rehab", "name": "SoBe Rehab", "logo": "assets/partners/sobe-rehab.png", "url": "", "tier": "" },
+    { "id": "seed-lince-digital-marketing", "name": "Lince Digital Marketing", "logo": "assets/partners/lince-digital-marketing.png", "url": "", "tier": "" },
+    { "id": "seed-raymond-james", "name": "Raymond James", "logo": "assets/partners/raymond-james.png", "url": "", "tier": "" }
+  ]
+}

@@ -9,7 +9,12 @@ Static homepage mockup for Miller's Marketing Group.
 - `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages (drafts pending legal review)
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
 - `assets/js/site.js` - contact/newsletter form handling and GA4 event tracking (gtag.js itself is loaded from each page's `<head>`)
+- `assets/js/content.js` - renders Events & Sponsors on the homepage from `data/*.json` (falls back to the static cards)
 - `api/lead.js` - Vercel serverless function that forwards contact + newsletter submissions to the GHL webhook
+- `data/events.json`, `data/sponsors.json` - content the site reads for Events & Sponsors (synced from GHL; seeded with current content)
+- `scripts/sync-ghl.mjs` - pulls GHL Custom Objects (Event, Sponsor) into `data/*.json`
+- `.github/workflows/sync-ghl.yml` - scheduled job that runs the sync and commits any changes
+- `docs/strategy/ghl-content-model.md` - the GHL custom-object schema to create for Events & Sponsors
 - `package.json` - marks the repo as a Vercel project (Node serverless functions)
 - `assets/brand/` - brand and relationship imagery
 - `assets/events/upcoming/` - current event flyers
@@ -51,11 +56,29 @@ read server-side only and is never exposed to the browser.
 > Mailchimp has been removed entirely — forms and the newsletter now flow
 > through the GoHighLevel webhook.
 
-### Not built yet
+### Events & Sponsors content sync (GHL Custom Objects)
 
-- **Events data backend** (the "Google Sheet" idea). If/when built it would need
-  `GOOGLE_SHEET_ID` 🌐 plus `GOOGLE_SHEETS_API_KEY` 🔒 (or `GOOGLE_SERVICE_ACCOUNT_KEY` 🔒).
+Events and Sponsors are read from `data/events.json` / `data/sponsors.json`,
+which the homepage renders via `assets/js/content.js` (with the static cards as
+fallback). Those files are refreshed by a scheduled GitHub Action
+(`.github/workflows/sync-ghl.yml`) that runs `scripts/sync-ghl.mjs` to pull the
+GHL **Event** and **Sponsor** custom objects. No token is used at request time —
+the site only serves the committed JSON.
 
-When new variables are added, document them in a `.env.example` and keep this
-section in sync.
+**Setup:** create the custom objects per
+[`docs/strategy/ghl-content-model.md`](docs/strategy/ghl-content-model.md), then
+add these **GitHub Actions secrets** (Settings → Secrets and variables → Actions):
+
+| Secret | Required | Notes |
+| --- | --- | --- |
+| `GHL_API_TOKEN` 🔒 | yes | GHL Private Integration token with `objects/record.readonly` scope |
+| `GHL_LOCATION_ID` | yes | Sub-account location id |
+| `GHL_EVENTS_OBJECT_KEY` | no | Defaults to `custom_objects.event` |
+| `GHL_SPONSORS_OBJECT_KEY` | no | Defaults to `custom_objects.sponsor` |
+
+Until the secrets are set, the sync is a no-op and the seeded JSON is served.
+The GHL API request/field mapping in `scripts/sync-ghl.mjs` should be validated
+against a live response once the objects and token exist.
+
+When new variables are added, document them and keep this section in sync.
 

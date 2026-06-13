@@ -1,0 +1,50 @@
+{
+  "updated": "2026-06-13T00:00:00Z",
+  "events": [
+    {
+      "id": "seed-bowling-mixer",
+      "title": "Personal Injury Professionals Bowling Mixer",
+      "status": "upcoming",
+      "date": "2026-06-25",
+      "cadence": "",
+      "city": "Dania Beach",
+      "venue": "Lucky Strike",
+      "type": "Networking mixer",
+      "summary": "Bring your bowling skills and your networking skills for a relaxed evening of strikes, spares, and meaningful connections at Lucky Strike.",
+      "image": "assets/events/upcoming/bowling-mixer-flyer.jpg",
+      "registerUrl": "https://www.eventbrite.com/e/personal-injury-professionals-networking-bowling-mixer-tickets-1990647189330",
+      "registerLabel": "Register on Eventbrite",
+      "featured": true
+    },
+    {
+      "id": "seed-pi-mixers",
+      "title": "PI Networking Mixers",
+      "status": "upcoming",
+      "date": "",
+      "cadence": "Last Thursday each month",
+      "city": "",
+      "venue": "",
+      "type": "Monthly series",
+      "summary": "Evening events bringing attorneys, medical providers, and industry professionals together for relationship-building and community.",
+      "image": "assets/events/series/pi-mixer-schedule.png",
+      "registerUrl": "https://www.eventbrite.com/o/millers-marketing-group-68684991773",
+      "registerLabel": "View Dates on Eventbrite",
+      "featured": false
+    },
+    {
+      "id": "seed-lunch-and-learn",
+      "title": "Lunch & Learn",
+      "status": "upcoming",
+      "date": "",
+      "cadence": "Second Friday each month",
+      "city": "",
+      "venue": "",
+      "type": "Monthly series",
+      "summary": "Midday educational gatherings focused on useful conversations, collaboration, and actionable takeaways for the personal injury community.",
+      "image": "assets/events/series/lunch-and-learn-schedule.png",
+      "registerUrl": "https://www.eventbrite.com/o/millers-marketing-group-68684991773",
+      "registerLabel": "View Dates on Eventbrite",
+      "featured": false
+    }
+  ]
+}
