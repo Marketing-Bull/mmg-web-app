@@ -1474,6 +1474,47 @@
         text-underline-offset: 3px;
       }
 
+      .form-status {
+        margin: 0.7rem 0 0;
+        font-size: 0.85rem;
+        font-weight: 600;
+        line-height: 1.4;
+        min-height: 1.2em;
+      }
+
+      .form-status:empty {
+        margin: 0;
+        min-height: 0;
+      }
+
+      .newsletter-form .form-status {
+        flex: 0 0 100%;
+      }
+
+      .consultation .form-status[data-state="pending"] {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .consultation .form-status[data-state="success"] {
+        color: #bfe9cf;
+      }
+
+      .consultation .form-status[data-state="error"] {
+        color: #ffc9bf;
+      }
+
+      .newsletter .form-status[data-state="pending"] {
+        color: var(--muted);
+      }
+
+      .newsletter .form-status[data-state="success"] {
+        color: var(--teal-dark);
+      }
+
+      .newsletter .form-status[data-state="error"] {
+        color: var(--red);
+      }
+
       .consultation {
         position: relative;
         overflow: hidden;
@@ -2723,7 +2764,7 @@
             </div>
           </div>
 
-          <form class="form-card" onsubmit="return false;">
+          <form class="form-card" data-lead="contact" novalidate>
             <div class="form-grid">
               <div class="field">
                 <label for="name">Full name</label>
@@ -2735,13 +2776,18 @@
               </div>
               <div class="field">
                 <label for="email">Email</label>
-                <input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" />
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required />
+              </div>
+              <div class="field">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(optional)" />
               </div>
               <div class="field">
                 <label for="interest">Area of interest</label>
                 <select id="interest" name="interest">
                   <option>Marketing partnership</option>
                   <option>Event sponsorship</option>
+                  <option>Consulting</option>
                   <option>General consultation</option>
                 </select>
               </div>
@@ -2750,10 +2796,14 @@
                 <textarea id="message" name="message" placeholder="What relationships or opportunities are you exploring?"></textarea>
               </div>
             </div>
+            <div aria-hidden="true" style="position: absolute; left: -5000px;">
+              <label>Leave this field empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+            </div>
             <div class="form-footer">
               <small>Andrew personally reviews consultation requests and follows up to schedule a conversation.</small>
-              <a class="button button-light" href="mailto:contact@millersmarketinggroup.com">Send Request <span class="arrow">→</span></a>
+              <button class="button button-light" type="submit">Send Request <span class="arrow">→</span></button>
             </div>
+            <p class="form-status" role="status" aria-live="polite"></p>
           </form>
         </div>
       </section>
@@ -2770,40 +2820,24 @@
               </p>
             </div>
             <div class="newsletter-action">
-              <!--
-                Mailchimp embedded form. Replace AUDIENCE_ID and the action
-                subdomain with the values from MMG's Mailchimp account
-                (Audience > Signup forms > Embedded forms). Account: us21,
-                u=2102fd3b9a354ec9fef50a91d.
-              -->
-              <form
-                class="newsletter-form"
-                action="https://millersmarketinggroup.us21.list-manage.com/subscribe/post?u=2102fd3b9a354ec9fef50a91d&amp;id=AUDIENCE_ID"
-                method="post"
-                target="_blank"
-                rel="noreferrer"
-                novalidate
-              >
+              <form class="newsletter-form" data-lead="newsletter" novalidate>
                 <input
                   type="email"
-                  name="EMAIL"
+                  name="email"
                   placeholder="you@company.com"
                   autocomplete="email"
                   aria-label="Email address"
                   required
                 />
-                <!-- Mailchimp anti-bot honeypot; do not remove -->
                 <div aria-hidden="true" style="position: absolute; left: -5000px;">
-                  <input type="text" name="b_2102fd3b9a354ec9fef50a91d_AUDIENCE_ID" tabindex="-1" value="" />
+                  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
                 </div>
-                <button class="button button-primary" type="submit" name="subscribe">
+                <button class="button button-primary" type="submit">
                   Subscribe <span class="arrow">→</span>
                 </button>
+                <p class="form-status" role="status" aria-live="polite"></p>
               </form>
-              <p class="newsletter-fine">
-                No spam — just useful updates. Unsubscribe anytime. See the
-                <a href="https://us21.campaign-archive.com/?e=__test_email__&amp;u=2102fd3b9a354ec9fef50a91d&amp;id=d7ff8628eb" target="_blank" rel="noreferrer">newsletter archive</a>.
-              </p>
+              <p class="newsletter-fine">No spam — just useful updates. Unsubscribe anytime.</p>
             </div>
           </div>
         </div>
@@ -2850,7 +2884,6 @@
             <ul>
               <li><a href="https://www.instagram.com/millers_marketing_group34/" target="_blank" rel="noreferrer">Instagram</a></li>
               <li><a href="https://www.eventbrite.com/o/millers-marketing-group-68684991773" target="_blank" rel="noreferrer">Eventbrite</a></li>
-              <li><a href="https://us21.campaign-archive.com/?e=__test_email__&amp;u=2102fd3b9a354ec9fef50a91d&amp;id=d7ff8628eb" target="_blank" rel="noreferrer">Newsletter archive</a></li>
               <li><a href="privacy-policy.html">Privacy Policy</a></li>
               <li><a href="terms-of-service.html">Terms of Service</a></li>
               <li><a href="disclaimer.html">Disclaimer</a></li>
@@ -2924,5 +2957,6 @@
         update();
       })();
     </script>
+    <script src="assets/js/site.js" defer></script>
   </body>
 </html>

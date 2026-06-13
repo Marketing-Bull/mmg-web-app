@@ -1,0 +1,10 @@
+{
+  "name": "mmg-web-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Miller's Marketing Group website (static pages + Vercel serverless functions).",
+  "engines": {
+    "node": ">=18"
+  }
+}

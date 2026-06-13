@@ -8,6 +8,9 @@ Static homepage mockup for Miller's Marketing Group.
 - `faq.html` - frequently asked questions
 - `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages (drafts pending legal review)
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
+- `assets/js/site.js` - Google Tag Manager loader, contact/newsletter form handling, and analytics events
+- `api/lead.js` - Vercel serverless function that forwards contact + newsletter submissions to the GHL webhook
+- `package.json` - marks the repo as a Vercel project (Node serverless functions)
 - `assets/brand/` - brand and relationship imagery
 - `assets/events/upcoming/` - current event flyers
 - `assets/events/past/` - archived event flyers
@@ -17,43 +20,42 @@ Static homepage mockup for Miller's Marketing Group.
 - `docs/discovery/` - stakeholder discovery notes
 - `docs/strategy/` - website strategy and brand guidance
 
-GitHub Pages should publish from the repository root so `index.html` remains the
-single source of truth.
+The static pages can be served from the repository root, but the contact and
+newsletter forms rely on a serverless function (`api/lead.js`), so the site is
+deployed on **Vercel** (static files + Node functions) rather than plain GitHub
+Pages. `index.html` remains the homepage source of truth.
 
 ## Configuration & environment variables
 
-**This project requires no environment variables.** It is a pure static
-HTML/CSS site with no build step, no server code, and no `.env` file. It deploys
-as flat files (Vercel / GitHub Pages) and runs as-is. There is nothing to
-configure to build or serve it.
-
-All third-party integrations currently in the markup are either plain public
-links or client-side embeds that use **non-secret, public identifiers** which
-belong directly in the HTML — not in `.env`:
-
-| Integration | Where | Notes |
-| --- | --- | --- |
-| Eventbrite | links in `index.html` | Public event/organizer URLs. No key. |
-| Instagram | contact + footer links | Public profile URL. No key. |
-| Mailchimp newsletter | embedded form in `index.html` | Public embed (account `u=2102fd3b9a354ec9fef50a91d`, server `us21`). The only value still needed is the **audience ID** (the `AUDIENCE_ID` placeholder in the form `action` and honeypot field), which also goes **in the HTML**, not `.env`. |
-
-### Variables needed only if future backend features are built
-
-None of these exist yet. They become necessary **only if** the corresponding
-feature is moved from static markup to a backend / serverless function. Provision
-them in the host (e.g. Vercel project settings), not in the repo.
-
 Each variable is marked **🔒 secret** (store only in the host's encrypted env
-settings — never commit) or **🌐 public** (safe to expose; often inlined in
-client markup).
+settings — never commit) or **🌐 public** (safe to expose; lives in client code).
 
-| Feature (not yet built) | Variables |
-| --- | --- |
-| Server-side newsletter signup (instead of the public embed) | `MAILCHIMP_API_KEY` 🔒, `MAILCHIMP_AUDIENCE_ID` 🌐, `MAILCHIMP_SERVER_PREFIX` 🌐 (`us21`) |
-| Contact form backend (currently a `mailto:`) | `RESEND_API_KEY` **or** `SENDGRID_API_KEY` 🔒, `CONTACT_TO_EMAIL` 🌐; optional `RECAPTCHA_SITE_KEY` 🌐 + `RECAPTCHA_SECRET_KEY` 🔒 |
-| Events data backend (the "Google Sheet" idea) | `GOOGLE_SHEET_ID` 🌐 + `GOOGLE_SHEETS_API_KEY` 🔒 **or** `GOOGLE_SERVICE_ACCOUNT_KEY` 🔒 |
-| Web analytics | `GA4_MEASUREMENT_ID` 🌐 (e.g. `G-XXXX`) |
+### Required
 
-If any of the above features are implemented, add a `.env.example` documenting
-the variables and keep this table in sync.
+| Variable | Where to set | Used by | Secret? |
+| --- | --- | --- | --- |
+| `GHL_WEBHOOK_URL` | Vercel → Project → Settings → Environment Variables | `api/lead.js` — forwards every contact + newsletter submission to the GoHighLevel inbound webhook | 🔒 secret |
+
+Without `GHL_WEBHOOK_URL` the forms return a configuration error. The value is
+read server-side only and is never exposed to the browser.
+
+### Public identifiers (not env vars — set directly in code)
+
+| Item | Where | Notes |
+| --- | --- | --- |
+| Google Tag Manager container ID | `GTM_ID` constant in `assets/js/site.js` | Replace the `GTM-XXXXXXX` placeholder with MMG's real container. GTM IDs are public by design. The loader skips the placeholder so nothing breaks until it's set. |
+| Eventbrite | links in `index.html` | Public event/organizer URLs. |
+| Instagram | contact + footer links | Public profile URL. |
+| Contact email | `contact@millersmarketinggroup.com` in `index.html` | Public address; GHL handles lead routing/notifications. |
+
+> Mailchimp has been removed entirely — forms and the newsletter now flow
+> through the GoHighLevel webhook.
+
+### Not built yet
+
+- **Events data backend** (the "Google Sheet" idea). If/when built it would need
+  `GOOGLE_SHEET_ID` 🌐 plus `GOOGLE_SHEETS_API_KEY` 🔒 (or `GOOGLE_SERVICE_ACCOUNT_KEY` 🔒).
+
+When new variables are added, document them in a `.env.example` and keep this
+section in sync.
 
