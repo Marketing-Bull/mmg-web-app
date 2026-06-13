@@ -2,37 +2,28 @@
   Miller's Marketing Group — site script.
 
   Responsibilities:
-    1. Load Google Analytics 4 (gtag.js) — one place to set the measurement ID.
-    2. Submit the contact + newsletter forms to /api/lead (GHL webhook proxy).
-    3. Send GA4 events (lead submits, Eventbrite clicks, primary CTA clicks).
+    1. Submit the contact + newsletter forms to /api/lead (GHL webhook proxy).
+    2. Send GA4 events (lead submits, Eventbrite clicks, primary CTA clicks)
+       through the global gtag() that the gtag.js <head> snippet defines.
 */
 (function () {
   "use strict";
 
-  // --- Google Analytics 4 (gtag.js) -----------------------------------------
-  // Public measurement ID.
-  var GA_ID = "G-D3DW5X6G2T";
-
-  window.dataLayer = window.dataLayer || [];
-  function gtag() {
-    window.dataLayer.push(arguments);
-  }
-
-  function loadGA(id) {
-    if (!id) return;
-    var s = document.createElement("script");
-    s.async = true;
-    s.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
-    document.head.appendChild(s);
-    gtag("js", new Date());
-    gtag("config", id);
-  }
-
+  // --- Analytics events -----------------------------------------------------
+  // GA4 (gtag.js) is loaded from the <head> snippet on every page; here we only
+  // send custom events through the global gtag.
   function track(event, params) {
-    gtag("event", event, params || {});
+    // gtag.js is loaded from each page's <head> snippet. If it's missing
+    // (blocked, failed, or a future page omits it), define the standard
+    // fallback that queues onto dataLayer so events aren't silently dropped.
+    if (typeof window.gtag !== "function") {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () {
+        window.dataLayer.push(arguments);
+      };
+    }
+    window.gtag("event", event, params || {});
   }
-
-  loadGA(GA_ID);
 
   // --- Lead forms (contact + newsletter) → /api/lead ------------------------
   function serialize(form) {

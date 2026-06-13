@@ -8,7 +8,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `faq.html` - frequently asked questions
 - `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages (drafts pending legal review)
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
-- `assets/js/site.js` - Google Analytics 4 (gtag.js) loader, contact/newsletter form handling, and analytics events
+- `assets/js/site.js` - contact/newsletter form handling and GA4 event tracking (gtag.js itself is loaded from each page's `<head>`)
 - `api/lead.js` - Vercel serverless function that forwards contact + newsletter submissions to the GHL webhook
 - `package.json` - marks the repo as a Vercel project (Node serverless functions)
 - `assets/brand/` - brand and relationship imagery
@@ -43,7 +43,7 @@ read server-side only and is never exposed to the browser.
 
 | Item | Where | Notes |
 | --- | --- | --- |
-| Google Analytics 4 measurement ID | `GA_ID` constant in `assets/js/site.js` (`G-D3DW5X6G2T`) | Loads gtag.js and sends events (`lead_submit`, `eventbrite_click`, `cta_click`). GA4 measurement IDs are public. |
+| Google Analytics 4 measurement ID | gtag.js snippet in the `<head>` of every page (`G-D3DW5X6G2T`) | `assets/js/site.js` sends events (`lead_submit`, `eventbrite_click`, `cta_click`) via the global `gtag`. GA4 measurement IDs are public. |
 | Eventbrite | links in `index.html` | Public event/organizer URLs. |
 | Instagram | contact + footer links | Public profile URL. |
 | Contact email | `contact@millersmarketinggroup.com` in `index.html` | Public address; GHL handles lead routing/notifications. |
