@@ -1,0 +1,27 @@
+name: Setup GHL objects
+
+# One-off, manually triggered. Creates the Event & Sponsor custom objects and
+# their fields in GHL. Safe to re-run (idempotent — skips what already exists).
+# Requires repo secrets: GHL_API_TOKEN (objects/schema.write), GHL_LOCATION_ID
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Create GHL custom objects
+        env:
+          GHL_API_TOKEN: ${{ secrets.GHL_API_TOKEN }}
+          GHL_LOCATION_ID: ${{ secrets.GHL_LOCATION_ID }}
+          GHL_EVENTS_OBJECT_KEY: ${{ secrets.GHL_EVENTS_OBJECT_KEY }}
+          GHL_SPONSORS_OBJECT_KEY: ${{ secrets.GHL_SPONSORS_OBJECT_KEY }}
+        run: node scripts/setup-ghl-objects.mjs
