@@ -29,8 +29,8 @@ function asArray(json, ...keys) {
   return Array.isArray(json) ? json : [];
 }
 
-function objectId(obj) {
-  return (obj && (obj.id || obj._id || obj.objectId)) || null;
+function extractId(obj) {
+  return (obj && (obj.id || obj._id || obj.objectId || obj.schemaId)) || null;
 }
 
 export default async function handler(req, res) {
@@ -54,14 +54,33 @@ export default async function handler(req, res) {
     return cachedObjects;
   }
 
-  // Returns the GHL database ID of the object (needed as parentId for fields).
+  // Fetch the full object schema (includes id + properties) and cache it.
+  const objectDataCache = {};
+  async function fetchObjectData(key) {
+    if (objectDataCache[key]) return objectDataCache[key];
+    const r = await ghl(
+      "GET",
+      `/objects/${encodeURIComponent(key)}?locationId=${encodeURIComponent(locationId)}&fetchProperties=true`
+    );
+    push(`GET /objects/${key} -> ${r.status}`);
+    const raw = (r.json && (r.json.object || r.json)) || {};
+    const id = extractId(raw);
+    // Log top-level keys so we can identify the ID field shape if needed.
+    push(`  schema keys: ${Object.keys(raw).slice(0, 12).join(", ")} | id: ${id || "not found"}`);
+    const data = { id, properties: asArray(raw, "properties", "customFields", "fields") };
+    objectDataCache[key] = data;
+    return data;
+  }
+
+  // Returns the GHL database ID of the object schema (needed as parentId for fields).
   async function ensureObject(key, singular, plural, primaryName) {
     const objs = await listObjects();
     const bare = key.replace("custom_objects.", "");
     const existing = objs.find((o) => o && (o.key === key || o.key === bare));
     if (existing) {
       push(`✓ object ${key} exists`);
-      return objectId(existing);
+      const data = await fetchObjectData(key);
+      return data.id;
     }
     const r = await ghl("POST", "/objects/", {
       labels: { singular, plural },
@@ -70,27 +89,17 @@ export default async function handler(req, res) {
       locationId,
       primaryDisplayPropertyDetails: { key: `${key}.name`, name: primaryName, dataType: "TEXT" },
     });
-    const created = (r.json && (r.json.object || r.json)) || {};
-    const id = objectId(created);
-    if (r.ok && cachedObjects) cachedObjects.push({ key, id });
     push(`POST /objects/ ${key} -> ${r.status}${r.ok ? "" : " " + JSON.stringify(r.json).slice(0, 300)}`);
-    return id;
-  }
-
-  const propertiesCache = {};
-  async function properties(key) {
-    if (propertiesCache[key]) return propertiesCache[key];
-    const r = await ghl(
-      "GET",
-      `/objects/${encodeURIComponent(key)}?locationId=${encodeURIComponent(locationId)}&fetchProperties=true`
-    );
-    const obj = (r.json && (r.json.object || r.json)) || {};
-    propertiesCache[key] = asArray(obj, "properties", "customFields", "fields");
-    return propertiesCache[key];
+    if (!r.ok) return null;
+    // Fetch the created object to get its real database ID.
+    const data = await fetchObjectData(key);
+    if (r.ok && cachedObjects) cachedObjects.push({ key, id: data.id });
+    return data.id;
   }
 
   async function ensureField(objectKey, parentId, field) {
-    const exists = (await properties(objectKey)).find(
+    const { properties } = await fetchObjectData(objectKey);
+    const exists = properties.find(
       (p) =>
         p &&
         (p.fieldKey === `${objectKey}.${field.key}` ||
@@ -112,13 +121,17 @@ export default async function handler(req, res) {
     if (parentId) body.parentId = parentId;
     if (field.options) body.options = field.options.map((o) => ({ key: o.toLowerCase().replace(/\s+/g, "_"), label: o }));
     let r = await ghl("POST", "/custom-fields/", body);
-    // FILE_UPLOAD falls back to TEXT; LARGE_TEXT falls back to TEXT.
+    // FILE_UPLOAD and LARGE_TEXT fall back to TEXT if rejected.
     if (!r.ok && (field.dataType === "FILE_UPLOAD" || field.dataType === "LARGE_TEXT")) {
       body.dataType = "TEXT";
       r = await ghl("POST", "/custom-fields/", body);
     }
-    if (r.ok && propertiesCache[objectKey]) {
-      propertiesCache[objectKey].push({ fieldKey: `${objectKey}.${field.key}`, key: field.key, name: field.name });
+    if (r.ok && objectDataCache[objectKey]) {
+      objectDataCache[objectKey].properties.push({
+        fieldKey: `${objectKey}.${field.key}`,
+        key: field.key,
+        name: field.name,
+      });
     }
     push(`  ${r.ok ? "＋" : "✗"} field ${field.key} (${body.dataType}) -> ${r.status}${r.ok ? "" : " " + JSON.stringify(r.json).slice(0, 200)}`);
   }
@@ -126,9 +139,11 @@ export default async function handler(req, res) {
   try {
     push("== Event ==");
     const eventId = await ensureObject(eventsKey, "Event", "Events", "Event Name");
+    push(`  Event schema id: ${eventId}`);
     for (const f of EVENT_FIELDS) await ensureField(eventsKey, eventId, f);
     push("== Sponsor ==");
     const sponsorId = await ensureObject(sponsorsKey, "Sponsor", "Sponsors", "Sponsor Name");
+    push(`  Sponsor schema id: ${sponsorId}`);
     for (const f of SPONSOR_FIELDS) await ensureField(sponsorsKey, sponsorId, f);
     push("Done.");
     return res.status(200).json({ ok: true, log });
