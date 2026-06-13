@@ -43,12 +43,16 @@ None of these exist yet. They become necessary **only if** the corresponding
 feature is moved from static markup to a backend / serverless function. Provision
 them in the host (e.g. Vercel project settings), not in the repo.
 
-| Feature (not yet built) | Variables | Secret? |
-| --- | --- | --- |
-| Server-side newsletter signup (instead of the public embed) | `MAILCHIMP_API_KEY`, `MAILCHIMP_AUDIENCE_ID`, `MAILCHIMP_SERVER_PREFIX` (`us21`) | API key is secret |
-| Contact form backend (currently a `mailto:`) | `RESEND_API_KEY` **or** `SENDGRID_API_KEY`, plus `CONTACT_TO_EMAIL`; optional `RECAPTCHA_SITE_KEY` / `RECAPTCHA_SECRET_KEY` | API & secret keys are secret |
-| Events data backend (the "Google Sheet" idea) | `GOOGLE_SHEET_ID` + `GOOGLE_SHEETS_API_KEY` **or** `GOOGLE_SERVICE_ACCOUNT_KEY` | Key is secret |
-| Web analytics | `GA4_MEASUREMENT_ID` (e.g. `G-XXXX`) | Public (script tag) |
+Each variable is marked **🔒 secret** (store only in the host's encrypted env
+settings — never commit) or **🌐 public** (safe to expose; often inlined in
+client markup).
+
+| Feature (not yet built) | Variables |
+| --- | --- |
+| Server-side newsletter signup (instead of the public embed) | `MAILCHIMP_API_KEY` 🔒, `MAILCHIMP_AUDIENCE_ID` 🌐, `MAILCHIMP_SERVER_PREFIX` 🌐 (`us21`) |
+| Contact form backend (currently a `mailto:`) | `RESEND_API_KEY` **or** `SENDGRID_API_KEY` 🔒, `CONTACT_TO_EMAIL` 🌐; optional `RECAPTCHA_SITE_KEY` 🌐 + `RECAPTCHA_SECRET_KEY` 🔒 |
+| Events data backend (the "Google Sheet" idea) | `GOOGLE_SHEET_ID` 🌐 + `GOOGLE_SHEETS_API_KEY` 🔒 **or** `GOOGLE_SERVICE_ACCOUNT_KEY` 🔒 |
+| Web analytics | `GA4_MEASUREMENT_ID` 🌐 (e.g. `G-XXXX`) |
 
 If any of the above features are implemented, add a `.env.example` documenting
 the variables and keep this table in sync.
