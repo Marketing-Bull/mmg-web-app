@@ -70,7 +70,7 @@ them in this order, using the first that returns data:
 
 1. **`/api/events` and `/api/sponsors`** — Vercel functions that read the GHL
    **Event** / **Sponsor** custom objects live (token from Vercel env), cached
-   ~5 min at the edge.
+   ~6 hours at the edge.
 2. **`data/events.json` / `data/sponsors.json`** — committed seed (offline fallback).
 3. The static cards already in `index.html`.
 
