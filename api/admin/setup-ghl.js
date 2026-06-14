@@ -1,6 +1,10 @@
 // One-time setup: create the Event & Sponsor custom objects + fields in GHL.
 // Protected by SETUP_SECRET. GET /api/admin/setup-ghl?key=SECRET
 // Idempotent — skips objects/fields that already exist. Returns a JSON log.
+//
+// GHL custom-object fields live inside a custom-field *folder*. The
+// /custom-fields/ create endpoint requires parentId = the folder's id (not the
+// object schema id), so we ensure a folder per object first.
 import { ghl, ghlEnv } from "../../lib/ghl.js";
 
 const EVENT_FIELDS = [
@@ -54,33 +58,12 @@ export default async function handler(req, res) {
     return cachedObjects;
   }
 
-  // Fetch the full object schema (includes id + properties) and cache it.
-  const objectDataCache = {};
-  async function fetchObjectData(key) {
-    if (objectDataCache[key]) return objectDataCache[key];
-    const r = await ghl(
-      "GET",
-      `/objects/${encodeURIComponent(key)}?locationId=${encodeURIComponent(locationId)}&fetchProperties=true`
-    );
-    push(`GET /objects/${key} -> ${r.status}`);
-    const raw = (r.json && (r.json.object || r.json)) || {};
-    const id = extractId(raw);
-    // Log top-level keys so we can identify the ID field shape if needed.
-    push(`  schema keys: ${Object.keys(raw).slice(0, 12).join(", ")} | id: ${id || "not found"}`);
-    const data = { id, properties: asArray(raw, "properties", "customFields", "fields") };
-    objectDataCache[key] = data;
-    return data;
-  }
-
-  // Returns the GHL database ID of the object schema (needed as parentId for fields).
   async function ensureObject(key, singular, plural, primaryName) {
     const objs = await listObjects();
     const bare = key.replace("custom_objects.", "");
-    const existing = objs.find((o) => o && (o.key === key || o.key === bare));
-    if (existing) {
+    if (objs.find((o) => o && (o.key === key || o.key === bare))) {
       push(`✓ object ${key} exists`);
-      const data = await fetchObjectData(key);
-      return data.id;
+      return;
     }
     const r = await ghl("POST", "/objects/", {
       labels: { singular, plural },
@@ -89,17 +72,56 @@ export default async function handler(req, res) {
       locationId,
       primaryDisplayPropertyDetails: { key: `${key}.name`, name: primaryName, dataType: "TEXT" },
     });
+    if (r.ok && cachedObjects) cachedObjects.push({ key });
     push(`POST /objects/ ${key} -> ${r.status}${r.ok ? "" : " " + JSON.stringify(r.json).slice(0, 300)}`);
-    if (!r.ok) return null;
-    // Fetch the created object to get its real database ID.
-    const data = await fetchObjectData(key);
-    if (r.ok && cachedObjects) cachedObjects.push({ key, id: data.id });
-    return data.id;
+  }
+
+  // GET the fields + folders that already exist for a custom object.
+  const objectFieldsCache = {};
+  async function getObjectFields(objectKey) {
+    if (objectFieldsCache[objectKey]) return objectFieldsCache[objectKey];
+    const r = await ghl(
+      "GET",
+      `/custom-fields/object-key/${encodeURIComponent(objectKey)}?locationId=${encodeURIComponent(locationId)}`
+    );
+    push(`GET /custom-fields/object-key/${objectKey} -> ${r.status}`);
+    const fields = asArray(r.json && r.json.fields, "fields").length
+      ? r.json.fields
+      : asArray(r.json, "fields", "customFields");
+    const folders = (r.json && asArray(r.json.folders, "folders").length)
+      ? r.json.folders
+      : asArray(r.json, "folders");
+    const data = {
+      fields: Array.isArray(fields) ? fields : [],
+      folders: Array.isArray(folders) ? folders : [],
+    };
+    push(`  existing: ${data.fields.length} field(s), ${data.folders.length} folder(s)`);
+    objectFieldsCache[objectKey] = data;
+    return data;
+  }
+
+  // Reuse the first existing folder, or create one. Returns the folder id.
+  async function ensureFolder(objectKey, folderName) {
+    const data = await getObjectFields(objectKey);
+    if (data.folders.length) {
+      const id = extractId(data.folders[0]);
+      push(`  ✓ folder exists (${id})`);
+      return id;
+    }
+    const r = await ghl("POST", "/custom-fields/folder/", {
+      objectKey,
+      name: folderName,
+      locationId,
+    });
+    const id = extractId((r.json && (r.json.folder || r.json)) || {});
+    push(`  ${r.ok ? "＋" : "✗"} folder ${folderName} -> ${r.status}${r.ok ? " (" + id + ")" : " " + JSON.stringify(r.json).slice(0, 200)}`);
+    if (r.ok && id) data.folders.push({ id, name: folderName });
+    return id;
   }
 
   async function ensureField(objectKey, parentId, field) {
-    const { properties } = await fetchObjectData(objectKey);
-    const exists = properties.find(
+    const data = await getObjectFields(objectKey);
+    const exists = data.fields.find(
       (p) =>
         p &&
         (p.fieldKey === `${objectKey}.${field.key}` ||
@@ -126,25 +148,19 @@ export default async function handler(req, res) {
       body.dataType = "TEXT";
       r = await ghl("POST", "/custom-fields/", body);
     }
-    if (r.ok && objectDataCache[objectKey]) {
-      objectDataCache[objectKey].properties.push({
-        fieldKey: `${objectKey}.${field.key}`,
-        key: field.key,
-        name: field.name,
-      });
-    }
+    if (r.ok) data.fields.push({ fieldKey: `${objectKey}.${field.key}`, key: field.key, name: field.name });
     push(`  ${r.ok ? "＋" : "✗"} field ${field.key} (${body.dataType}) -> ${r.status}${r.ok ? "" : " " + JSON.stringify(r.json).slice(0, 200)}`);
   }
 
   try {
     push("== Event ==");
-    const eventId = await ensureObject(eventsKey, "Event", "Events", "Event Name");
-    push(`  Event schema id: ${eventId}`);
-    for (const f of EVENT_FIELDS) await ensureField(eventsKey, eventId, f);
+    await ensureObject(eventsKey, "Event", "Events", "Event Name");
+    const eventFolder = await ensureFolder(eventsKey, "Event Details");
+    for (const f of EVENT_FIELDS) await ensureField(eventsKey, eventFolder, f);
     push("== Sponsor ==");
-    const sponsorId = await ensureObject(sponsorsKey, "Sponsor", "Sponsors", "Sponsor Name");
-    push(`  Sponsor schema id: ${sponsorId}`);
-    for (const f of SPONSOR_FIELDS) await ensureField(sponsorsKey, sponsorId, f);
+    await ensureObject(sponsorsKey, "Sponsor", "Sponsors", "Sponsor Name");
+    const sponsorFolder = await ensureFolder(sponsorsKey, "Sponsor Details");
+    for (const f of SPONSOR_FIELDS) await ensureField(sponsorsKey, sponsorFolder, f);
     push("Done.");
     return res.status(200).json({ ok: true, log });
   } catch (err) {
