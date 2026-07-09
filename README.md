@@ -4,17 +4,17 @@ Static homepage mockup for Miller's Marketing Group.
 
 ## Project Structure
 
-- `index.html` - deployable GitHub Pages homepage
+- `index.html` - Vercel-served homepage
 - `faq.html` - frequently asked questions
-- `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages (drafts pending legal review)
+- `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages
+- `404.html`, `robots.txt`, `sitemap.xml` - launch support files
+- `content-manager.html` - browser-based editor for Events and Sponsors JSON
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
 - `assets/js/site.js` - contact/newsletter form handling and GA4 event tracking (gtag.js itself is loaded from each page's `<head>`)
-- `assets/js/content.js` - renders Events & Sponsors on the homepage from `data/*.json` (falls back to the static cards)
+- `assets/js/content.js` - renders Events and Sponsors on the homepage from `data/*.json` (falls back to the static cards)
 - `api/lead.js` - Vercel serverless function that forwards contact + newsletter submissions to the GHL webhook
-- `data/events.json`, `data/sponsors.json` - content the site reads for Events & Sponsors (synced from GHL; seeded with current content)
-- `scripts/sync-ghl.mjs` - pulls GHL Custom Objects (Event, Sponsor) into `data/*.json`
-- `.github/workflows/sync-ghl.yml` - scheduled job that runs the sync and commits any changes
-- `docs/strategy/ghl-content-model.md` - the GHL custom-object schema to create for Events & Sponsors
+- `data/events.json`, `data/sponsors.json` - source of truth for homepage Events and Sponsors
+- `docs/content-management.md` - simple update workflow for Andrew's team
 - `package.json` - marks the repo as a Vercel project (Node serverless functions)
 - `assets/brand/` - brand and relationship imagery
 - `assets/events/upcoming/` - current event flyers
@@ -25,10 +25,10 @@ Static homepage mockup for Miller's Marketing Group.
 - `docs/discovery/` - stakeholder discovery notes
 - `docs/strategy/` - website strategy and brand guidance
 
-The static pages can be served from the repository root, but the contact and
-newsletter forms rely on a serverless function (`api/lead.js`), so the site is
-deployed on **Vercel** (static files + Node functions) rather than plain GitHub
-Pages. `index.html` remains the homepage source of truth.
+The static pages are served from the repository root, but the contact and
+newsletter forms rely on a serverless function (`api/lead.js`), so the site must
+be deployed on **Vercel** (static files + Node functions) rather than plain
+GitHub Pages. `index.html` remains the homepage source of truth.
 
 ## Configuration & environment variables
 
@@ -40,16 +40,9 @@ settings — never commit) or **🌐 public** (safe to expose; lives in client c
 | Variable | Where to set | Used by | Secret? |
 | --- | --- | --- | --- |
 | `GHL_WEBHOOK_URL` | Vercel env | `api/lead.js` — forwards every contact + newsletter submission to the GoHighLevel inbound webhook | 🔒 secret |
-| `GHL_API_TOKEN` | Vercel env | `api/events`, `api/sponsors`, `api/admin/setup-ghl` — reads GHL custom objects (needs `objects/record.readonly`; `objects/schema.write` for setup) | 🔒 secret |
-| `GHL_LOCATION_ID` | Vercel env | same as above — the GHL sub-account location id | 🔒 secret |
-| `SETUP_SECRET` | Vercel env | guards `api/admin/setup-ghl` (the one-time object-creation route) | 🔒 secret |
 
-All are read server-side only and never exposed to the browser. Without the GHL
-vars, `api/events`/`api/sponsors` return empty and the site falls back to the
-committed `data/*.json`; the forms need `GHL_WEBHOOK_URL`.
-
-Optional: `GHL_EVENTS_OBJECT_KEY` (default `custom_objects.event`),
-`GHL_SPONSORS_OBJECT_KEY` (default `custom_objects.sponsor`).
+The webhook URL is read server-side only and never exposed to the browser. The
+forms need `GHL_WEBHOOK_URL`; Events and Sponsors do not use GHL.
 
 ### Public identifiers (not env vars — set directly in code)
 
@@ -63,31 +56,17 @@ Optional: `GHL_EVENTS_OBJECT_KEY` (default `custom_objects.event`),
 > Mailchimp has been removed entirely — forms and the newsletter now flow
 > through the GoHighLevel webhook.
 
-### Events & Sponsors content sync (GHL Custom Objects)
+### Events and Sponsors content
 
-`assets/js/content.js` renders the Events and Sponsors on the homepage. It loads
-them in this order, using the first that returns data:
+Events and Sponsors are maintained directly in:
 
-1. **`/api/events` and `/api/sponsors`** — Vercel functions that read the GHL
-   **Event** / **Sponsor** custom objects live (token from Vercel env), cached
-   ~6 hours at the edge.
-2. **`data/events.json` / `data/sponsors.json`** — committed seed (offline fallback).
-3. The static cards already in `index.html`.
+- `data/events.json`
+- `data/sponsors.json`
 
-**Setup (one time):**
-
-1. Run the setup route to create the GHL custom objects + fields:
-   `GET /api/admin/setup-ghl?key=<SETUP_SECRET>` (idempotent; returns a JSON
-   log). It builds the schema in
-   [`docs/strategy/ghl-content-model.md`](docs/strategy/ghl-content-model.md) —
-   flyer/logo are file-upload fields; sponsors are name + logo + priority. The
-   token needs `objects/schema.write` for this step.
-2. Add Events/Sponsors as records in GHL. `/api/events` and `/api/sponsors` pick
-   them up automatically within the cache window.
-
-> The `.github/workflows/*` + `scripts/sync-ghl.mjs` are an **alternative**
-> sync-to-static-JSON path (requires GitHub Actions to be enabled). With the
-> Vercel functions above, they are not needed.
+Andrew's team can use `content-manager.html` to load the current files, add or
+remove items, edit details, and download updated JSON. Replace the matching file
+in `data/` and commit the change. See
+[`docs/content-management.md`](docs/content-management.md) for the step-by-step
+workflow.
 
 When new variables are added, document them and keep this section in sync.
-

@@ -48,8 +48,8 @@ export default async function handler(req, res) {
   const firstName = gap === -1 ? name : name.slice(0, gap);
   const lastName = gap === -1 ? "" : name.slice(gap + 1);
 
-  // Tags GHL can use to segment the lead.
-  const tags = ["MMG Website", isNewsletter ? "Newsletter Signup" : "Website Contact Form"];
+  // Tags GHL can use to segment the lead and keep contact/newsletter flows separate.
+  const tags = ["MMG Website", isNewsletter ? "MMG Newsletter Signup" : "MMG Consultation Request"];
   if (!isNewsletter && body.interest) tags.push(String(body.interest));
 
   const payload = {

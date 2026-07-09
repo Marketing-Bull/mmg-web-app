@@ -1,8 +1,7 @@
 /*
-  Renders Events and Sponsors from the synced JSON (data/events.json,
-  data/sponsors.json) into the homepage grids. Progressive enhancement:
-  if the JSON is missing or fails to load, the static cards already in the
-  HTML remain as the fallback.
+  Renders Events and Sponsors from the committed JSON files:
+  data/events.json and data/sponsors.json. Progressive enhancement keeps the
+  static HTML cards in place if either JSON file is missing or invalid.
 */
 (function () {
   "use strict";
@@ -38,6 +37,11 @@
   function dayNumber(value) {
     var d = parseDate(value);
     return d ? String(d.getDate()) : "";
+  }
+
+  function dateLabel(value) {
+    var d = parseDate(value);
+    return d ? d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "";
   }
 
   function eventCard(ev) {
@@ -79,6 +83,52 @@
     );
   }
 
+  function pastEventCard(ev) {
+    var img = safeUrl(ev.image);
+    var recapUrl = safeUrl(ev.recapUrl);
+    var recapImage = safeUrl(ev.recapImage);
+    var meta = [dateLabel(ev.date), ev.city].filter(Boolean).map(esc).join(" &bull; ");
+    var tags = String(ev.recapMeta || "Flyer archive, Community recap, Sponsor recognition")
+      .split(",")
+      .map(function (x) {
+        return x.trim();
+      })
+      .filter(Boolean);
+
+    return (
+      '<article class="past-event-card">' +
+      '<div class="past-event-media">' +
+      '<div class="past-flyer">' +
+      (img ? '<img src="' + esc(img) + '" alt="' + esc(ev.title) + ' flyer" />' : "") +
+      '<span class="flyer-label">Original flyer</span></div>' +
+      (recapUrl
+        ? '<a class="past-video" href="' +
+          esc(recapUrl) +
+          '" target="_blank" rel="noreferrer" aria-label="View recap for ' +
+          esc(ev.title) +
+          '">' +
+          (recapImage ? '<img src="' + esc(recapImage) + '" alt="" />' : "") +
+          '<span class="play-button" aria-hidden="true">▶</span><span class="video-label">' +
+          esc(ev.recapLabel || "Watch event recaps") +
+          "</span></a>"
+        : "") +
+      "</div>" +
+      '<div class="past-event-body">' +
+      (meta ? "<small>" + meta + "</small>" : "") +
+      "<h3>" + esc(ev.title) + "</h3>" +
+      (ev.summary ? "<p>" + esc(ev.summary) + "</p>" : "") +
+      (tags.length
+        ? '<div class="recap-meta">' +
+          tags.map(function (tag) {
+            return "<span>" + esc(tag) + "</span>";
+          }).join("") +
+          "</div>"
+        : "") +
+      '<a class="text-link" href="#events">See the next gathering <span class="arrow">→</span></a>' +
+      "</div></article>"
+    );
+  }
+
   function sponsorCard(s) {
     var logo = safeUrl(s.logo);
     var inner =
@@ -104,29 +154,27 @@
     });
   }
 
-  // Try the live GHL-backed API first, then the committed JSON. Returns the
-  // first source that yields a non-empty array under `key`.
-  function loadFirst(urls, key) {
-    var i = 0;
-    function tryNext() {
-      if (i >= urls.length) return Promise.reject(new Error("no data"));
-      var url = urls[i++];
-      return fetchJSON(url).then(function (data) {
-        var list = data && Array.isArray(data[key]) ? data[key] : [];
-        return list.length ? list : tryNext();
-      }, tryNext);
-    }
-    return tryNext();
+  function loadContent(url, key) {
+    return fetchJSON(url).then(function (data) {
+      var list = data && Array.isArray(data[key]) ? data[key] : [];
+      if (!list.length) throw new Error("no " + key);
+      return list;
+    });
   }
 
   function renderEvents() {
-    var grid = document.querySelector(".upcoming-events-grid");
-    if (!grid) return;
-    loadFirst(["/api/events", "data/events.json"], "events").then(function (list) {
+    var upcomingGrid = document.querySelector(".upcoming-events-grid");
+    var pastGrid = document.querySelector(".past-events-grid");
+    if (!upcomingGrid && !pastGrid) return;
+    loadContent("data/events.json", "events").then(function (list) {
       var up = list.filter(function (e) {
         return (e.status || "upcoming") === "upcoming" && e.title;
       });
-      if (up.length) grid.innerHTML = up.map(eventCard).join("");
+      var past = list.filter(function (e) {
+        return e.status === "past" && e.title;
+      });
+      if (upcomingGrid && up.length) upcomingGrid.innerHTML = up.map(eventCard).join("");
+      if (pastGrid && past.length) pastGrid.innerHTML = past.map(pastEventCard).join("");
     }, function () {
       /* keep static cards */
     });
@@ -135,7 +183,7 @@
   function renderSponsors() {
     var grid = document.querySelector(".partners-grid");
     if (!grid) return;
-    loadFirst(["/api/sponsors", "data/sponsors.json"], "sponsors").then(function (list) {
+    loadContent("data/sponsors.json", "sponsors").then(function (list) {
       var s = list.filter(function (x) {
         return x.name;
       });

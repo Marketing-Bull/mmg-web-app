@@ -75,8 +75,8 @@
           setStatus(
             status,
             type === "newsletter"
-              ? "You're subscribed — thank you!"
-              : "Thank you. Andrew will follow up shortly.",
+              ? "You're subscribed - thank you!"
+              : "Thank you for contacting Miller's Marketing Group. We will respond within 24 hours.",
             "success"
           );
           track("lead_submit", { lead_type: type });
@@ -112,9 +112,30 @@
     else document.addEventListener("DOMContentLoaded", fn);
   }
 
+  function wireCookieConsent() {
+    var notice = document.querySelector("[data-cookie-consent]");
+    var button = document.querySelector("[data-cookie-accept]");
+    if (!notice || !button) return;
+    try {
+      if (localStorage.getItem("mmg_cookie_notice") === "accepted") return;
+    } catch {
+      /* ignore private browsing storage errors */
+    }
+    notice.classList.add("is-visible");
+    button.addEventListener("click", function () {
+      try {
+        localStorage.setItem("mmg_cookie_notice", "accepted");
+      } catch {
+        /* ignore private browsing storage errors */
+      }
+      notice.classList.remove("is-visible");
+    });
+  }
+
   onReady(function () {
     var forms = document.querySelectorAll("form[data-lead]");
     for (var i = 0; i < forms.length; i++) wireLeadForm(forms[i]);
     wireClickTracking();
+    wireCookieConsent();
   });
 })();

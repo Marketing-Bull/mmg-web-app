@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/png" href="assets/brand/mmg-official-logo.png" />
+    <title>Content Manager | Miller's Marketing Group</title>
+    <style>
+      :root {
+        --red: #a52e2a;
+        --red-dark: #76211f;
+        --gold: #f2c94c;
+        --cream: #fff7e8;
+        --paper: #fffdf8;
+        --sand: #eadbc4;
+        --sand-light: #f4eadd;
+        --espresso: #261d19;
+        --muted: #6c5e56;
+        --teal: #2e7772;
+        --line: rgba(38, 29, 25, 0.13);
+        --shadow: 0 22px 60px rgba(75, 38, 27, 0.12);
+        --sans: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--espresso);
+        background: var(--cream);
+        font-family: var(--sans);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      :focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 3px;
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 2rem 0 4rem;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        text-decoration: none;
+        font-weight: 800;
+      }
+
+      .brand img {
+        width: 48px;
+        height: 48px;
+        padding: 0.3rem;
+        border-radius: 14px;
+        background: var(--red);
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .intro {
+        padding: 1.25rem;
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 0.4rem;
+        font-size: clamp(2rem, 4vw, 3.1rem);
+        line-height: 1;
+      }
+
+      p {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0.7rem 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        color: #fff;
+        background: var(--red);
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        background: var(--red-dark);
+      }
+
+      .button.secondary {
+        color: var(--espresso);
+        border-color: var(--line);
+        background: #fff;
+      }
+
+      .button.gold {
+        color: var(--red-dark);
+        background: var(--gold);
+      }
+
+      .button.danger {
+        background: #7d1f1c;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+
+      .tab {
+        color: var(--espresso);
+        background: #fff;
+        border-color: var(--line);
+      }
+
+      .tab[aria-selected="true"] {
+        color: #fff;
+        background: var(--red);
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 1rem;
+      }
+
+      .list {
+        min-height: 520px;
+        overflow: hidden;
+      }
+
+      .list-head,
+      .editor-head {
+        padding: 1rem;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .items {
+        max-height: 640px;
+        overflow: auto;
+      }
+
+      .item {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        display: grid;
+        gap: 0.2rem;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        color: inherit;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .item:hover,
+      .item[aria-current="true"] {
+        background: var(--sand-light);
+      }
+
+      .item strong {
+        font-size: 0.95rem;
+      }
+
+      .item small {
+        color: var(--muted);
+      }
+
+      form {
+        padding: 1rem;
+        display: grid;
+        gap: 1rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.9rem;
+      }
+
+      .field {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        color: var(--espresso);
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 44px;
+        padding: 0.72rem 0.8rem;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--espresso);
+        background: #fff;
+      }
+
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+      }
+
+      .check input {
+        width: 18px;
+        min-height: 18px;
+      }
+
+      .status {
+        min-height: 1.5rem;
+        color: var(--teal);
+        font-weight: 800;
+      }
+
+      .status[data-state="error"] {
+        color: #8d201d;
+      }
+
+      .hint {
+        margin: 1rem 0 0;
+        padding: 1rem;
+        border-radius: 16px;
+        background: var(--sand-light);
+      }
+
+      .hint code {
+        color: var(--red-dark);
+        font-weight: 800;
+      }
+
+      @media (max-width: 900px) {
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .top,
+        .actions {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <div class="top">
+        <a class="brand" href="index.html">
+          <img src="assets/brand/mmg-official-logo.png" alt="" />
+          <span>Miller's Marketing Group</span>
+        </a>
+        <a class="button secondary" href="index.html">View Site</a>
+      </div>
+
+      <section class="panel intro">
+        <div>
+          <h1>Events & Sponsors</h1>
+          <p>
+            Manage the content shown on the homepage, then export the updated JSON files for the website.
+          </p>
+        </div>
+        <div class="actions">
+          <button class="button" type="button" data-action="add">Add New</button>
+          <button class="button secondary" type="button" data-action="duplicate">Duplicate</button>
+          <button class="button danger" type="button" data-action="delete">Remove</button>
+          <button class="button gold" type="button" data-action="download">Download JSON</button>
+        </div>
+      </section>
+
+      <div class="tabs" role="tablist" aria-label="Content type">
+        <button class="button tab" type="button" role="tab" aria-selected="true" data-tab="events">Events</button>
+        <button class="button tab" type="button" role="tab" aria-selected="false" data-tab="sponsors">Sponsors</button>
+      </div>
+
+      <section class="workspace">
+        <aside class="panel list">
+          <div class="list-head">
+            <h2 id="listTitle">Events</h2>
+            <p id="listSummary">Loading content...</p>
+          </div>
+          <div class="items" data-items></div>
+        </aside>
+
+        <section class="panel editor">
+          <div class="editor-head">
+            <h2 id="editorTitle">Edit Event</h2>
+            <p id="editorSummary">Changes stay in this browser until you download the JSON file.</p>
+          </div>
+          <form data-form></form>
+        </section>
+      </section>
+
+      <div class="hint">
+        <p>
+          After exporting, replace <code>data/events.json</code> or <code>data/sponsors.json</code> in the repository.
+          The website updates from those files; no GHL event or sponsor sync is used.
+        </p>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var state = {
+          mode: "events",
+          selected: 0,
+          events: [],
+          sponsors: [],
+        };
+
+        var schemas = {
+          events: {
+            title: "Events",
+            singular: "Event",
+            file: "events.json",
+            key: "events",
+            fields: [
+              ["id", "ID", "text", "unique-event-id"],
+              ["title", "Title", "text", "Personal Injury Networking Mixer"],
+              ["status", "Status", "select", "upcoming", ["upcoming", "past"]],
+              ["date", "Date", "date", ""],
+              ["cadence", "Cadence", "text", "Last Thursday each month"],
+              ["city", "City", "text", "Plantation"],
+              ["venue", "Venue", "text", "Venue name"],
+              ["type", "Type", "text", "Networking mixer"],
+              ["summary", "Summary", "textarea", "Short event description"],
+              ["image", "Image path or URL", "text", "assets/events/upcoming/event-flyer.jpg"],
+              ["registerUrl", "Registration URL", "url", "https://www.eventbrite.com/..."],
+              ["registerLabel", "Registration label", "text", "Register on Eventbrite"],
+              ["recapUrl", "Recap URL", "url", "https://www.instagram.com/..."],
+              ["recapImage", "Recap image path or URL", "text", "assets/events/recaps/event-still.png"],
+              ["recapLabel", "Recap label", "text", "Watch recap video"],
+              ["recapMeta", "Recap tags", "text", "Flyer archive, Video recap, Sponsor recognition"],
+              ["featured", "Featured", "checkbox", false],
+            ],
+            empty: function () {
+              return {
+                id: "new-event",
+                title: "New Event",
+                status: "upcoming",
+                date: "",
+                cadence: "",
+                city: "",
+                venue: "",
+                type: "Networking event",
+                summary: "",
+                image: "",
+                registerUrl: "",
+                registerLabel: "Register on Eventbrite",
+                recapUrl: "",
+                recapImage: "",
+                recapLabel: "",
+                recapMeta: "",
+                featured: false,
+              };
+            },
+          },
+          sponsors: {
+            title: "Sponsors",
+            singular: "Sponsor",
+            file: "sponsors.json",
+            key: "sponsors",
+            fields: [
+              ["id", "ID", "text", "unique-sponsor-id"],
+              ["name", "Name", "text", "Sponsor name"],
+              ["logo", "Logo path or URL", "text", "assets/partners/logo.png"],
+              ["url", "Website URL", "url", "https://..."],
+              ["tier", "Tier", "text", "Gold"],
+            ],
+            empty: function () {
+              return { id: "new-sponsor", name: "New Sponsor", logo: "", url: "", tier: "" };
+            },
+          },
+        };
+
+        var itemsEl = document.querySelector("[data-items]");
+        var formEl = document.querySelector("[data-form]");
+        var listTitle = document.getElementById("listTitle");
+        var listSummary = document.getElementById("listSummary");
+        var editorTitle = document.getElementById("editorTitle");
+
+        function getList() {
+          return state[state.mode];
+        }
+
+        function slug(value) {
+          return String(value || "item")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "")
+            .slice(0, 60) || "item";
+        }
+
+        function normalize(item) {
+          if (!item.id) item.id = slug(item.title || item.name);
+          return item;
+        }
+
+        function loadJSON(url, key) {
+          return fetch(url, { credentials: "omit" })
+            .then(function (res) {
+              if (!res.ok) throw new Error(url + " " + res.status);
+              return res.json();
+            })
+            .then(function (data) {
+              return data && Array.isArray(data[key]) ? data[key].map(normalize) : [];
+            });
+        }
+
+        function renderList() {
+          var schema = schemas[state.mode];
+          var list = getList();
+          listTitle.textContent = schema.title;
+          listSummary.textContent = list.length + " item" + (list.length === 1 ? "" : "s");
+          itemsEl.innerHTML = "";
+          list.forEach(function (item, index) {
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "item";
+            button.setAttribute("aria-current", String(index === state.selected));
+            button.innerHTML =
+              "<strong>" +
+              escapeHTML(item.title || item.name || item.id) +
+              "</strong><small>" +
+              escapeHTML([item.status, item.date || item.cadence, item.city || item.tier].filter(Boolean).join(" • ")) +
+              "</small>";
+            button.addEventListener("click", function () {
+              state.selected = index;
+              render();
+            });
+            itemsEl.appendChild(button);
+          });
+        }
+
+        function escapeHTML(value) {
+          return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+
+        function fieldHTML(field, item) {
+          var key = field[0];
+          var label = field[1];
+          var type = field[2];
+          var placeholder = field[3];
+          var value = item[key];
+          if (type === "select") {
+            return (
+              '<div class="field"><label for="' +
+              key +
+              '">' +
+              label +
+              '</label><select id="' +
+              key +
+              '" name="' +
+              key +
+              '">' +
+              field[4].map(function (option) {
+                return '<option value="' + option + '"' + (value === option ? " selected" : "") + ">" + option + "</option>";
+              }).join("") +
+              "</select></div>"
+            );
+          }
+          if (type === "textarea") {
+            return (
+              '<div class="field full"><label for="' +
+              key +
+              '">' +
+              label +
+              '</label><textarea id="' +
+              key +
+              '" name="' +
+              key +
+              '" placeholder="' +
+              escapeHTML(placeholder) +
+              '">' +
+              escapeHTML(value || "") +
+              "</textarea></div>"
+            );
+          }
+          if (type === "checkbox") {
+            return (
+              '<div class="field check"><input id="' +
+              key +
+              '" name="' +
+              key +
+              '" type="checkbox"' +
+              (value ? " checked" : "") +
+              ' /><label for="' +
+              key +
+              '">' +
+              label +
+              "</label></div>"
+            );
+          }
+          return (
+            '<div class="field"><label for="' +
+            key +
+            '">' +
+            label +
+            '</label><input id="' +
+            key +
+            '" name="' +
+            key +
+            '" type="' +
+            type +
+            '" value="' +
+            escapeHTML(value || "") +
+            '" placeholder="' +
+            escapeHTML(placeholder) +
+            '" /></div>'
+          );
+        }
+
+        function renderForm() {
+          var schema = schemas[state.mode];
+          var list = getList();
+          if (!list.length) list.push(schema.empty());
+          if (state.selected >= list.length) state.selected = list.length - 1;
+          var item = list[state.selected];
+          editorTitle.textContent = "Edit " + schema.singular;
+          formEl.innerHTML =
+            '<div class="grid">' +
+            schema.fields.map(function (field) {
+              return fieldHTML(field, item);
+            }).join("") +
+            '</div><div class="actions"><button class="button" type="submit">Save Changes</button><p class="status" data-status></p></div>';
+        }
+
+        function render() {
+          renderList();
+          renderForm();
+        }
+
+        function formToItem() {
+          var schema = schemas[state.mode];
+          var data = {};
+          schema.fields.forEach(function (field) {
+            var key = field[0];
+            var type = field[2];
+            var input = formEl.elements[key];
+            data[key] = type === "checkbox" ? !!input.checked : String(input.value || "").trim();
+          });
+          return normalize(data);
+        }
+
+        function saveForm(event) {
+          event.preventDefault();
+          persistForm();
+          var status = formEl.querySelector("[data-status]");
+          status.textContent = "Saved in browser.";
+          status.setAttribute("data-state", "success");
+          renderList();
+        }
+
+        function persistForm() {
+          var list = getList();
+          list[state.selected] = formToItem();
+        }
+
+        function updateDraft() {
+          if (!formEl.elements.length) return;
+          persistForm();
+        }
+
+        function saveBeforeAction() {
+          if (formEl.elements.length) persistForm();
+        }
+
+        function saveAndRenderList() {
+          saveBeforeAction();
+          var status = formEl.querySelector("[data-status]");
+          if (status) {
+            status.textContent = "Saved in browser.";
+            status.setAttribute("data-state", "success");
+          }
+          renderList();
+        }
+
+        function addItem() {
+          saveBeforeAction();
+          var list = getList();
+          list.push(schemas[state.mode].empty());
+          state.selected = list.length - 1;
+          render();
+        }
+
+        function duplicateItem() {
+          saveBeforeAction();
+          var list = getList();
+          if (!list.length) return;
+          var copy = JSON.parse(JSON.stringify(list[state.selected]));
+          copy.id = slug((copy.id || copy.title || copy.name) + "-copy");
+          if (copy.title) copy.title += " Copy";
+          if (copy.name) copy.name += " Copy";
+          list.splice(state.selected + 1, 0, copy);
+          state.selected += 1;
+          render();
+        }
+
+        function deleteItem() {
+          saveBeforeAction();
+          var list = getList();
+          if (!list.length) return;
+          list.splice(state.selected, 1);
+          state.selected = Math.max(0, state.selected - 1);
+          render();
+        }
+
+        function download() {
+          saveBeforeAction();
+          var schema = schemas[state.mode];
+          var payload = {};
+          payload.updated = new Date().toISOString();
+          payload[schema.key] = getList();
+          var blob = new Blob([JSON.stringify(payload, null, 2) + "\n"], { type: "application/json" });
+          var link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = schema.file;
+          link.click();
+          URL.revokeObjectURL(link.href);
+        }
+
+        function bindActions() {
+          document.querySelectorAll("[data-tab]").forEach(function (tab) {
+            tab.addEventListener("click", function () {
+              state.mode = tab.getAttribute("data-tab");
+              state.selected = 0;
+              document.querySelectorAll("[data-tab]").forEach(function (btn) {
+                btn.setAttribute("aria-selected", String(btn === tab));
+              });
+              render();
+            });
+          });
+
+          document.querySelector('[data-action="add"]').addEventListener("click", addItem);
+          document.querySelector('[data-action="duplicate"]').addEventListener("click", duplicateItem);
+          document.querySelector('[data-action="delete"]').addEventListener("click", deleteItem);
+          document.querySelector('[data-action="download"]').addEventListener("click", download);
+          formEl.addEventListener("submit", saveForm);
+          formEl.addEventListener("input", updateDraft);
+          formEl.addEventListener("change", saveAndRenderList);
+        }
+
+        Promise.all([
+          loadJSON("data/events.json", "events").catch(function () { return []; }),
+          loadJSON("data/sponsors.json", "sponsors").catch(function () { return []; }),
+        ]).then(function (result) {
+          state.events = result[0];
+          state.sponsors = result[1];
+          bindActions();
+          render();
+        });
+      })();
+    </script>
+  </body>
+</html>
