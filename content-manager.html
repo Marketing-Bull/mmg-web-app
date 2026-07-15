@@ -1064,7 +1064,8 @@
               var value = window.prompt("New event type:");
               value = value ? value.trim() : "";
               if (!value) {
-                select.value = state.eventTypes[0] || "";
+                var item = getList()[state.selected];
+                select.value = (item && item.type) || state.eventTypes[0] || "";
                 return;
               }
               if (state.eventTypes.indexOf(value) === -1) state.eventTypes.push(value);
