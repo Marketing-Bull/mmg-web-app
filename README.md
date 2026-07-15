@@ -4,18 +4,24 @@ Static homepage mockup for Miller's Marketing Group.
 
 ## Project Structure
 
-- `index.html` - deployable GitHub Pages homepage
+- `index.html` - Vercel-served homepage
 - `faq.html` - frequently asked questions
-- `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages (drafts pending legal review)
+- `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages
+- `404.html`, `robots.txt`, `sitemap.xml` - launch support files
+- `content-manager.html` - password-protected editor for Events and Sponsors, with Instagram-based image import
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
 - `assets/js/site.js` - contact/newsletter form handling and GA4 event tracking (gtag.js itself is loaded from each page's `<head>`)
-- `assets/js/content.js` - renders Events & Sponsors on the homepage from `data/*.json` (falls back to the static cards)
-- `api/lead.js` - Vercel serverless function that forwards contact + newsletter submissions to the GHL webhook
-- `data/events.json`, `data/sponsors.json` - content the site reads for Events & Sponsors (synced from GHL; seeded with current content)
-- `scripts/sync-ghl.mjs` - pulls GHL Custom Objects (Event, Sponsor) into `data/*.json`
-- `.github/workflows/sync-ghl.yml` - scheduled job that runs the sync and commits any changes
-- `docs/strategy/ghl-content-model.md` - the GHL custom-object schema to create for Events & Sponsors
-- `package.json` - marks the repo as a Vercel project (Node serverless functions)
+- `assets/js/content.js` - renders Events and Sponsors on the homepage: `/api/events`+`/api/sponsors` (live, published) → `data/*.json` (seed) → static cards
+- `api/lead.js` - forwards contact + newsletter submissions to the GHL webhook
+- `api/events.js`, `api/sponsors.js` - public read endpoints; serve published content from Vercel Blob, falling back to the `data/*.json` seed
+- `api/admin/login.js`, `api/admin/logout.js` - shared-password session login for the content manager
+- `api/admin/content.js` - authenticated read/publish of Events and Sponsors (writes to Vercel Blob)
+- `api/admin/instagram.js` - authenticated: resolves a pasted Instagram post/reel URL to its image and copies it to Vercel Blob
+- `lib/auth.js` - password check + signed session cookie helpers
+- `lib/blobStore.js` - Vercel Blob read/write helpers for content JSON and imported media
+- `data/events.json`, `data/sponsors.json` - initial seed content (used until the first Publish, and as a fallback after)
+- `docs/content-management.md` - editing workflow for Andrew's team
+- `package.json` - marks the repo as a Vercel project (Node serverless functions, `@vercel/blob`)
 - `assets/brand/` - brand and relationship imagery
 - `assets/events/upcoming/` - current event flyers
 - `assets/events/past/` - archived event flyers
@@ -25,10 +31,10 @@ Static homepage mockup for Miller's Marketing Group.
 - `docs/discovery/` - stakeholder discovery notes
 - `docs/strategy/` - website strategy and brand guidance
 
-The static pages can be served from the repository root, but the contact and
-newsletter forms rely on a serverless function (`api/lead.js`), so the site is
-deployed on **Vercel** (static files + Node functions) rather than plain GitHub
-Pages. `index.html` remains the homepage source of truth.
+The static pages are served from the repository root, but the contact and
+newsletter forms rely on a serverless function (`api/lead.js`), so the site must
+be deployed on **Vercel** (static files + Node functions) rather than plain
+GitHub Pages. `index.html` remains the homepage source of truth.
 
 ## Configuration & environment variables
 
@@ -40,16 +46,22 @@ settings — never commit) or **🌐 public** (safe to expose; lives in client c
 | Variable | Where to set | Used by | Secret? |
 | --- | --- | --- | --- |
 | `GHL_WEBHOOK_URL` | Vercel env | `api/lead.js` — forwards every contact + newsletter submission to the GoHighLevel inbound webhook | 🔒 secret |
-| `GHL_API_TOKEN` | Vercel env | `api/events`, `api/sponsors`, `api/admin/setup-ghl` — reads GHL custom objects (needs `objects/record.readonly`; `objects/schema.write` for setup) | 🔒 secret |
-| `GHL_LOCATION_ID` | Vercel env | same as above — the GHL sub-account location id | 🔒 secret |
-| `SETUP_SECRET` | Vercel env | guards `api/admin/setup-ghl` (the one-time object-creation route) | 🔒 secret |
+| `CONTENT_ADMIN_PASSWORD` | Vercel env | `api/admin/login.js` — the shared password for `content-manager.html` | 🔒 secret |
+| `CONTENT_SESSION_SECRET` | Vercel env | `lib/auth.js` — signs the login session cookie. Use a long random string, e.g. `openssl rand -hex 32` | 🔒 secret |
+| `BLOB_READ_WRITE_TOKEN` | Vercel env (auto-added) | `lib/blobStore.js` — read/write access to the project's Vercel Blob store | 🔒 secret |
+| `IG_APP_ID`, `IG_APP_SECRET` | Vercel env | `api/admin/instagram.js` — Meta Developer App credentials used to resolve a pasted Instagram URL to its image via the oEmbed API | 🔒 secret |
 
-All are read server-side only and never exposed to the browser. Without the GHL
-vars, `api/events`/`api/sponsors` return empty and the site falls back to the
-committed `data/*.json`; the forms need `GHL_WEBHOOK_URL`.
+None of these are ever exposed to the browser. Setup notes:
 
-Optional: `GHL_EVENTS_OBJECT_KEY` (default `custom_objects.event`),
-`GHL_SPONSORS_OBJECT_KEY` (default `custom_objects.sponsor`).
+- **`BLOB_READ_WRITE_TOKEN`**: in the Vercel dashboard, go to **Storage → Create → Blob**, then connect the store to
+  this project. Vercel adds this env var automatically — no manual copying needed.
+- **`IG_APP_ID` / `IG_APP_SECRET`**: create a free app at
+  [developers.facebook.com](https://developers.facebook.com/), note the App ID and App Secret from the app's
+  Settings → Basic page. No app review is required for oEmbed reads of public posts.
+- Without `CONTENT_ADMIN_PASSWORD`/`CONTENT_SESSION_SECRET`, the content manager login is disabled. Without
+  `IG_APP_ID`/`IG_APP_SECRET`, the "Use this Instagram photo" import fails (a direct image URL can still be pasted
+  manually as a fallback). Without `BLOB_READ_WRITE_TOKEN`, Publish fails and the site keeps serving the
+  `data/*.json` seed.
 
 ### Public identifiers (not env vars — set directly in code)
 
@@ -63,31 +75,20 @@ Optional: `GHL_EVENTS_OBJECT_KEY` (default `custom_objects.event`),
 > Mailchimp has been removed entirely — forms and the newsletter now flow
 > through the GoHighLevel webhook.
 
-### Events & Sponsors content sync (GHL Custom Objects)
+### Events and Sponsors content
 
-`assets/js/content.js` renders the Events and Sponsors on the homepage. It loads
-them in this order, using the first that returns data:
+Andrew's team edits Events and Sponsors through the password-protected
+`content-manager.html`. Publishing writes straight to Vercel Blob — no git,
+no file replacing, no redeploy. `/api/events` and `/api/sponsors` serve that
+published content to the homepage, falling back to the committed
+`data/events.json` / `data/sponsors.json` seed if nothing has been published
+yet (or if Blob is unreachable). See
+[`docs/content-management.md`](docs/content-management.md) for the step-by-step
+workflow.
 
-1. **`/api/events` and `/api/sponsors`** — Vercel functions that read the GHL
-   **Event** / **Sponsor** custom objects live (token from Vercel env), cached
-   ~6 hours at the edge.
-2. **`data/events.json` / `data/sponsors.json`** — committed seed (offline fallback).
-3. The static cards already in `index.html`.
-
-**Setup (one time):**
-
-1. Run the setup route to create the GHL custom objects + fields:
-   `GET /api/admin/setup-ghl?key=<SETUP_SECRET>` (idempotent; returns a JSON
-   log). It builds the schema in
-   [`docs/strategy/ghl-content-model.md`](docs/strategy/ghl-content-model.md) —
-   flyer/logo are file-upload fields; sponsors are name + logo + priority. The
-   token needs `objects/schema.write` for this step.
-2. Add Events/Sponsors as records in GHL. `/api/events` and `/api/sponsors` pick
-   them up automatically within the cache window.
-
-> The `.github/workflows/*` + `scripts/sync-ghl.mjs` are an **alternative**
-> sync-to-static-JSON path (requires GitHub Actions to be enabled). With the
-> Vercel functions above, they are not needed.
+Images (event flyers, recap thumbnails, sponsor logos) are imported by
+pasting an Instagram post or reel URL — the content manager resolves it via
+the Instagram oEmbed API and copies the image into Vercel Blob automatically,
+so there's no manual resizing or file uploading.
 
 When new variables are added, document them and keep this section in sync.
-

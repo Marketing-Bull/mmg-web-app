@@ -6,5 +6,8 @@
   "description": "Miller's Marketing Group website (static pages + Vercel serverless functions).",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.6.1"
   }
 }

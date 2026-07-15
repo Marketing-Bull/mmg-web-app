@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" href="assets/brand/mmg-official-logo.png" />
+    <title>Content Manager | Miller's Marketing Group</title>
+    <style>
+      :root {
+        --red: #a52e2a;
+        --red-dark: #76211f;
+        --gold: #f2c94c;
+        --cream: #fff7e8;
+        --paper: #fffdf8;
+        --sand: #eadbc4;
+        --sand-light: #f4eadd;
+        --espresso: #261d19;
+        --muted: #6c5e56;
+        --teal: #2e7772;
+        --line: rgba(38, 29, 25, 0.13);
+        --shadow: 0 22px 60px rgba(75, 38, 27, 0.12);
+        --sans: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--espresso);
+        background: var(--cream);
+        font-family: var(--sans);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      :focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 3px;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 2rem 0 4rem;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        text-decoration: none;
+        font-weight: 800;
+      }
+
+      .brand img {
+        width: 48px;
+        height: 48px;
+        padding: 0.3rem;
+        border-radius: 14px;
+        background: var(--red);
+      }
+
+      .top-actions {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .intro {
+        padding: 1.25rem;
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 0.4rem;
+        font-size: clamp(2rem, 4vw, 3.1rem);
+        line-height: 1;
+      }
+
+      p {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.7rem;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0.7rem 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        color: #fff;
+        background: var(--red);
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        background: var(--red-dark);
+      }
+
+      .button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .button.secondary {
+        color: var(--espresso);
+        border-color: var(--line);
+        background: #fff;
+      }
+
+      .button.gold {
+        color: var(--red-dark);
+        background: var(--gold);
+      }
+
+      .button.danger {
+        background: #7d1f1c;
+      }
+
+      .button.small {
+        min-height: 36px;
+        padding: 0.45rem 0.85rem;
+        font-size: 0.82rem;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+
+      .tab {
+        color: var(--espresso);
+        background: #fff;
+        border-color: var(--line);
+      }
+
+      .tab[aria-selected="true"] {
+        color: #fff;
+        background: var(--red);
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 1rem;
+      }
+
+      .list {
+        min-height: 520px;
+        overflow: hidden;
+      }
+
+      .list-head,
+      .editor-head {
+        padding: 1rem;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .items {
+        max-height: 640px;
+        overflow: auto;
+      }
+
+      .item {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        display: grid;
+        gap: 0.2rem;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        color: inherit;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .item:hover,
+      .item[aria-current="true"] {
+        background: var(--sand-light);
+      }
+
+      .item strong {
+        font-size: 0.95rem;
+      }
+
+      .item small {
+        color: var(--muted);
+      }
+
+      form {
+        padding: 1rem;
+        display: grid;
+        gap: 1rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.9rem;
+      }
+
+      .field {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        color: var(--espresso);
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 44px;
+        padding: 0.72rem 0.8rem;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--espresso);
+        background: #fff;
+      }
+
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+      }
+
+      .check input {
+        width: 18px;
+        min-height: 18px;
+      }
+
+      .status {
+        min-height: 1.5rem;
+        color: var(--teal);
+        font-weight: 800;
+      }
+
+      .status[data-state="error"] {
+        color: #8d201d;
+      }
+
+      .status[data-state="success"] {
+        color: var(--teal);
+      }
+
+      .hint {
+        margin: 1rem 0 0;
+        padding: 1rem;
+        border-radius: 16px;
+        background: var(--sand-light);
+      }
+
+      .hint code {
+        color: var(--red-dark);
+        font-weight: 800;
+      }
+
+      /* Login screen ------------------------------------------------------ */
+      .login-screen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+
+      .login-card {
+        width: min(380px, 100%);
+        padding: 2rem;
+        display: grid;
+        gap: 0.9rem;
+        text-align: center;
+      }
+
+      .login-card img {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto;
+        padding: 0.4rem;
+        border-radius: 16px;
+        background: var(--red);
+      }
+
+      .login-card form {
+        padding: 0;
+        text-align: left;
+      }
+
+      /* Instagram image field ---------------------------------------------- */
+      .ig-field {
+        display: grid;
+        gap: 0.5rem;
+        padding: 0.9rem;
+        border: 1px dashed var(--line);
+        border-radius: 14px;
+        background: var(--sand-light);
+      }
+
+      .ig-preview {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 140px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--line);
+      }
+
+      .ig-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .ig-empty {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .ig-controls {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .ig-controls input {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .ig-status {
+        min-height: 1.2rem;
+        margin: 0;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--teal);
+      }
+
+      .ig-status[data-state="error"] {
+        color: #8d201d;
+      }
+
+      .ig-manual summary {
+        cursor: pointer;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: var(--muted);
+      }
+
+      .ig-manual input {
+        margin-top: 0.5rem;
+      }
+
+      .publish-status {
+        min-height: 1.4rem;
+        margin: 0;
+        font-weight: 800;
+        color: var(--teal);
+      }
+
+      .publish-status[data-state="error"] {
+        color: #8d201d;
+      }
+
+      @media (max-width: 900px) {
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .top,
+        .actions {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-screen" data-login>
+      <div class="panel login-card">
+        <img src="assets/brand/mmg-official-logo.png" alt="" />
+        <div>
+          <h1 style="font-size: 1.6rem">Content Manager</h1>
+          <p>Sign in to edit Events and Sponsors.</p>
+        </div>
+        <form data-login-form>
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+          </div>
+          <div class="actions" style="margin-top: 0.9rem">
+            <button class="button" type="submit">Log In</button>
+          </div>
+          <p class="status" data-login-status></p>
+        </form>
+      </div>
+    </div>
+
+    <main class="shell" data-app hidden>
+      <div class="top">
+        <a class="brand" href="index.html">
+          <img src="assets/brand/mmg-official-logo.png" alt="" />
+          <span>Miller's Marketing Group</span>
+        </a>
+        <div class="top-actions">
+          <a class="button secondary" href="index.html">View Site</a>
+          <button class="button secondary" type="button" data-action="logout">Log Out</button>
+        </div>
+      </div>
+
+      <section class="panel intro">
+        <div>
+          <h1>Events & Sponsors</h1>
+          <p>
+            Edit the content shown on the homepage, then publish. Changes go live within a few minutes — no
+            downloads, no file replacing, no git.
+          </p>
+        </div>
+        <div class="actions">
+          <button class="button" type="button" data-action="add">Add New</button>
+          <button class="button secondary" type="button" data-action="duplicate">Duplicate</button>
+          <button class="button danger" type="button" data-action="delete">Remove</button>
+          <button class="button gold" type="button" data-action="publish">Publish Events</button>
+          <p class="publish-status" data-publish-status></p>
+        </div>
+      </section>
+
+      <div class="tabs" role="tablist" aria-label="Content type">
+        <button class="button tab" type="button" role="tab" aria-selected="true" data-tab="events">Events</button>
+        <button class="button tab" type="button" role="tab" aria-selected="false" data-tab="sponsors">Sponsors</button>
+      </div>
+
+      <section class="workspace">
+        <aside class="panel list">
+          <div class="list-head">
+            <h2 id="listTitle">Events</h2>
+            <p id="listSummary">Loading content...</p>
+          </div>
+          <div class="items" data-items></div>
+        </aside>
+
+        <section class="panel editor">
+          <div class="editor-head">
+            <h2 id="editorTitle">Edit Event</h2>
+            <p id="editorSummary">Changes stay in this browser until you click Publish.</p>
+          </div>
+          <form data-form></form>
+        </section>
+      </section>
+
+      <div class="hint">
+        <p>
+          For flyers and photos, paste the Instagram post or reel URL and click <code>Use this Instagram photo</code>
+          &mdash; the image is copied to fast site storage automatically, no resizing or uploading required.
+        </p>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var state = {
+          mode: "events",
+          selected: 0,
+          events: [],
+          sponsors: [],
+        };
+
+        var schemas = {
+          events: {
+            title: "Events",
+            singular: "Event",
+            key: "events",
+            fields: [
+              ["id", "ID", "text", "unique-event-id"],
+              ["title", "Title", "text", "Personal Injury Networking Mixer"],
+              ["status", "Status", "select", "upcoming", ["upcoming", "past"]],
+              ["date", "Date", "date", ""],
+              ["cadence", "Cadence", "text", "Last Thursday each month"],
+              ["city", "City", "text", "Plantation"],
+              ["venue", "Venue", "text", "Venue name"],
+              ["type", "Type", "text", "Networking mixer"],
+              ["summary", "Summary", "textarea", "Short event description"],
+              ["image", "Event Flyer Image", "instagram-image", "https://www.instagram.com/p/..."],
+              ["registerUrl", "Registration URL", "url", "https://www.eventbrite.com/..."],
+              ["registerLabel", "Registration label", "text", "Register on Eventbrite"],
+              ["recapUrl", "Recap URL", "url", "https://www.instagram.com/..."],
+              ["recapImage", "Recap Thumbnail", "instagram-image", "https://www.instagram.com/reel/..."],
+              ["recapLabel", "Recap label", "text", "Watch recap video"],
+              ["recapMeta", "Recap tags", "text", "Flyer archive, Video recap, Sponsor recognition"],
+              ["featured", "Featured", "checkbox", false],
+            ],
+            empty: function () {
+              return {
+                id: "new-event-" + Date.now(),
+                title: "New Event",
+                status: "upcoming",
+                date: "",
+                cadence: "",
+                city: "",
+                venue: "",
+                type: "Networking event",
+                summary: "",
+                image: "",
+                registerUrl: "",
+                registerLabel: "Register on Eventbrite",
+                recapUrl: "",
+                recapImage: "",
+                recapLabel: "",
+                recapMeta: "",
+                featured: false,
+              };
+            },
+          },
+          sponsors: {
+            title: "Sponsors",
+            singular: "Sponsor",
+            key: "sponsors",
+            fields: [
+              ["id", "ID", "text", "unique-sponsor-id"],
+              ["name", "Name", "text", "Sponsor name"],
+              ["logo", "Sponsor Logo", "instagram-image", "https://www.instagram.com/p/..."],
+              ["url", "Website URL", "url", "https://..."],
+              ["tier", "Tier", "text", "Gold"],
+            ],
+            empty: function () {
+              return { id: "new-sponsor-" + Date.now(), name: "New Sponsor", logo: "", url: "", tier: "" };
+            },
+          },
+        };
+
+        var loginScreen = document.querySelector("[data-login]");
+        var loginForm = document.querySelector("[data-login-form]");
+        var loginStatus = document.querySelector("[data-login-status]");
+        var app = document.querySelector("[data-app]");
+        var publishStatus = document.querySelector("[data-publish-status]");
+        var publishBtn = document.querySelector('[data-action="publish"]');
+
+        var itemsEl = document.querySelector("[data-items]");
+        var formEl = document.querySelector("[data-form]");
+        var listTitle = document.getElementById("listTitle");
+        var listSummary = document.getElementById("listSummary");
+        var editorTitle = document.getElementById("editorTitle");
+
+        var actionsBound = false;
+
+        function getList() {
+          return state[state.mode];
+        }
+
+        function slug(value) {
+          return String(value || "item")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "")
+            .slice(0, 60) || "item";
+        }
+
+        function normalize(item) {
+          if (!item.id) item.id = slug(item.title || item.name);
+          return item;
+        }
+
+        function escapeHTML(value) {
+          return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+
+        // --- Auth -------------------------------------------------------
+        function showLogin(message) {
+          loginScreen.hidden = false;
+          app.hidden = true;
+          if (message) {
+            loginStatus.textContent = message;
+            loginStatus.setAttribute("data-state", "error");
+          }
+        }
+
+        function showApp() {
+          loginScreen.hidden = true;
+          app.hidden = false;
+        }
+
+        function boot() {
+          fetch("/api/admin/content", { credentials: "same-origin" })
+            .then(function (res) {
+              if (res.status === 401) {
+                showLogin();
+                return null;
+              }
+              if (!res.ok) throw new Error("Failed to load content (" + res.status + ")");
+              return res.json();
+            })
+            .then(function (data) {
+              if (!data) return;
+              state.events = (data.events || []).map(normalize);
+              state.sponsors = (data.sponsors || []).map(normalize);
+              showApp();
+              bindActions();
+              render();
+            })
+            .catch(function (err) {
+              showLogin("Could not load content: " + err.message);
+            });
+        }
+
+        loginForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+          var password = loginForm.elements.password.value;
+          var submitBtn = loginForm.querySelector('[type="submit"]');
+          submitBtn.disabled = true;
+          loginStatus.textContent = "Signing in…";
+          loginStatus.removeAttribute("data-state");
+
+          fetch("/api/admin/login", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: password }),
+          })
+            .then(function (res) {
+              return res.json().catch(function () {
+                return {};
+              }).then(function (data) {
+                return { ok: res.ok, data: data };
+              });
+            })
+            .then(function (result) {
+              if (!result.ok) {
+                loginStatus.textContent = (result.data && result.data.error) || "Incorrect password.";
+                loginStatus.setAttribute("data-state", "error");
+                return;
+              }
+              loginForm.reset();
+              loginStatus.textContent = "";
+              loginStatus.removeAttribute("data-state");
+              boot();
+            })
+            .catch(function () {
+              loginStatus.textContent = "Could not reach the server. Try again.";
+              loginStatus.setAttribute("data-state", "error");
+            })
+            .finally(function () {
+              submitBtn.disabled = false;
+            });
+        });
+
+        // --- List / form rendering ---------------------------------------
+        function renderList() {
+          var schema = schemas[state.mode];
+          var list = getList();
+          listTitle.textContent = schema.title;
+          listSummary.textContent = list.length + " item" + (list.length === 1 ? "" : "s");
+          itemsEl.innerHTML = "";
+          list.forEach(function (item, index) {
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "item";
+            button.setAttribute("aria-current", String(index === state.selected));
+            button.innerHTML =
+              "<strong>" +
+              escapeHTML(item.title || item.name || item.id) +
+              "</strong><small>" +
+              escapeHTML([item.status, item.date || item.cadence, item.city || item.tier].filter(Boolean).join(" • ")) +
+              "</small>";
+            button.addEventListener("click", function () {
+              state.selected = index;
+              render();
+            });
+            itemsEl.appendChild(button);
+          });
+        }
+
+        function fieldHTML(field, item) {
+          var key = field[0];
+          var label = field[1];
+          var type = field[2];
+          var placeholder = field[3];
+          var value = item[key];
+
+          if (type === "instagram-image") {
+            return (
+              '<div class="field full ig-field" data-ig-field="' +
+              key +
+              '"><label>' +
+              label +
+              '</label><div class="ig-preview" data-ig-preview>' +
+              (value
+                ? '<img src="' + escapeHTML(value) + '" alt="" />'
+                : '<span class="ig-empty">No image yet</span>') +
+              '</div><input type="hidden" name="' +
+              key +
+              '" data-ig-value value="' +
+              escapeHTML(value || "") +
+              '" /><div class="ig-controls"><input type="url" data-ig-source aria-label="Instagram post or reel URL" placeholder="' +
+              escapeHTML(placeholder) +
+              '" /><button class="button small secondary" type="button" data-ig-fetch>Use this Instagram photo</button></div>' +
+              '<p class="ig-status" data-ig-status></p>' +
+              '<details class="ig-manual"><summary>Or paste an image URL directly</summary>' +
+              '<input type="url" data-ig-manual aria-label="Direct image URL" value="' +
+              escapeHTML(value || "") +
+              '" /></details></div>'
+            );
+          }
+
+          if (type === "select") {
+            return (
+              '<div class="field"><label for="' +
+              key +
+              '">' +
+              label +
+              '</label><select id="' +
+              key +
+              '" name="' +
+              key +
+              '">' +
+              field[4].map(function (option) {
+                return '<option value="' + option + '"' + (value === option ? " selected" : "") + ">" + option + "</option>";
+              }).join("") +
+              "</select></div>"
+            );
+          }
+          if (type === "textarea") {
+            return (
+              '<div class="field full"><label for="' +
+              key +
+              '">' +
+              label +
+              '</label><textarea id="' +
+              key +
+              '" name="' +
+              key +
+              '" placeholder="' +
+              escapeHTML(placeholder) +
+              '">' +
+              escapeHTML(value || "") +
+              "</textarea></div>"
+            );
+          }
+          if (type === "checkbox") {
+            return (
+              '<div class="field check"><input id="' +
+              key +
+              '" name="' +
+              key +
+              '" type="checkbox"' +
+              (value ? " checked" : "") +
+              ' /><label for="' +
+              key +
+              '">' +
+              label +
+              "</label></div>"
+            );
+          }
+          return (
+            '<div class="field"><label for="' +
+            key +
+            '">' +
+            label +
+            '</label><input id="' +
+            key +
+            '" name="' +
+            key +
+            '" type="' +
+            type +
+            '" value="' +
+            escapeHTML(value || "") +
+            '" placeholder="' +
+            escapeHTML(placeholder) +
+            '" /></div>'
+          );
+        }
+
+        function renderForm() {
+          var schema = schemas[state.mode];
+          var list = getList();
+          if (!list.length) list.push(schema.empty());
+          if (state.selected >= list.length) state.selected = list.length - 1;
+          var item = list[state.selected];
+          editorTitle.textContent = "Edit " + schema.singular;
+          formEl.innerHTML =
+            '<div class="grid">' +
+            schema.fields.map(function (field) {
+              return fieldHTML(field, item);
+            }).join("") +
+            '</div><div class="actions"><button class="button" type="submit">Save Changes</button><p class="status" data-status></p></div>';
+          wireInstagramFields();
+        }
+
+        function render() {
+          if (publishBtn) publishBtn.textContent = "Publish " + schemas[state.mode].title;
+          // Ensure the list has at least one item before rendering either
+          // panel, so the sidebar and the editor never fall out of sync.
+          var list = getList();
+          if (!list.length) list.push(schemas[state.mode].empty());
+          renderList();
+          renderForm();
+        }
+
+        // --- Instagram image fields ---------------------------------------
+        function wireInstagramFields() {
+          formEl.querySelectorAll("[data-ig-field]").forEach(function (wrap) {
+            var hiddenInput = wrap.querySelector("[data-ig-value]");
+            var preview = wrap.querySelector("[data-ig-preview]");
+            var sourceInput = wrap.querySelector("[data-ig-source]");
+            var fetchBtn = wrap.querySelector("[data-ig-fetch]");
+            var statusEl = wrap.querySelector("[data-ig-status]");
+            var manualInput = wrap.querySelector("[data-ig-manual]");
+
+            function setValue(url) {
+              hiddenInput.value = url;
+              manualInput.value = url;
+              preview.innerHTML = url
+                ? '<img src="' + escapeHTML(url) + '" alt="" />'
+                : '<span class="ig-empty">No image yet</span>';
+              persistForm();
+            }
+
+            fetchBtn.addEventListener("click", function () {
+              var url = sourceInput.value.trim();
+              if (!url) {
+                statusEl.textContent = "Paste an Instagram post or reel URL first.";
+                statusEl.setAttribute("data-state", "error");
+                return;
+              }
+              fetchBtn.disabled = true;
+              statusEl.textContent = "Fetching from Instagram…";
+              statusEl.removeAttribute("data-state");
+
+              fetch("/api/admin/instagram", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: url }),
+              })
+                .then(function (res) {
+                  if (res.status === 401) {
+                    showLogin("Your session expired. Log in again to keep editing.");
+                    throw new Error("__handled__");
+                  }
+                  return res.json().catch(function () {
+                    return {};
+                  }).then(function (data) {
+                    return { ok: res.ok, data: data };
+                  });
+                })
+                .then(function (result) {
+                  if (!result.ok) {
+                    statusEl.textContent = (result.data && result.data.error) || "Could not fetch that Instagram post.";
+                    statusEl.setAttribute("data-state", "error");
+                    return;
+                  }
+                  setValue(result.data.imageUrl);
+                  sourceInput.value = "";
+                  statusEl.textContent = "Image imported — ready to publish.";
+                  statusEl.setAttribute("data-state", "success");
+                })
+                .catch(function (err) {
+                  if (err.message !== "__handled__") {
+                    statusEl.textContent = "Could not reach the server. Try again.";
+                    statusEl.setAttribute("data-state", "error");
+                  }
+                })
+                .finally(function () {
+                  fetchBtn.disabled = false;
+                });
+            });
+
+            manualInput.addEventListener("change", function () {
+              setValue(manualInput.value.trim());
+              statusEl.textContent = "";
+              statusEl.removeAttribute("data-state");
+            });
+          });
+        }
+
+        // --- Form <-> state -------------------------------------------------
+        function formToItem() {
+          var schema = schemas[state.mode];
+          var data = {};
+          schema.fields.forEach(function (field) {
+            var key = field[0];
+            var type = field[2];
+            var input = formEl.elements[key];
+            if (!input) return;
+            data[key] = type === "checkbox" ? !!input.checked : String(input.value || "").trim();
+          });
+          return normalize(data);
+        }
+
+        function saveForm(event) {
+          event.preventDefault();
+          persistForm();
+          var status = formEl.querySelector("[data-status]");
+          status.textContent = "Saved in browser — click Publish to make it live.";
+          status.setAttribute("data-state", "success");
+          renderList();
+        }
+
+        function persistForm() {
+          var list = getList();
+          list[state.selected] = formToItem();
+        }
+
+        function updateDraft() {
+          if (!formEl.elements.length) return;
+          persistForm();
+        }
+
+        function saveBeforeAction() {
+          if (formEl.elements.length) persistForm();
+        }
+
+        function saveAndRenderList() {
+          saveBeforeAction();
+          var status = formEl.querySelector("[data-status]");
+          if (status) {
+            status.textContent = "Saved in browser — click Publish to make it live.";
+            status.setAttribute("data-state", "success");
+          }
+          renderList();
+        }
+
+        function addItem() {
+          saveBeforeAction();
+          var list = getList();
+          list.push(schemas[state.mode].empty());
+          state.selected = list.length - 1;
+          render();
+        }
+
+        function duplicateItem() {
+          saveBeforeAction();
+          var list = getList();
+          if (!list.length) return;
+          var copy = JSON.parse(JSON.stringify(list[state.selected]));
+          var base = slug((copy.id || copy.title || copy.name) + "-copy");
+          var candidate = base;
+          var n = 2;
+          while (list.some(function (existing) {
+            return existing.id === candidate;
+          })) {
+            candidate = base + "-" + n++;
+          }
+          copy.id = candidate;
+          if (copy.title) copy.title += " Copy";
+          if (copy.name) copy.name += " Copy";
+          list.splice(state.selected + 1, 0, copy);
+          state.selected += 1;
+          render();
+        }
+
+        function deleteItem() {
+          saveBeforeAction();
+          var list = getList();
+          if (!list.length) return;
+          list.splice(state.selected, 1);
+          state.selected = Math.max(0, state.selected - 1);
+          render();
+        }
+
+        function publish() {
+          saveBeforeAction();
+          var schema = schemas[state.mode];
+          publishBtn.disabled = true;
+          publishStatus.textContent = "Publishing…";
+          publishStatus.removeAttribute("data-state");
+
+          fetch("/api/admin/content", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: state.mode, items: getList() }),
+          })
+            .then(function (res) {
+              if (res.status === 401) {
+                showLogin("Your session expired. Log in again — your edits are still here.");
+                throw new Error("__handled__");
+              }
+              return res.json().catch(function () {
+                return {};
+              }).then(function (data) {
+                return { ok: res.ok, data: data };
+              });
+            })
+            .then(function (result) {
+              if (!result.ok) {
+                publishStatus.textContent = (result.data && result.data.error) || "Could not publish. Try again.";
+                publishStatus.setAttribute("data-state", "error");
+                return;
+              }
+              publishStatus.textContent = schema.title + " published — live on the site shortly.";
+              publishStatus.setAttribute("data-state", "success");
+            })
+            .catch(function (err) {
+              if (err.message !== "__handled__") {
+                publishStatus.textContent = "Could not reach the server. Try again.";
+                publishStatus.setAttribute("data-state", "error");
+              }
+            })
+            .finally(function () {
+              publishBtn.disabled = false;
+            });
+        }
+
+        function logout() {
+          fetch("/api/admin/logout", { method: "POST", credentials: "same-origin" }).finally(function () {
+            showLogin();
+          });
+        }
+
+        function bindActions() {
+          if (actionsBound) return;
+          actionsBound = true;
+
+          document.querySelectorAll("[data-tab]").forEach(function (tab) {
+            tab.addEventListener("click", function () {
+              state.mode = tab.getAttribute("data-tab");
+              state.selected = 0;
+              document.querySelectorAll("[data-tab]").forEach(function (btn) {
+                btn.setAttribute("aria-selected", String(btn === tab));
+              });
+              render();
+            });
+          });
+
+          document.querySelector('[data-action="add"]').addEventListener("click", addItem);
+          document.querySelector('[data-action="duplicate"]').addEventListener("click", duplicateItem);
+          document.querySelector('[data-action="delete"]').addEventListener("click", deleteItem);
+          document.querySelector('[data-action="publish"]').addEventListener("click", publish);
+          document.querySelector('[data-action="logout"]').addEventListener("click", logout);
+          formEl.addEventListener("submit", saveForm);
+          formEl.addEventListener("input", updateDraft);
+          formEl.addEventListener("change", saveAndRenderList);
+        }
+
+        boot();
+      })();
+    </script>
+  </body>
+</html>
