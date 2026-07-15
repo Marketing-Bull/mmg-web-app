@@ -1,7 +1,8 @@
 /*
-  Renders Events and Sponsors from the committed JSON files:
-  data/events.json and data/sponsors.json. Progressive enhancement keeps the
-  static HTML cards in place if either JSON file is missing or invalid.
+  Renders Events and Sponsors on the homepage. Tries the live, editor-published
+  feed first (/api/events, /api/sponsors — backed by Vercel Blob), then the
+  committed seed JSON, then leaves the static HTML cards already in the page
+  as a final fallback.
 */
 (function () {
   "use strict";
@@ -154,19 +155,26 @@
     });
   }
 
-  function loadContent(url, key) {
-    return fetchJSON(url).then(function (data) {
-      var list = data && Array.isArray(data[key]) ? data[key] : [];
-      if (!list.length) throw new Error("no " + key);
-      return list;
-    });
+  // Try the live API first, then the committed seed. Returns the first
+  // source that yields a non-empty array under `key`.
+  function loadFirst(urls, key) {
+    var i = 0;
+    function tryNext() {
+      if (i >= urls.length) return Promise.reject(new Error("no data"));
+      var url = urls[i++];
+      return fetchJSON(url).then(function (data) {
+        var list = data && Array.isArray(data[key]) ? data[key] : [];
+        return list.length ? list : tryNext();
+      }, tryNext);
+    }
+    return tryNext();
   }
 
   function renderEvents() {
     var upcomingGrid = document.querySelector(".upcoming-events-grid");
     var pastGrid = document.querySelector(".past-events-grid");
     if (!upcomingGrid && !pastGrid) return;
-    loadContent("data/events.json", "events").then(function (list) {
+    loadFirst(["/api/events", "data/events.json"], "events").then(function (list) {
       var up = list.filter(function (e) {
         return (e.status || "upcoming") === "upcoming" && e.title;
       });
@@ -183,7 +191,7 @@
   function renderSponsors() {
     var grid = document.querySelector(".partners-grid");
     if (!grid) return;
-    loadContent("data/sponsors.json", "sponsors").then(function (list) {
+    loadFirst(["/api/sponsors", "data/sponsors.json"], "sponsors").then(function (list) {
       var s = list.filter(function (x) {
         return x.name;
       });
