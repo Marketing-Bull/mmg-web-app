@@ -5,20 +5,17 @@ manager. Publishing is instant — no downloads, no git, no file replacing.
 
 - Editor: `content-manager.html` (linked from the deployed site, not the public nav)
 - Login: one shared password for Andrew's team
-- Media: paste an Instagram post or reel URL; the image is copied
-  automatically to fast site storage — no manual resizing or uploading
+- Media: paste an Instagram URL for auto-import, or upload a file directly —
+  either way it's copied to fast site storage automatically, up to 3MB per file
 
 ## Workflow
 
 1. Open `content-manager.html` on the deployed site and log in.
 2. Choose **Events** or **Sponsors**.
 3. Add, update, duplicate, or remove items. Changes are saved in your
-   browser as you go.
-4. For any image (event flyer, recap thumbnail, sponsor logo): paste the
-   Instagram post or reel URL into the Instagram field and click
-   **Use this Instagram photo**. The image is fetched and copied to the
-   site's own storage automatically.
-5. Click **Publish Events** (or **Publish Sponsors**) to make the changes
+   browser as you go. The list is sorted **newest first** (recurring/undated
+   events sort to the bottom).
+4. Click **Publish Events** (or **Publish Sponsors**) to make the changes
    live. The homepage picks them up within a minute or two.
 
 If your session expires while editing, log back in — your in-progress
@@ -26,35 +23,38 @@ changes are still there; nothing is lost.
 
 ## Event Fields
 
-| Field | Required | Notes |
-| --- | --- | --- |
-| `id` | Yes | Stable unique slug, generated automatically from the title if left blank. |
-| `title` | Yes | Event title shown on the homepage. |
-| `status` | Yes | Use `upcoming` or `past`. Only `upcoming` appears in Upcoming Events. |
-| `date` | No | Use `YYYY-MM-DD` for dated events. Leave blank for recurring series. |
-| `cadence` | No | Recurring schedule, such as `Last Thursday each month`. |
-| `city` | No | City shown in the event card. |
-| `venue` | No | Venue name. |
-| `type` | No | Event category, such as `Networking mixer`. |
-| `summary` | No | One or two short sentences. |
-| `image` | No | Paste an Instagram URL, or a direct image URL under "Or paste an image URL directly". |
-| `registerUrl` | No | Eventbrite or organizer URL. |
-| `registerLabel` | No | Button label. Defaults to Eventbrite wording when blank. |
-| `recapUrl` | No | Instagram recap or other recap URL for past events. |
-| `recapImage` | No | Thumbnail for the past-event recap link — same Instagram-paste flow as `image`. |
-| `recapLabel` | No | Text shown on the recap link. |
-| `recapMeta` | No | Comma-separated tags, such as `Flyer archive, Video recap, Sponsor recognition`. |
-| `featured` | No | Reserved for future highlighting. |
+| Field | Notes |
+| --- | --- |
+| `featured` | Checkbox at the top of the form. Reserved for future highlighting. |
+| `title` | Event title shown on the homepage. |
+| `id` | **Automatic** — generated from the title, read-only. |
+| `date` | Use `YYYY-MM-DD` for dated events. Leave blank for recurring series. |
+| `status` | **Automatic** — `upcoming` or `past`, based on `date` (undated/recurring events are always `upcoming`). Read-only. |
+| `cadence` | Recurring schedule, such as `Last Thursday each month`. |
+| `city` | City shown in the event card. |
+| `venue` | Venue name. |
+| `type` | Dropdown of previously-used categories. Pick **+ Add new type…** to add one on the fly. |
+| `summary` | One or two short sentences. |
+| `image` (Event Flyer Image) | Paste an Instagram post/reel URL and click **Use this Instagram photo**, or use **Upload an image** to pick a file directly. Max 3MB. |
+| `registerUrl` | Eventbrite or organizer URL. |
+| `registerLabel` | Button label. Defaults to Eventbrite wording when blank. |
+| Recap | One combined control: paste an Instagram reel URL and click **Pull from Instagram**, or **upload a video** directly (max 3MB). Whichever is used populates the recap link/thumbnail shown on past-event cards. |
 
 ## Sponsor Fields
 
-| Field | Required | Notes |
-| --- | --- | --- |
-| `id` | Yes | Stable unique slug, generated automatically from the name if left blank. |
-| `name` | Yes | Sponsor or partner name. |
-| `logo` | No | Paste an Instagram URL, or a direct image URL under "Or paste an image URL directly". |
-| `url` | No | Sponsor website URL. |
-| `tier` | No | Optional internal label, such as `Gold`. |
+| Field | Notes |
+| --- | --- |
+| `name` | Sponsor or partner name. |
+| `id` | **Automatic** — generated from the name, read-only. |
+| `logo` | **Upload only** (no Instagram option) — pick an image file directly. Max 3MB. |
+| `url` | Sponsor website URL. |
+| `tier` | Optional internal label, such as `Gold`. |
+
+## Upload limits
+
+Files (images and recap videos) go through the site's own server, which has
+a **3MB per-file limit**. For a longer or larger recap video, use the
+Instagram reel pull option instead, or compress the clip before uploading.
 
 ## How publishing works (for reference)
 
@@ -65,5 +65,6 @@ changes are still there; nothing is lost.
   committed seed files (`data/events.json`, `data/sponsors.json`), and
   further back to the static cards already in `index.html` if those are
   unavailable too.
-- Move finished events from `upcoming` to `past` after the event date.
+- Events move themselves from "upcoming" to "past" automatically once their
+  date passes — no manual status update needed.
 - Keep Eventbrite as the registration destination.

@@ -283,6 +283,13 @@
         resize: vertical;
       }
 
+      input:disabled,
+      input[readonly] {
+        background: var(--sand-light);
+        color: var(--muted);
+        cursor: not-allowed;
+      }
+
       .check {
         display: flex;
         align-items: center;
@@ -351,7 +358,7 @@
         text-align: left;
       }
 
-      /* Instagram image field ---------------------------------------------- */
+      /* Media fields (Instagram import / upload / recap) ------------------- */
       .ig-field {
         display: grid;
         gap: 0.5rem;
@@ -406,15 +413,17 @@
         color: #8d201d;
       }
 
-      .ig-manual summary {
-        cursor: pointer;
+      .upload-label {
         font-size: 0.78rem;
         font-weight: 800;
         color: var(--muted);
       }
 
-      .ig-manual input {
-        margin-top: 0.5rem;
+      .ig-field input[type="file"] {
+        min-height: auto;
+        padding: 0.5rem 0;
+        border: none;
+        background: transparent;
       }
 
       .publish-status {
@@ -522,8 +531,9 @@
 
       <div class="hint">
         <p>
-          For flyers and photos, paste the Instagram post or reel URL and click <code>Use this Instagram photo</code>
-          &mdash; the image is copied to fast site storage automatically, no resizing or uploading required.
+          For images, paste an Instagram post/reel URL and click the fetch button, or use the upload option to pick
+          a file directly — either way the image is copied to fast site storage automatically. ID and Status (Events)
+          are set automatically and can't be edited by hand.
         </p>
       </div>
     </main>
@@ -532,11 +542,21 @@
       (function () {
         "use strict";
 
+        var MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
+        var DEFAULT_EVENT_TYPES = [
+          "Networking mixer",
+          "Monthly series",
+          "Lunch & Learn",
+          "Educational",
+          "Community event",
+        ];
+
         var state = {
           mode: "events",
           selected: 0,
           events: [],
           sponsors: [],
+          eventTypes: DEFAULT_EVENT_TYPES.slice(),
         };
 
         var schemas = {
@@ -545,27 +565,24 @@
             singular: "Event",
             key: "events",
             fields: [
-              ["id", "ID", "text", "unique-event-id"],
+              ["featured", "Featured", "checkbox", false],
               ["title", "Title", "text", "Personal Injury Networking Mixer"],
-              ["status", "Status", "select", "upcoming", ["upcoming", "past"]],
+              ["id", "ID", "auto-id", ""],
               ["date", "Date", "date", ""],
+              ["status", "Status", "auto-status", ""],
               ["cadence", "Cadence", "text", "Last Thursday each month"],
               ["city", "City", "text", "Plantation"],
               ["venue", "Venue", "text", "Venue name"],
-              ["type", "Type", "text", "Networking mixer"],
+              ["type", "Type", "select-addnew", ""],
               ["summary", "Summary", "textarea", "Short event description"],
               ["image", "Event Flyer Image", "instagram-image", "https://www.instagram.com/p/..."],
               ["registerUrl", "Registration URL", "url", "https://www.eventbrite.com/..."],
               ["registerLabel", "Registration label", "text", "Register on Eventbrite"],
-              ["recapUrl", "Recap URL", "url", "https://www.instagram.com/..."],
-              ["recapImage", "Recap Thumbnail", "instagram-image", "https://www.instagram.com/reel/..."],
-              ["recapLabel", "Recap label", "text", "Watch recap video"],
-              ["recapMeta", "Recap tags", "text", "Flyer archive, Video recap, Sponsor recognition"],
-              ["featured", "Featured", "checkbox", false],
+              ["recap", "Recap", "recap", ""],
             ],
             empty: function () {
               return {
-                id: "new-event-" + Date.now(),
+                id: "",
                 title: "New Event",
                 status: "upcoming",
                 date: "",
@@ -590,14 +607,14 @@
             singular: "Sponsor",
             key: "sponsors",
             fields: [
-              ["id", "ID", "text", "unique-sponsor-id"],
               ["name", "Name", "text", "Sponsor name"],
-              ["logo", "Sponsor Logo", "instagram-image", "https://www.instagram.com/p/..."],
+              ["id", "ID", "auto-id", ""],
+              ["logo", "Sponsor Logo", "upload-image", ""],
               ["url", "Website URL", "url", "https://..."],
               ["tier", "Tier", "text", "Gold"],
             ],
             empty: function () {
-              return { id: "new-sponsor-" + Date.now(), name: "New Sponsor", logo: "", url: "", tier: "" };
+              return { id: "", name: "New Sponsor", logo: "", url: "", tier: "" };
             },
           },
         };
@@ -629,6 +646,20 @@
             .slice(0, 60) || "item";
         }
 
+        function uniqueSlug(base, list, excludeIndex) {
+          var root = slug(base);
+          var candidate = root;
+          var n = 2;
+          while (
+            list.some(function (item, i) {
+              return i !== excludeIndex && item.id === candidate;
+            })
+          ) {
+            candidate = root + "-" + n++;
+          }
+          return candidate;
+        }
+
         function normalize(item) {
           if (!item.id) item.id = slug(item.title || item.name);
           return item;
@@ -638,6 +669,38 @@
           return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
             return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
           });
+        }
+
+        // Parse a YYYY-MM-DD (or full ISO datetime) prefix as a local date.
+        function parseDateLocal(value) {
+          var m = String(value == null ? "" : value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+          if (!m) return null;
+          var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+          return isNaN(d.getTime()) ? null : d;
+        }
+
+        function computeStatus(dateValue) {
+          var d = parseDateLocal(dateValue);
+          if (!d) return "upcoming"; // recurring/undated events are always "upcoming"
+          var today = new Date();
+          today.setHours(0, 0, 0, 0);
+          return d < today ? "past" : "upcoming";
+        }
+
+        function collectEventTypes(events) {
+          var seen = {};
+          var out = [];
+          DEFAULT_EVENT_TYPES.concat(
+            events.map(function (e) {
+              return e.type;
+            })
+          ).forEach(function (t) {
+            if (t && !seen[t]) {
+              seen[t] = true;
+              out.push(t);
+            }
+          });
+          return out;
         }
 
         // --- Auth -------------------------------------------------------
@@ -669,6 +732,7 @@
               if (!data) return;
               state.events = (data.events || []).map(normalize);
               state.sponsors = (data.sponsors || []).map(normalize);
+              state.eventTypes = collectEventTypes(state.events);
               showApp();
               bindActions();
               render();
@@ -693,11 +757,14 @@
             body: JSON.stringify({ password: password }),
           })
             .then(function (res) {
-              return res.json().catch(function () {
-                return {};
-              }).then(function (data) {
-                return { ok: res.ok, data: data };
-              });
+              return res
+                .json()
+                .catch(function () {
+                  return {};
+                })
+                .then(function (data) {
+                  return { ok: res.ok, data: data };
+                });
             })
             .then(function (result) {
               if (!result.ok) {
@@ -726,7 +793,26 @@
           listTitle.textContent = schema.title;
           listSummary.textContent = list.length + " item" + (list.length === 1 ? "" : "s");
           itemsEl.innerHTML = "";
-          list.forEach(function (item, index) {
+
+          // Sort a *display* copy only — state.selected still indexes the
+          // underlying array, so editing/publishing order is unaffected.
+          var entries = list.map(function (item, i) {
+            return { item: item, i: i };
+          });
+          if (state.mode === "events") {
+            entries.sort(function (a, b) {
+              var da = parseDateLocal(a.item.date);
+              var db = parseDateLocal(b.item.date);
+              if (da && db) return db - da; // newest first
+              if (da && !db) return -1; // dated events before undated/recurring
+              if (!da && db) return 1;
+              return 0;
+            });
+          }
+
+          entries.forEach(function (entry) {
+            var item = entry.item;
+            var index = entry.i;
             var button = document.createElement("button");
             button.type = "button";
             button.className = "item";
@@ -752,6 +838,49 @@
           var placeholder = field[3];
           var value = item[key];
 
+          if (type === "auto-id" || type === "auto-status") {
+            var attr = type === "auto-id" ? "data-auto-id" : "data-auto-status";
+            return (
+              '<div class="field"><label>' +
+              label +
+              '</label><input type="text" value="' +
+              escapeHTML(value || "") +
+              '" readonly disabled ' +
+              attr +
+              " /></div>"
+            );
+          }
+
+          if (type === "select-addnew") {
+            var options = state.eventTypes.slice();
+            if (value && options.indexOf(value) === -1) options.push(value);
+            return (
+              '<div class="field"><label for="' +
+              key +
+              '">' +
+              label +
+              '</label><select id="' +
+              key +
+              '" name="' +
+              key +
+              '" data-addnew-select>' +
+              options
+                .map(function (opt) {
+                  return (
+                    '<option value="' +
+                    escapeHTML(opt) +
+                    '"' +
+                    (value === opt ? " selected" : "") +
+                    ">" +
+                    escapeHTML(opt) +
+                    "</option>"
+                  );
+                })
+                .join("") +
+              '<option value="__add_new__">+ Add new type…</option></select></div>'
+            );
+          }
+
           if (type === "instagram-image") {
             return (
               '<div class="field full ig-field" data-ig-field="' +
@@ -770,30 +899,62 @@
               escapeHTML(placeholder) +
               '" /><button class="button small secondary" type="button" data-ig-fetch>Use this Instagram photo</button></div>' +
               '<p class="ig-status" data-ig-status></p>' +
-              '<details class="ig-manual"><summary>Or paste an image URL directly</summary>' +
-              '<input type="url" data-ig-manual aria-label="Direct image URL" value="' +
-              escapeHTML(value || "") +
-              '" /></details></div>'
+              '<label class="upload-label" for="' +
+              key +
+              '-upload">Or upload an image</label><input type="file" id="' +
+              key +
+              '-upload" accept="image/*" data-upload-input="image" data-upload-prefix="flyers" /></div>'
             );
           }
 
-          if (type === "select") {
+          if (type === "upload-image") {
             return (
-              '<div class="field"><label for="' +
+              '<div class="field full ig-field" data-upload-field="' +
               key +
-              '">' +
+              '"><label>' +
               label +
-              '</label><select id="' +
+              '</label><div class="ig-preview" data-upload-preview>' +
+              (value
+                ? '<img src="' + escapeHTML(value) + '" alt="" />'
+                : '<span class="ig-empty">No image yet</span>') +
+              '</div><input type="hidden" name="' +
               key +
-              '" name="' +
+              '" data-upload-value value="' +
+              escapeHTML(value || "") +
+              '" /><p class="ig-status" data-upload-status></p>' +
+              '<label class="upload-label" for="' +
               key +
-              '">' +
-              field[4].map(function (option) {
-                return '<option value="' + option + '"' + (value === option ? " selected" : "") + ">" + option + "</option>";
-              }).join("") +
-              "</select></div>"
+              '-upload">Upload an image</label><input type="file" id="' +
+              key +
+              '-upload" accept="image/*" data-upload-input="image" data-upload-prefix="logos" /></div>'
             );
           }
+
+          if (type === "recap") {
+            var recapImage = item.recapImage || "";
+            var recapUrl = item.recapUrl || "";
+            var recapPreview = recapImage
+              ? '<img src="' + escapeHTML(recapImage) + '" alt="" />'
+              : recapUrl
+              ? '<span class="ig-empty">Video attached</span>'
+              : '<span class="ig-empty">No recap yet</span>';
+            return (
+              '<div class="field full ig-field" data-recap-field><label>' +
+              label +
+              '</label><div class="ig-preview" data-recap-preview>' +
+              recapPreview +
+              '</div><input type="hidden" name="recapUrl" data-recap-url value="' +
+              escapeHTML(recapUrl) +
+              '" /><input type="hidden" name="recapImage" data-recap-image value="' +
+              escapeHTML(recapImage) +
+              '" /><div class="ig-controls"><input type="url" data-recap-source aria-label="Instagram reel URL" placeholder="https://www.instagram.com/reel/..." />' +
+              '<button class="button small secondary" type="button" data-recap-fetch>Pull from Instagram</button></div>' +
+              '<p class="ig-status" data-recap-status></p>' +
+              '<label class="upload-label" for="recap-upload">Or upload a video</label>' +
+              '<input type="file" id="recap-upload" accept="video/*" data-upload-input="video" data-upload-prefix="recaps" data-upload-target="recap" /></div>'
+            );
+          }
+
           if (type === "textarea") {
             return (
               '<div class="field full"><label for="' +
@@ -845,20 +1006,35 @@
           );
         }
 
+        // A freshly pushed empty() item has no id yet (it's derived from the
+        // title/name once the user edits, or here immediately so the
+        // read-only ID field never shows blank).
+        function pushEmpty(list) {
+          var item = schemas[state.mode].empty();
+          item.id = uniqueSlug(item.title || item.name, list, -1);
+          list.push(item);
+          return item;
+        }
+
         function renderForm() {
           var schema = schemas[state.mode];
           var list = getList();
-          if (!list.length) list.push(schema.empty());
+          if (!list.length) pushEmpty(list);
           if (state.selected >= list.length) state.selected = list.length - 1;
           var item = list[state.selected];
           editorTitle.textContent = "Edit " + schema.singular;
           formEl.innerHTML =
             '<div class="grid">' +
-            schema.fields.map(function (field) {
-              return fieldHTML(field, item);
-            }).join("") +
+            schema.fields
+              .map(function (field) {
+                return fieldHTML(field, item);
+              })
+              .join("") +
             '</div><div class="actions"><button class="button" type="submit">Save Changes</button><p class="status" data-status></p></div>';
           wireInstagramFields();
+          wireRecapFields();
+          wireUploads();
+          wireAddNewSelects();
         }
 
         function render() {
@@ -866,12 +1042,42 @@
           // Ensure the list has at least one item before rendering either
           // panel, so the sidebar and the editor never fall out of sync.
           var list = getList();
-          if (!list.length) list.push(schemas[state.mode].empty());
+          if (!list.length) pushEmpty(list);
           renderList();
           renderForm();
         }
 
-        // --- Instagram image fields ---------------------------------------
+        function refreshComputedFields() {
+          var item = getList()[state.selected];
+          if (!item) return;
+          var idInput = formEl.querySelector("[data-auto-id]");
+          if (idInput) idInput.value = item.id;
+          var statusInput = formEl.querySelector("[data-auto-status]");
+          if (statusInput) statusInput.value = item.status;
+        }
+
+        // --- Type dropdown "add new" ---------------------------------------
+        function wireAddNewSelects() {
+          formEl.querySelectorAll("[data-addnew-select]").forEach(function (select) {
+            select.addEventListener("change", function () {
+              if (select.value !== "__add_new__") return;
+              var value = window.prompt("New event type:");
+              value = value ? value.trim() : "";
+              if (!value) {
+                select.value = state.eventTypes[0] || "";
+                return;
+              }
+              if (state.eventTypes.indexOf(value) === -1) state.eventTypes.push(value);
+              var option = document.createElement("option");
+              option.value = value;
+              option.textContent = value;
+              select.insertBefore(option, select.lastElementChild);
+              select.value = value;
+            });
+          });
+        }
+
+        // --- Instagram image fields (event flyer) ---------------------------
         function wireInstagramFields() {
           formEl.querySelectorAll("[data-ig-field]").forEach(function (wrap) {
             var hiddenInput = wrap.querySelector("[data-ig-value]");
@@ -879,16 +1085,6 @@
             var sourceInput = wrap.querySelector("[data-ig-source]");
             var fetchBtn = wrap.querySelector("[data-ig-fetch]");
             var statusEl = wrap.querySelector("[data-ig-status]");
-            var manualInput = wrap.querySelector("[data-ig-manual]");
-
-            function setValue(url) {
-              hiddenInput.value = url;
-              manualInput.value = url;
-              preview.innerHTML = url
-                ? '<img src="' + escapeHTML(url) + '" alt="" />'
-                : '<span class="ig-empty">No image yet</span>';
-              persistForm();
-            }
 
             fetchBtn.addEventListener("click", function () {
               var url = sourceInput.value.trim();
@@ -912,11 +1108,14 @@
                     showLogin("Your session expired. Log in again to keep editing.");
                     throw new Error("__handled__");
                   }
-                  return res.json().catch(function () {
-                    return {};
-                  }).then(function (data) {
-                    return { ok: res.ok, data: data };
-                  });
+                  return res
+                    .json()
+                    .catch(function () {
+                      return {};
+                    })
+                    .then(function (data) {
+                      return { ok: res.ok, data: data };
+                    });
                 })
                 .then(function (result) {
                   if (!result.ok) {
@@ -924,10 +1123,12 @@
                     statusEl.setAttribute("data-state", "error");
                     return;
                   }
-                  setValue(result.data.imageUrl);
+                  hiddenInput.value = result.data.imageUrl;
+                  preview.innerHTML = '<img src="' + escapeHTML(result.data.imageUrl) + '" alt="" />';
                   sourceInput.value = "";
                   statusEl.textContent = "Image imported — ready to publish.";
                   statusEl.setAttribute("data-state", "success");
+                  persistForm();
                 })
                 .catch(function (err) {
                   if (err.message !== "__handled__") {
@@ -939,11 +1140,175 @@
                   fetchBtn.disabled = false;
                 });
             });
+          });
+        }
 
-            manualInput.addEventListener("change", function () {
-              setValue(manualInput.value.trim());
-              statusEl.textContent = "";
+        // --- Recap field (event: Instagram reel pull or video upload) -------
+        function wireRecapFields() {
+          formEl.querySelectorAll("[data-recap-field]").forEach(function (wrap) {
+            var urlInput = wrap.querySelector("[data-recap-url]");
+            var imageInput = wrap.querySelector("[data-recap-image]");
+            var preview = wrap.querySelector("[data-recap-preview]");
+            var sourceInput = wrap.querySelector("[data-recap-source]");
+            var fetchBtn = wrap.querySelector("[data-recap-fetch]");
+            var statusEl = wrap.querySelector("[data-recap-status]");
+
+            fetchBtn.addEventListener("click", function () {
+              var url = sourceInput.value.trim();
+              if (!url) {
+                statusEl.textContent = "Paste an Instagram reel URL first.";
+                statusEl.setAttribute("data-state", "error");
+                return;
+              }
+              fetchBtn.disabled = true;
+              statusEl.textContent = "Fetching from Instagram…";
               statusEl.removeAttribute("data-state");
+
+              fetch("/api/admin/instagram", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: url }),
+              })
+                .then(function (res) {
+                  if (res.status === 401) {
+                    showLogin("Your session expired. Log in again to keep editing.");
+                    throw new Error("__handled__");
+                  }
+                  return res
+                    .json()
+                    .catch(function () {
+                      return {};
+                    })
+                    .then(function (data) {
+                      return { ok: res.ok, data: data };
+                    });
+                })
+                .then(function (result) {
+                  if (!result.ok) {
+                    statusEl.textContent = (result.data && result.data.error) || "Could not fetch that Instagram reel.";
+                    statusEl.setAttribute("data-state", "error");
+                    return;
+                  }
+                  urlInput.value = url;
+                  imageInput.value = result.data.imageUrl;
+                  preview.innerHTML = '<img src="' + escapeHTML(result.data.imageUrl) + '" alt="" />';
+                  sourceInput.value = "";
+                  statusEl.textContent = "Recap imported — ready to publish.";
+                  statusEl.setAttribute("data-state", "success");
+                  persistForm();
+                })
+                .catch(function (err) {
+                  if (err.message !== "__handled__") {
+                    statusEl.textContent = "Could not reach the server. Try again.";
+                    statusEl.setAttribute("data-state", "error");
+                  }
+                })
+                .finally(function () {
+                  fetchBtn.disabled = false;
+                });
+            });
+          });
+        }
+
+        // --- File uploads (flyer / sponsor logo / recap video) --------------
+        function wireUploads() {
+          formEl.querySelectorAll("[data-upload-input]").forEach(function (input) {
+            input.addEventListener("change", function () {
+              var file = input.files && input.files[0];
+              if (!file) return;
+              var container = input.closest("[data-ig-field], [data-upload-field], [data-recap-field]");
+              if (!container) return;
+              var statusEl = container.querySelector("[data-ig-status], [data-upload-status], [data-recap-status]");
+              var preview = container.querySelector("[data-ig-preview], [data-upload-preview], [data-recap-preview]");
+              var kind = input.getAttribute("data-upload-input");
+
+              function fail(message) {
+                if (statusEl) {
+                  statusEl.textContent = message;
+                  statusEl.setAttribute("data-state", "error");
+                }
+                input.value = "";
+              }
+
+              if (!file.type || file.type.indexOf(kind + "/") !== 0) {
+                fail("Please choose a " + kind + " file.");
+                return;
+              }
+              if (file.size > MAX_UPLOAD_BYTES) {
+                fail("File is too large — please keep uploads under 3MB.");
+                return;
+              }
+
+              if (statusEl) {
+                statusEl.textContent = "Uploading…";
+                statusEl.removeAttribute("data-state");
+              }
+
+              var reader = new FileReader();
+              reader.onerror = function () {
+                fail("Could not read that file.");
+              };
+              reader.onload = function () {
+                var dataUrl = String(reader.result || "");
+                var base64 = dataUrl.split(",")[1] || "";
+
+                fetch("/api/admin/upload", {
+                  method: "POST",
+                  credentials: "same-origin",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    filename: file.name,
+                    contentType: file.type,
+                    dataBase64: base64,
+                    prefix: input.getAttribute("data-upload-prefix") || "uploads",
+                  }),
+                })
+                  .then(function (res) {
+                    if (res.status === 401) {
+                      showLogin("Your session expired. Log in again to keep editing.");
+                      throw new Error("__handled__");
+                    }
+                    return res
+                      .json()
+                      .catch(function () {
+                        return {};
+                      })
+                      .then(function (data) {
+                        return { ok: res.ok, data: data };
+                      });
+                  })
+                  .then(function (result) {
+                    if (!result.ok) {
+                      fail((result.data && result.data.error) || "Upload failed.");
+                      return;
+                    }
+                    var url = result.data.url;
+                    if (input.getAttribute("data-upload-target") === "recap") {
+                      var recapUrlInput = container.querySelector("[data-recap-url]");
+                      var recapImageInput = container.querySelector("[data-recap-image]");
+                      if (recapUrlInput) recapUrlInput.value = url;
+                      if (recapImageInput) recapImageInput.value = "";
+                      if (preview) preview.innerHTML = '<span class="ig-empty">Video attached</span>';
+                    } else {
+                      var hiddenInput = container.querySelector("[data-ig-value], [data-upload-value]");
+                      if (hiddenInput) hiddenInput.value = url;
+                      if (preview) preview.innerHTML = '<img src="' + escapeHTML(url) + '" alt="" />';
+                    }
+                    if (statusEl) {
+                      statusEl.textContent = "Uploaded — ready to publish.";
+                      statusEl.setAttribute("data-state", "success");
+                    }
+                    persistForm();
+                  })
+                  .catch(function (err) {
+                    if (err.message !== "__handled__") fail("Could not reach the server. Try again.");
+                  })
+                  .finally(function () {
+                    input.value = "";
+                  });
+              };
+              reader.readAsDataURL(file);
             });
           });
         }
@@ -951,20 +1316,32 @@
         // --- Form <-> state -------------------------------------------------
         function formToItem() {
           var schema = schemas[state.mode];
-          var data = {};
+          var list = getList();
+          var base = list[state.selected] || schema.empty();
+          var data = Object.assign({}, base);
+
           schema.fields.forEach(function (field) {
             var key = field[0];
             var type = field[2];
+            if (type === "auto-id" || type === "auto-status" || type === "recap") return;
             var input = formEl.elements[key];
             if (!input) return;
             data[key] = type === "checkbox" ? !!input.checked : String(input.value || "").trim();
           });
-          return normalize(data);
+
+          if (formEl.elements["recapUrl"]) data.recapUrl = String(formEl.elements["recapUrl"].value || "").trim();
+          if (formEl.elements["recapImage"]) data.recapImage = String(formEl.elements["recapImage"].value || "").trim();
+
+          data.id = uniqueSlug(data.title || data.name, list, state.selected);
+          if (state.mode === "events") data.status = computeStatus(data.date);
+
+          return data;
         }
 
         function saveForm(event) {
           event.preventDefault();
           persistForm();
+          refreshComputedFields();
           var status = formEl.querySelector("[data-status]");
           status.textContent = "Saved in browser — click Publish to make it live.";
           status.setAttribute("data-state", "success");
@@ -979,6 +1356,7 @@
         function updateDraft() {
           if (!formEl.elements.length) return;
           persistForm();
+          refreshComputedFields();
         }
 
         function saveBeforeAction() {
@@ -987,6 +1365,7 @@
 
         function saveAndRenderList() {
           saveBeforeAction();
+          refreshComputedFields();
           var status = formEl.querySelector("[data-status]");
           if (status) {
             status.textContent = "Saved in browser — click Publish to make it live.";
@@ -998,7 +1377,7 @@
         function addItem() {
           saveBeforeAction();
           var list = getList();
-          list.push(schemas[state.mode].empty());
+          pushEmpty(list);
           state.selected = list.length - 1;
           render();
         }
@@ -1011,9 +1390,11 @@
           var base = slug((copy.id || copy.title || copy.name) + "-copy");
           var candidate = base;
           var n = 2;
-          while (list.some(function (existing) {
-            return existing.id === candidate;
-          })) {
+          while (
+            list.some(function (existing) {
+              return existing.id === candidate;
+            })
+          ) {
             candidate = base + "-" + n++;
           }
           copy.id = candidate;
@@ -1051,11 +1432,14 @@
                 showLogin("Your session expired. Log in again — your edits are still here.");
                 throw new Error("__handled__");
               }
-              return res.json().catch(function () {
-                return {};
-              }).then(function (data) {
-                return { ok: res.ok, data: data };
-              });
+              return res
+                .json()
+                .catch(function () {
+                  return {};
+                })
+                .then(function (data) {
+                  return { ok: res.ok, data: data };
+                });
             })
             .then(function (result) {
               if (!result.ok) {

@@ -8,7 +8,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `faq.html` - frequently asked questions
 - `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages
 - `404.html`, `robots.txt`, `sitemap.xml` - launch support files
-- `content-manager.html` - password-protected editor for Events and Sponsors, with Instagram-based image import
+- `content-manager.html` - password-protected editor for Events and Sponsors, with Instagram-based image import and direct file upload
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
 - `assets/js/site.js` - contact/newsletter form handling and GA4 event tracking (gtag.js itself is loaded from each page's `<head>`)
 - `assets/js/content.js` - renders Events and Sponsors on the homepage: `/api/events`+`/api/sponsors` (live, published) → `data/*.json` (seed) → static cards
@@ -17,6 +17,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `api/admin/login.js`, `api/admin/logout.js` - shared-password session login for the content manager
 - `api/admin/content.js` - authenticated read/publish of Events and Sponsors (writes to Vercel Blob)
 - `api/admin/instagram.js` - authenticated: resolves a pasted Instagram post/reel URL to its image and copies it to Vercel Blob
+- `api/admin/upload.js` - authenticated: direct file upload (event flyers, sponsor logos, recap video clips) to Vercel Blob, 3MB limit
 - `lib/auth.js` - password check + signed session cookie helpers
 - `lib/blobStore.js` - Vercel Blob read/write helpers for content JSON and imported media
 - `data/events.json`, `data/sponsors.json` - initial seed content (used until the first Publish, and as a fallback after)
