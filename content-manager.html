@@ -565,7 +565,7 @@
             ],
             empty: function () {
               return {
-                id: "new-event",
+                id: "new-event-" + Date.now(),
                 title: "New Event",
                 status: "upcoming",
                 date: "",
@@ -597,7 +597,7 @@
               ["tier", "Tier", "text", "Gold"],
             ],
             empty: function () {
-              return { id: "new-sponsor", name: "New Sponsor", logo: "", url: "", tier: "" };
+              return { id: "new-sponsor-" + Date.now(), name: "New Sponsor", logo: "", url: "", tier: "" };
             },
           },
         };
@@ -863,6 +863,10 @@
 
         function render() {
           if (publishBtn) publishBtn.textContent = "Publish " + schemas[state.mode].title;
+          // Ensure the list has at least one item before rendering either
+          // panel, so the sidebar and the editor never fall out of sync.
+          var list = getList();
+          if (!list.length) list.push(schemas[state.mode].empty());
           renderList();
           renderForm();
         }
