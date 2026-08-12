@@ -22,6 +22,8 @@ Static homepage mockup for Miller's Marketing Group.
 - `lib/blobStore.js` - Vercel Blob read/write helpers for content JSON and imported media
 - `data/events.json`, `data/sponsors.json` - initial seed content (used until the first Publish, and as a fallback after)
 - `docs/content-management.md` - editing workflow for Andrew's team
+- `scripts/validate.mjs` - syntax/JSON validation for every JS file, inline page script, and data file
+- `.github/workflows/ci.yml` - runs `scripts/validate.mjs` on every push and pull request
 - `package.json` - marks the repo as a Vercel project (Node serverless functions, `@vercel/blob`)
 - `assets/brand/` - brand and relationship imagery
 - `assets/events/upcoming/` - current event flyers
@@ -36,6 +38,55 @@ The static pages are served from the repository root, but the contact and
 newsletter forms rely on a serverless function (`api/lead.js`), so the site must
 be deployed on **Vercel** (static files + Node functions) rather than plain
 GitHub Pages. `index.html` remains the homepage source of truth.
+
+## Checks
+
+There is no build step, so a syntax typo or a malformed data file would
+otherwise reach production unnoticed. Before pushing, run:
+
+```bash
+node scripts/validate.mjs
+```
+
+It parses every `.js` file, every inline `<script>` in the HTML pages, and
+every JSON data file, and exits non-zero on the first problem.
+`.github/workflows/ci.yml` runs the same command on every push and pull
+request.
+
+## Repository maintenance
+
+### Stale branches to delete
+
+Every feature branch below was **squash-merged** into `main` (PRs #1–#9), so
+its commits don't appear in `main`'s history even though all of its content
+did land. They're safe to delete:
+
+```
+claude/faq-and-legal-pages-WgPI1
+claude/ga4-head-snippet-WgPI1
+claude/ghl-events-sponsors-backend-WgPI1
+claude/ghl-object-setup-WgPI1
+claude/ghl-vercel-runtime-WgPI1
+claude/homepage-markup-revisions-WgPI1
+claude/mobile-experience-improvements-WgPI1
+claude/readme-env-config-WgPI1
+codex/remove-ghl-content-sync
+```
+
+Delete them from **[the branches page](https://github.com/Marketing-Bull/mmg-web-app/branches)**,
+or locally with:
+
+```bash
+git push origin --delete <branch-name>
+```
+
+To avoid this piling up again, enable **Settings → General → Pull Requests →
+Automatically delete head branches**.
+
+> `gh-pages` and `master` are *not* in the list above — leave them alone
+> unless you've confirmed they're unused. The site deploys from `main` via
+> Vercel, so `gh-pages` is likely a leftover from the original GitHub Pages
+> setup, but it hasn't been verified as safe to remove.
 
 ## Configuration & environment variables
 

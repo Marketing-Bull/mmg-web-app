@@ -1,0 +1,26 @@
+name: CI
+
+# This site has no build step, so nothing else would catch a syntax typo or a
+# malformed data file before it reaches production. This runs the same checks
+# you can run locally with `node scripts/validate.mjs`.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate JS + JSON
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate
+        run: node scripts/validate.mjs
