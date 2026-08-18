@@ -240,4 +240,11 @@ pasting an Instagram post or reel URL — the content manager resolves it via
 the Instagram oEmbed API and copies the image into Vercel Blob automatically,
 so there's no manual resizing or file uploading.
 
+Each sponsor also has a **Logo Background** (`bg`) — a hex colour painted
+behind that logo's tile. Set it to the logo artwork's own backdrop so the
+image blends into the card instead of showing as a rectangle on it; a logo
+drawn in white needs a dark value here or it disappears. Leave it blank for
+logos on a transparent background, which use the default card colour. The
+homepage inverts the caption automatically on dark tiles.
+
 When new variables are added, document them and keep this section in sync.
