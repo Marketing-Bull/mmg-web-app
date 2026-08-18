@@ -781,6 +781,27 @@
         gap: 1rem;
       }
 
+      .events-empty {
+        grid-column: 1 / -1;
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .events-empty strong {
+        display: block;
+        font-family: var(--serif);
+        font-size: clamp(1.6rem, 3vw, 2.25rem);
+      }
+
+      .events-empty p {
+        max-width: 54ch;
+        margin: 0.65rem 0 1.25rem;
+        color: rgba(255, 255, 255, 0.74);
+        line-height: 1.65;
+      }
+
       .event-card {
         display: grid;
         grid-template-rows: 330px 1fr;
@@ -1759,6 +1780,15 @@
 
       .footer-bottom span:first-child {
         max-width: 84ch;
+      }
+
+      .footer-credit a {
+        color: inherit;
+        text-underline-offset: 0.2em;
+      }
+
+      .footer-credit a:hover {
+        color: var(--gold);
       }
 
       .mobile-actions {
@@ -2990,7 +3020,10 @@
             MMG is not a law firm or medical provider and does not provide legal or medical advice. Participation in
             MMG marketing programs or events does not guarantee referrals, clients, cases, or business outcomes.
           </span>
-          <span>© 2026 Miller's Marketing Group</span>
+          <span class="footer-credit">
+            © 2026 Miller's Marketing Group ·
+            <a href="https://getmarketingbull.com?utm_source=millersmarketinggroup.com">Website by Marketing Bull</a>
+          </span>
         </div>
       </div>
     </footer>

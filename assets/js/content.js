@@ -176,16 +176,51 @@
     if (!upcomingGrid && !pastGrid) return;
     loadFirst(["/api/events", "data/events.json"], "events").then(function (list) {
       var up = list.filter(function (e) {
-        return (e.status || "upcoming") === "upcoming" && e.title;
+        return currentEventStatus(e) === "upcoming" && e.title;
       });
       var past = list.filter(function (e) {
-        return e.status === "past" && e.title;
+        return currentEventStatus(e) === "past" && e.title;
       });
-      if (upcomingGrid && up.length) upcomingGrid.innerHTML = up.map(eventCard).join("");
+      if (upcomingGrid) upcomingGrid.innerHTML = up.length ? up.map(eventCard).join("") : upcomingEmptyState();
       if (pastGrid && past.length) pastGrid.innerHTML = past.map(pastEventCard).join("");
     }, function () {
       /* keep static cards */
     });
+  }
+
+  function eventDateKey(value) {
+    var match = String(value == null ? "" : value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return match ? match[1] + "-" + match[2] + "-" + match[3] : null;
+  }
+
+  function floridaDateKey() {
+    var parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(new Date());
+    var values = {};
+    parts.forEach(function (part) {
+      values[part.type] = part.value;
+    });
+    return values.year + "-" + values.month + "-" + values.day;
+  }
+
+  function currentEventStatus(event) {
+    var date = eventDateKey(event.date);
+    if (!date) return event.status || "upcoming";
+    return date < floridaDateKey() ? "past" : "upcoming";
+  }
+
+  function upcomingEmptyState() {
+    return (
+      '<div class="events-empty">' +
+      "<strong>New event dates are coming soon.</strong>" +
+      "<p>Follow MMG on Eventbrite to be the first to see the next gathering.</p>" +
+      '<a class="button button-ghost" href="https://www.eventbrite.com/o/millers-marketing-group-68684991773" target="_blank" rel="noreferrer">View Eventbrite <span class="arrow">→</span></a>' +
+      "</div>"
+    );
   }
 
   function renderSponsors() {

@@ -65,6 +65,7 @@ Instagram reel pull option instead, or compress the clip before uploading.
   committed seed files (`data/events.json`, `data/sponsors.json`), and
   further back to the static cards already in `index.html` if those are
   unavailable too.
-- Events move themselves from "upcoming" to "past" automatically once their
-  date passes — no manual status update needed.
+- Dated events move themselves from "upcoming" to "past" automatically once
+  their date passes in the `America/New_York` time zone — no manual status
+  update needed. Undated recurring series remain upcoming.
 - Keep Eventbrite as the registration destination.

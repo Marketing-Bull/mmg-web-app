@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    { "source": "/about-us/:path*", "destination": "/#about", "permanent": true },
+    { "source": "/services/:path*", "destination": "/#marketing", "permanent": true },
+    { "source": "/our-programs/:path*", "destination": "/#marketing", "permanent": true },
+    { "source": "/practice-areas/:path*", "destination": "/#marketing", "permanent": true },
+    { "source": "/events/:path*", "destination": "/#events", "permanent": true },
+    { "source": "/activities/:path*", "destination": "/#events", "permanent": true },
+    { "source": "/contact-us/:path*", "destination": "/#contact", "permanent": true },
+    { "source": "/contact/:path*", "destination": "/#contact", "permanent": true },
+    { "source": "/faq/:path*", "destination": "/faq.html", "permanent": true },
+    { "source": "/home-2/:path*", "destination": "/", "permanent": true },
+    { "source": "/attorneys/:path*", "destination": "/", "permanent": true },
+    { "source": "/blog/:path*", "destination": "/", "permanent": true },
+    { "source": "/blog-landing-page-business-v1/:path*", "destination": "/", "permanent": true },
+    { "source": "/privacy-policy/:path*", "destination": "/privacy-policy.html", "permanent": true },
+    { "source": "/terms-of-service/:path*", "destination": "/terms-of-service.html", "permanent": true },
+    { "source": "/disclaimer/:path*", "destination": "/disclaimer.html", "permanent": true },
+    { "source": "/accessibility/:path*", "destination": "/accessibility.html", "permanent": true }
+  ]
+}

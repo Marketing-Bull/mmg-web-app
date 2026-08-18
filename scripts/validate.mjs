@@ -14,7 +14,7 @@ import { join, extname } from "node:path";
 import vm from "node:vm";
 
 const JS_DIRS = ["api", "lib", "scripts", "assets/js"];
-const JSON_FILES = ["package.json"];
+const JSON_FILES = ["package.json", "vercel.json"];
 const JSON_DIRS = ["data"];
 
 let failures = 0;

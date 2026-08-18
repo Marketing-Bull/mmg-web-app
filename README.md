@@ -8,6 +8,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `faq.html` - frequently asked questions
 - `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages
 - `404.html`, `robots.txt`, `sitemap.xml` - launch support files
+- `vercel.json` - permanent redirects from legacy WordPress URLs
 - `content-manager.html` - password-protected editor for Events and Sponsors, with Instagram-based image import and direct file upload
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
 - `assets/js/site.js` - contact/newsletter form handling and GA4 event tracking (gtag.js itself is loaded from each page's `<head>`)
@@ -22,6 +23,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `lib/blobStore.js` - Vercel Blob read/write helpers for content JSON and imported media
 - `data/events.json`, `data/sponsors.json` - initial seed content (used until the first Publish, and as a fallback after)
 - `docs/content-management.md` - editing workflow for Andrew's team
+- `docs/launch-readiness.md` - current verdict, blockers, and pre-launch acceptance requirements
 - `scripts/validate.mjs` - syntax/JSON validation for every JS file, inline page script, and data file
 - `.github/workflows/ci.yml` - runs `scripts/validate.mjs` on every push and pull request
 - `package.json` - marks the repo as a Vercel project (Node serverless functions, `@vercel/blob`)

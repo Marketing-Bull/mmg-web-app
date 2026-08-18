@@ -506,6 +506,15 @@ img {
   max-width: 84ch;
 }
 
+.footer-credit a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.footer-credit a:hover {
+  color: var(--gold);
+}
+
 .cookie-consent {
   position: fixed;
   z-index: 80;
