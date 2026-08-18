@@ -18,20 +18,22 @@ testing, final content approval, and Florida Bar compliance verification.
 
 ### 1. Production deployment and domain are not public
 
-**Status: Open**
+**Status: Resolved — verified August 18, 2026**
 
-The Vercel production deployment currently requires Vercel authentication, and
-the public `millersmarketinggroup.com` domain still serves the previous
-WordPress website.
+The site is live. Verified with unauthenticated requests:
 
-Before launch:
+- `millersmarketinggroup.com` redirects to `www.millersmarketinggroup.com` and
+  returns the new site over HTTPS.
+- `www.millersmarketinggroup.com` returns the new site (200), not WordPress.
+- `mmg-web-app.vercel.app` also resolves publicly to the same deployment.
 
-- Disable Deployment Protection for the public Production environment.
-- Add `millersmarketinggroup.com` and `www.millersmarketinggroup.com` to the
-  Vercel project.
-- Update DNS only after the Vercel URL passes acceptance testing.
-- Confirm SSL is active on both domain variants.
-- Keep a backup of the WordPress site for rollback.
+Deployment Protection is still enabled for everything *except* production, which
+is the configuration to keep: per-deployment URLs and branch previews (for
+example the PR preview for this branch) still return a 302 to Vercel's login, so
+unreleased work stays private while the live site is open to everyone. Nothing
+further is needed here.
+
+Keep the WordPress backup until the site has run clean for a few weeks.
 
 ### 2. Production services have not been acceptance-tested
 
@@ -183,12 +185,10 @@ Still open:
   a local SQLite file on Vercel.
 - Add production monitoring for failed form submissions and server errors.
 - The public `/api/events` and `/api/sponsors` feeds are intentionally not rate
-  limited: they set `s-maxage=60` so a flood is absorbed by the CDN rather than
+  limited: they set `s-maxage=60`, so a flood is absorbed by the CDN rather than
   the origin, and a per-IP limit there would risk blocking legitimate visitors
-  behind shared networks. Note that both currently respond with
-  `cache-control: public, max-age=0, must-revalidate` and `x-vercel-cache:
-  MISS` — Deployment Protection disables edge caching. This is pre-existing
-  behaviour, unrelated to the hardening work, but it means the feeds are not
-  actually being cached yet. Re-check the response headers once Deployment
-  Protection is off (blocker 1); if they still are not cached, the assumption
-  above needs revisiting.
+  behind shared networks. Confirmed working on the live site — repeated requests
+  return `x-vercel-cache: HIT` with a rising `age`. The `cache-control: public,
+  max-age=0, must-revalidate` in the response is what Vercel sends to the
+  browser; `s-maxage` is consumed by the CDN and not passed through, so it is
+  not a sign that caching is off.
