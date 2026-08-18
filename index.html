@@ -1934,6 +1934,19 @@
           min-height: 520px;
         }
 
+        /* Once this stacks into one column, letting the card run the full
+           width turns it into a wide, short band. The portrait photo is
+           square, so object-fit: cover then crops it to a middle strip and
+           Andrew's head is cut off. Keep the card portrait-shaped instead.
+           Everything inside the card is absolutely positioned, so it has no
+           content width of its own — width: 100% is what gives it a size to
+           cap once margin-inline: auto opts it out of grid stretch. */
+        .andrew-portrait {
+          width: 100%;
+          max-width: 440px;
+          margin-inline: auto;
+        }
+
         .experience-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
