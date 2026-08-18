@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-15T00:00:00Z",
+  "updated": "2026-08-18T01:35:06Z",
   "sponsors": [
     { "id": "the-mri-guys", "name": "The MRI Guys", "logo": "assets/partners/the-mri-guys.jpg", "url": "https://themriguys.com/", "tier": "" },
     { "id": "better-wellness-clinic", "name": "Better Wellness Clinic", "logo": "assets/partners/better-wellness-clinic.jpg", "url": "https://betterwellnessclinic.com/", "tier": "" },
@@ -13,12 +13,14 @@
     { "id": "horizon-tbi-brain-center", "name": "Horizon TBI & Brain Center", "logo": "assets/partners/horizon.png", "url": "https://horizontbi.com/", "tier": "" },
     { "id": "lienstar", "name": "LienStar", "logo": "", "url": "https://lienstar.com/", "tier": "" },
     { "id": "in-check", "name": "In-Check Health, Wellness & Beauty Centre", "logo": "assets/partners/in-check.png", "url": "https://www.in-checkhwb.com/", "tier": "" },
+    { "id": "quality-physical-therapy", "name": "Quality Physical Therapy", "logo": "", "url": "", "tier": "" },
     { "id": "mlaw", "name": "MLaw", "logo": "", "url": "https://www.mlaw.us/", "tier": "" },
-    { "id": "plantation-chiropractic-services", "name": "Plantation Chiropractic Services", "logo": "", "url": "", "tier": "" },
+    { "id": "applied-healthcare-centers", "name": "Applied Healthcare Centers", "logo": "", "url": "", "tier": "" },
     { "id": "inventcare-consulting-group", "name": "InventCare Consulting Group", "logo": "", "url": "https://www.linkedin.com/company/inventcare", "tier": "" },
     { "id": "ae-law", "name": "AE Law", "logo": "assets/partners/ae-law.png", "url": "", "tier": "" },
     { "id": "express-funding-of-america", "name": "Express Funding of America", "logo": "", "url": "https://efafunds.com/", "tier": "" },
     { "id": "realign-chiropractic-center", "name": "Realign Chiropractic Center", "logo": "", "url": "https://realignchiropractic.com/", "tier": "" },
-    { "id": "selfcare-chiropractic", "name": "Selfcare Chiropractic", "logo": "", "url": "https://selfcarechiro.com/", "tier": "" }
+    { "id": "selfcare-chiropractic", "name": "Selfcare Chiropractic", "logo": "", "url": "https://selfcarechiro.com/", "tier": "" },
+    { "id": "citadelle-law", "name": "Citadelle Law", "logo": "", "url": "", "tier": "" }
   ]
 }
