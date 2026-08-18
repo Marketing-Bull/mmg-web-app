@@ -1907,6 +1907,119 @@
         }
       }
 
+      /* --- MMG Connect app ---------------------------------------------- */
+      .app-layout {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: clamp(1.5rem, 4vw, 3.6rem);
+        align-items: center;
+      }
+
+      /* The default red eyebrow and title accent are near-unreadable on the
+         espresso background, so this section takes the gold used in the promo. */
+      .app-section .eyebrow,
+      .app-section .section-title span {
+        color: var(--gold);
+      }
+
+      .app-copy > p {
+        max-width: 56ch;
+        color: rgba(255, 255, 255, 0.72);
+        line-height: 1.8;
+      }
+
+      .app-features {
+        display: grid;
+        gap: 0.7rem;
+        margin: 1.7rem 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .app-feature {
+        padding: 0.95rem 1.15rem;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .app-feature strong {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+      }
+
+      .app-feature span {
+        color: rgba(255, 255, 255, 0.64);
+        font-size: 0.88rem;
+        line-height: 1.6;
+      }
+
+      .app-steps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem 1.4rem;
+        margin: 0 0 1.5rem;
+        padding: 0;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.86rem;
+        list-style: none;
+      }
+
+      .app-steps li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .app-steps b {
+        display: grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        color: var(--espresso);
+        background: var(--gold);
+        font-size: 0.74rem;
+      }
+
+      .app-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+      }
+
+      .app-note {
+        max-width: 62ch;
+        margin: 1.6rem 0 0;
+        color: rgba(255, 255, 255, 0.52);
+        font-size: 0.76rem;
+        line-height: 1.65;
+      }
+
+      .app-video-frame {
+        justify-self: center;
+        width: 100%;
+        max-width: 320px;
+        margin: 0;
+        padding: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 34px;
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+      }
+
+      /* The promo is shot 9:16 — pin the box to that ratio so the poster and
+         the video occupy the same space and nothing reflows on play. */
+      .app-video-frame video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 9 / 16;
+        border-radius: 26px;
+        background: #000;
+        object-fit: cover;
+      }
+
       @media (max-width: 1040px) {
         .nav > a:not(.button) {
           display: none;
@@ -1916,6 +2029,7 @@
         .audience-wrap,
         .event-layout,
         .andrew-layout,
+        .app-layout,
         .consultation-grid {
           grid-template-columns: 1fr;
         }
@@ -2244,6 +2358,7 @@
         </a>
 
         <nav class="nav" aria-label="Primary navigation">
+          <a href="#app">App</a>
           <a href="#events">Events</a>
           <a href="#sponsorships">Sponsorships</a>
           <a href="#marketing">Marketing</a>
@@ -2683,6 +2798,70 @@
               </div>
             </article>
           </div>
+        </div>
+      </section>
+
+      <section class="section section-dark app-section" id="app">
+        <div class="container app-layout">
+          <div class="app-copy reveal">
+            <div class="eyebrow">MMG Connect · now live</div>
+            <h2 class="section-title">Your network. Your events. <span>One app.</span></h2>
+            <p>
+              MMG Connect puts South Florida's personal injury referral network in your pocket. Injured visitors are
+              routed to providers and attorneys in about a minute, and everyone else gets the network and the mixer
+              calendar in one place.
+            </p>
+
+            <ul class="app-features">
+              <li class="app-feature">
+                <strong>Injured-visitor intake</strong>
+                <span>Visitors are matched with providers and attorneys in about 60 seconds.</span>
+              </li>
+              <li class="app-feature">
+                <strong>The attorney &amp; provider network</strong>
+                <span>MMG's attorneys and medical providers, listed together and easy to browse.</span>
+              </li>
+              <li class="app-feature">
+                <strong>The mixers</strong>
+                <span>Every upcoming PI networking mixer, with dates, times, and venues.</span>
+              </li>
+            </ul>
+
+            <ol class="app-steps">
+              <li><b>1</b> Open the app</li>
+              <li><b>2</b> Add it to your home screen</li>
+              <li><b>3</b> You're in</li>
+            </ol>
+
+            <div class="app-actions">
+              <a
+                class="button button-light"
+                href="https://millersmarketingconnects.com"
+                target="_blank"
+                rel="noreferrer"
+              >Open MMG Connect <span class="arrow">→</span></a>
+              <a class="button button-ghost" href="#contact">Talk With Andrew <span class="arrow">→</span></a>
+            </div>
+
+            <p class="app-note">
+              Per Florida Bar rules, MMG Connect presents four qualified attorney options and your choice is always
+              voluntary. Miller's Marketing Group is a marketing organization and does not provide legal advice.
+            </p>
+          </div>
+
+          <figure class="app-video-frame reveal-delay">
+            <video
+              controls
+              playsinline
+              preload="none"
+              poster="assets/app/mmg-connect-promo-poster.webp"
+              aria-label="MMG Connect launch promo video"
+            >
+              <source src="assets/app/mmg-connect-promo.mp4" type="video/mp4" />
+              Your browser cannot play this video.
+              <a href="assets/app/mmg-connect-promo.mp4">Download the MMG Connect promo</a>.
+            </video>
+          </figure>
         </div>
       </section>
 
