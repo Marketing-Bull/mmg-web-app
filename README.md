@@ -106,19 +106,41 @@ Platforms cache preview images hard. After changing the card, re-scrape the URL:
 
 Two things worth knowing about these:
 
-- **Rate limits are per function instance, not global.** Vercel scales each
-  endpoint independently and the counters live in instance memory, so a burst
-  spread across several warm instances can exceed the nominal limit before
-  anything is rejected. It stops the cases it exists for — a script hammering
-  the lead form, a password-guessing run — but it is not an exact quota. If MMG
-  ever needs one, swap the `Map` in `lib/rateLimit.js` for Vercel KV or Upstash;
-  the API is designed to stay the same.
-- **The CSP allowlists GA4 and GoHighLevel by name.** It was verified against
-  every page in this repo (no violations), but GHL's tracking script can load
-  further hosts at runtime that can only be seen on a real deployment. After
-  the next deploy, open the site with the browser console visible and check for
-  `Refused to load...` messages before changing DNS. Anything legitimate gets
-  added to the relevant directive in `vercel.json`.
+**Rate limits are per function instance, not global.** Vercel scales each
+endpoint independently and the counters live in instance memory, so requests
+from one client get spread across instances that each count separately.
+Measured against a real deployment on August 18, 2026, hitting `/api/lead` from
+a single IP against a nominal limit of 5 per 10 minutes:
+
+| Load | Rejected with 429 |
+| --- | --- |
+| 7 requests, serial | 0 |
+| 30 requests, serial | 10 |
+| 20 requests, concurrent | 13 |
+
+So it throttles a sustained or concurrent flood, and a small burst passes
+through. That is the right shape for stopping abuse without tripping up a real
+visitor who resubmits a form, but it is not an exact quota and should not be
+relied on as the only control:
+
+- For a hard limit, enable **Vercel Firewall → Rate Limiting** on the project.
+  It runs at the edge with shared state, before any function is invoked, and is
+  the durable fix. The in-code limiter then stays as defense in depth.
+- Because the per-instance ceiling also applies to `/api/admin/login`, the value
+  of `CONTENT_ADMIN_PASSWORD` matters more than the limit does. Use a long
+  random passphrase, not a memorable one.
+- If MMG ever wants exact limits in code instead, swap the `Map` in
+  `lib/rateLimit.js` for Vercel KV or Upstash; the API is designed to stay the
+  same.
+
+**The CSP allowlists GA4 and GoHighLevel by name.** It was verified two ways: a
+headless browser loading every page in this repo produced no violations, and
+GoHighLevel's `external-tracking.js` was checked directly — it only calls
+`backend.leadconnectorhq.com`, which `connect-src` already covers via
+`https://*.leadconnectorhq.com`. If a third-party script is ever added or
+updated, load the site with the browser console open and look for
+`Refused to load...`, then add the host to the matching directive in
+`vercel.json`.
 
 ## Repository maintenance
 

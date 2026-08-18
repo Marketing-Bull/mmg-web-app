@@ -132,10 +132,7 @@ Completed:
 - Per-IP rate limiting on lead submissions (5 per 10 minutes), the
   content-manager login (8 per 15 minutes), admin content reads and publishes
   (60 per 5 minutes), and uploads and Instagram imports (30 per 10 minutes).
-  See `lib/rateLimit.js`. These counters live in each function instance's
-  memory, so they are per-instance rather than an exact global quota — enough
-  to stop a script hammering an endpoint or a password-guessing run, not a
-  substitute for a shared store if exact limits are ever required.
+  See `lib/rateLimit.js`.
 - Uploads restricted to an explicit MIME allowlist (JPG, PNG, GIF, WebP, MP4,
   MOV, WebM), each verified against the file's magic bytes. SVG is excluded
   because browsers execute script inside it. The content manager's file
@@ -153,16 +150,30 @@ Completed:
 - Tests covering the limiter and the upload allowlist run in CI
   (`scripts/hardening.test.mjs`).
 
-Verify after the next deployment:
+Verified against the preview deployment on August 18, 2026:
 
-- **The CSP.** It was checked against every page in this repository with no
-  violations, but GoHighLevel's tracking script may request further hosts at
-  runtime that are only visible on a real deployment. Load the deployed site
-  with the browser console open and look for `Refused to load...` messages
-  before changing DNS. Add any legitimate host to the matching directive in
-  `vercel.json`.
-- The rate limits, by submitting the contact form repeatedly and confirming a
-  429 with a `Retry-After` header.
+- **Security headers** are present on every response, and the social card is
+  served as `image/jpeg`.
+- **The CSP** produced no violations across every page (headless browser), and
+  GoHighLevel's `external-tracking.js` was inspected directly — it only calls
+  `backend.leadconnectorhq.com`, already covered by `connect-src`'s
+  `https://*.leadconnectorhq.com`. Re-check the console if a third-party script
+  is ever added or updated.
+- **Rate limiting** returns 429 with `Retry-After` under load. Measured against
+  `/api/lead` from a single IP, nominal limit 5 per 10 minutes: 7 serial
+  requests were all allowed, 30 serial requests produced 10 rejections, and 20
+  concurrent requests produced 13. The counters are per function instance, so a
+  small burst passes and a sustained or concurrent flood is throttled.
+
+Recommended before launch, given that measurement:
+
+- Enable **Vercel Firewall → Rate Limiting** on the project. It runs at the
+  edge with shared state, before any function is invoked, and gives a hard
+  limit that the in-code limiter cannot. The in-code limiter then stays as
+  defense in depth.
+- Set `CONTENT_ADMIN_PASSWORD` to a long random passphrase rather than a
+  memorable one. The per-instance ceiling applies to the login endpoint too, so
+  password strength matters more than the attempt limit does.
 
 Still open:
 
@@ -172,6 +183,12 @@ Still open:
   a local SQLite file on Vercel.
 - Add production monitoring for failed form submissions and server errors.
 - The public `/api/events` and `/api/sponsors` feeds are intentionally not rate
-  limited: they are edge-cached (`s-maxage=60`), so a flood is absorbed by the
-  CDN rather than the origin, and a per-IP limit there would risk blocking
-  legitimate visitors behind shared networks.
+  limited: they set `s-maxage=60` so a flood is absorbed by the CDN rather than
+  the origin, and a per-IP limit there would risk blocking legitimate visitors
+  behind shared networks. Note that both currently respond with
+  `cache-control: public, max-age=0, must-revalidate` and `x-vercel-cache:
+  MISS` — Deployment Protection disables edge caching. This is pre-existing
+  behaviour, unrelated to the hardening work, but it means the feeds are not
+  actually being cached yet. Re-check the response headers once Deployment
+  Protection is off (blocker 1); if they still are not cached, the assumption
+  above needs revisiting.
