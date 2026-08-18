@@ -64,8 +64,8 @@ redirect after the next Vercel deployment and before changing DNS.
 
 Dated events are now classified against the current local date whenever the
 API or browser fallback renders them. Today and future dates remain Upcoming;
-expired dates move to Past automatically. Undated recurring series remain
-Upcoming until an explicit date is assigned or the record is removed.
+expired dates move to Past automatically. Undated records remain hidden from
+Upcoming until an explicit date is assigned.
 
 ### 5. Final Events and Sponsors content
 
@@ -114,4 +114,3 @@ Before or immediately after launch:
 - Add rate limiting to the content-manager login.
 - Restrict uploads to an explicit safe MIME-type allowlist.
 - Add production monitoring for failed form submissions and server errors.
-

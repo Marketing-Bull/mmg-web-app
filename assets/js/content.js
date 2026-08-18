@@ -209,7 +209,7 @@
 
   function currentEventStatus(event) {
     var date = eventDateKey(event.date);
-    if (!date) return event.status || "upcoming";
+    if (!date) return "undated";
     return date < floridaDateKey() ? "past" : "upcoming";
   }
 

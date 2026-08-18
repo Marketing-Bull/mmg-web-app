@@ -29,7 +29,7 @@ changes are still there; nothing is lost.
 | `title` | Event title shown on the homepage. |
 | `id` | **Automatic** — generated from the title, read-only. |
 | `date` | Use `YYYY-MM-DD` for dated events. Leave blank for recurring series. |
-| `status` | **Automatic** — `upcoming` or `past`, based on `date` (undated/recurring events are always `upcoming`). Read-only. |
+| `status` | **Automatic** — `upcoming`, `past`, or `undated`, based on `date`. Only dated events can appear in Upcoming. Read-only. |
 | `cadence` | Recurring schedule, such as `Last Thursday each month`. |
 | `city` | City shown in the event card. |
 | `venue` | Venue name. |
@@ -67,5 +67,5 @@ Instagram reel pull option instead, or compress the clip before uploading.
   unavailable too.
 - Dated events move themselves from "upcoming" to "past" automatically once
   their date passes in the `America/New_York` time zone — no manual status
-  update needed. Undated recurring series remain upcoming.
+  update needed. Undated records stay hidden from Upcoming until a date is set.
 - Keep Eventbrite as the registration destination.

@@ -35,7 +35,7 @@ function withCurrentStatus(events) {
 
   return events.map((event) => {
     const date = eventDateKey(event.date);
-    if (!date) return event;
+    if (!date) return { ...event, status: "undated" };
     return { ...event, status: date < today ? "past" : "upcoming" };
   });
 }

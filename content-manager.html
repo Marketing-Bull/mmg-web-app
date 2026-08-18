@@ -681,7 +681,7 @@
 
         function computeStatus(dateValue) {
           var d = parseDateLocal(dateValue);
-          if (!d) return "upcoming"; // recurring/undated events are always "upcoming"
+          if (!d) return "undated";
           var today = new Date();
           today.setHours(0, 0, 0, 0);
           return d < today ? "past" : "upcoming";
