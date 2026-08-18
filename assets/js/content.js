@@ -21,6 +21,25 @@
     return "";
   }
 
+  // Allow only hex colours (#abc / #aabbcc), so an editor-supplied value can
+  // never smuggle extra declarations into the inline style attribute.
+  function safeColor(value) {
+    var v = String(value || "").trim();
+    return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v) ? v : "";
+  }
+
+  // Relative luminance of a hex colour, used to decide whether a logo tile
+  // needs light text on top of it.
+  function isDarkColor(hex) {
+    var v = hex.slice(1);
+    if (v.length === 3) v = v[0] + v[0] + v[1] + v[1] + v[2] + v[2];
+    var n = parseInt(v, 16);
+    var r = (n >> 16) & 255;
+    var g = (n >> 8) & 255;
+    var b = n & 255;
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b < 140;
+  }
+
   // Parse from the YYYY-MM-DD prefix as a local date. Handles plain dates and
   // full ISO date-times (e.g. "2026-06-25T00:00:00Z") without timezone drift.
   function parseDate(value) {
@@ -132,20 +151,26 @@
 
   function sponsorCard(s) {
     var logo = safeUrl(s.logo);
+    // `bg` is the logo artwork's own backdrop. Painting the tile that colour
+    // makes the image blend into the card instead of sitting on it as a
+    // visible rectangle, and keeps light-on-dark logos legible.
+    var bg = safeColor(s.bg);
+    var cls = "partner-card" + (bg && isDarkColor(bg) ? " partner-card-dark" : "");
+    var style = bg ? ' style="--partner-bg:' + esc(bg) + '"' : "";
     var inner =
       (logo ? '<img src="' + esc(logo) + '" alt="' + esc(s.name) + '" loading="lazy" />' : "") +
       "<figcaption>" + esc(s.name) + "</figcaption>";
     var url = safeUrl(s.url);
     if (url) {
       return (
-        '<figure class="partner-card"><a href="' +
+        '<figure class="' + cls + '"' + style + '><a href="' +
         esc(url) +
         '" target="_blank" rel="noreferrer" style="display:contents">' +
         inner +
         "</a></figure>"
       );
     }
-    return '<figure class="partner-card">' + inner + "</figure>";
+    return '<figure class="' + cls + '"' + style + ">" + inner + "</figure>";
   }
 
   function fetchJSON(url) {

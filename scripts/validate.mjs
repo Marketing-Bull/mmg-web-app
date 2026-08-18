@@ -89,6 +89,31 @@ for (const file of jsonFiles) {
   }
 }
 
+// A sponsor whose logo path is a typo, or points at a file that never got
+// committed, fails silently on the page — the card just renders as bare text.
+// Same for a malformed `bg`, which is dropped by the renderer's sanitiser.
+console.log("\nSponsor logos");
+const sponsors = JSON.parse(readFileSync("data/sponsors.json", "utf8")).sponsors || [];
+const HEX = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+let missingLogos = 0;
+for (const sponsor of sponsors) {
+  const label = sponsor.name || sponsor.id;
+  const logo = (sponsor.logo || "").trim();
+  if (!logo) {
+    missingLogos += 1;
+    console.log(`  warn  ${label} — no logo yet`);
+  } else if (!/^https?:\/\//i.test(logo) && !existsSync(logo)) {
+    fail(label, `logo file not found: ${logo}`);
+  } else {
+    ok(`${label} — ${logo}`);
+  }
+  const bg = (sponsor.bg || "").trim();
+  if (bg && !HEX.test(bg)) fail(label, `bg must be a hex colour like #ffffff, got: ${bg}`);
+}
+if (missingLogos) {
+  console.log(`  ${missingLogos} sponsor(s) still need artwork (warning, not a failure).`);
+}
+
 console.log("");
 if (failures) {
   console.error(`${failures} check(s) failed.`);

@@ -1373,7 +1373,10 @@
         padding: 1.1rem 1rem 0.85rem;
         border: 1px solid rgba(118, 33, 31, 0.11);
         border-radius: 20px;
-        background: rgba(255, 253, 248, 0.86);
+        /* --partner-bg is the logo artwork's own backdrop, set per sponsor, so
+           the image blends into the tile rather than sitting on it as a
+           visible rectangle. Falls back to the default card colour. */
+        background: var(--partner-bg, rgba(255, 253, 248, 0.86));
         box-shadow: 0 14px 34px rgba(75, 38, 27, 0.08);
         transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
       }
@@ -1400,6 +1403,20 @@
         text-overflow: ellipsis;
         text-transform: uppercase;
         white-space: nowrap;
+      }
+
+      /* Tiles painted a dark brand colour need an inverted caption and border.
+         Declared after .partner-card figcaption so it wins on source order. */
+      .partner-card-dark {
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+
+      .partner-card-dark figcaption {
+        color: rgba(255, 255, 255, 0.86);
+      }
+
+      .partner-card-dark:hover {
+        border-color: rgba(255, 255, 255, 0.32);
       }
 
       .community-card {
@@ -2700,76 +2717,87 @@
           </div>
 
           <div class="partners-grid" aria-label="Miller's Marketing Group clients and sponsors">
-            <figure class="partner-card">
+            <figure class="partner-card" style="--partner-bg: #ffffff">
               <img src="assets/partners/the-mri-guys.jpg" alt="The MRI Guys" loading="lazy" />
               <figcaption>The MRI Guys</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card" style="--partner-bg: #ffffff">
               <img src="assets/partners/better-wellness-clinic.jpg" alt="Better Wellness Clinic" loading="lazy" />
               <figcaption>Better Wellness Clinic</figcaption>
             </figure>
             <figure class="partner-card">
+              <img src="assets/partners/ceda-orthopedic-group.webp" alt="CEDA Orthopedic Group" loading="lazy" />
               <figcaption>CEDA Orthopedic Group</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card" style="--partner-bg: #ffffff">
               <img src="assets/partners/mario-lopez.jpg" alt="Law Offices of Mario E. Lopez" loading="lazy" />
               <figcaption>Law Offices of Mario E. Lopez</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card" style="--partner-bg: #ffffff">
               <img src="assets/partners/sobe-rehab.png" alt="SOBE Rehab" loading="lazy" />
               <figcaption>SOBE Rehab</figcaption>
             </figure>
-            <figure class="partner-card">
-              <figcaption>TOTI Health & Wellness</figcaption>
+            <figure class="partner-card" style="--partner-bg: #f0ece8">
+              <img src="assets/partners/toti-health-wellness.webp" alt="TOTI Health &amp; Wellness" loading="lazy" />
+              <figcaption>TOTI Health &amp; Wellness</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card" style="--partner-bg: #ffffff">
+              <img src="assets/partners/earley-law-firm.webp" alt="Earley Law Firm" loading="lazy" />
               <figcaption>Earley Law Firm</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card" style="--partner-bg: #ffffff">
               <img src="assets/partners/align-the-spine-chiropractic.webp" alt="Align the Spine Chiropractic and Wellness Center" loading="lazy" />
               <figcaption>Align the Spine Chiropractic and Wellness Center</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card" style="--partner-bg: #ffffff">
               <img src="assets/partners/linder-diaz-logo.png" alt="Linder Diaz" loading="lazy" />
               <figcaption>Linder Diaz</figcaption>
             </figure>
-            <figure class="partner-card">
-              <img src="assets/partners/horizon.png" alt="Horizon TBI & Brain Center" loading="lazy" />
-              <figcaption>Horizon TBI & Brain Center</figcaption>
+            <figure class="partner-card" style="--partner-bg: #ffffff">
+              <img src="assets/partners/horizon.png" alt="Horizon TBI &amp; Brain Center" loading="lazy" />
+              <figcaption>Horizon TBI &amp; Brain Center</figcaption>
             </figure>
             <figure class="partner-card">
+              <img src="assets/partners/lienstar.webp" alt="LienStar" loading="lazy" />
               <figcaption>LienStar</figcaption>
             </figure>
-            <figure class="partner-card">
-              <img src="assets/partners/in-check.png" alt="In-Check Health, Wellness & Beauty Centre" loading="lazy" />
-              <figcaption>In-Check Health, Wellness & Beauty Centre</figcaption>
+            <figure class="partner-card" style="--partner-bg: #ffffff">
+              <img src="assets/partners/in-check.png" alt="In-Check Health, Wellness &amp; Beauty Centre" loading="lazy" />
+              <figcaption>In-Check Health, Wellness &amp; Beauty Centre</figcaption>
             </figure>
             <figure class="partner-card">
               <figcaption>Quality Physical Therapy</figcaption>
             </figure>
             <figure class="partner-card">
+              <img src="assets/partners/mlaw.webp" alt="MLaw" loading="lazy" />
               <figcaption>MLaw</figcaption>
             </figure>
-            <figure class="partner-card">
-              <figcaption>Applied Healthcare Centers</figcaption>
+            <figure class="partner-card partner-card-dark" style="--partner-bg: #009ca7">
+              <img src="assets/partners/affiliated-healthcare-centers.webp" alt="Affiliated Healthcare Centers" loading="lazy" />
+              <figcaption>Affiliated Healthcare Centers</figcaption>
             </figure>
             <figure class="partner-card">
+              <img src="assets/partners/inventcare-consulting-group.webp" alt="InventCare Consulting Group" loading="lazy" />
               <figcaption>InventCare Consulting Group</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card" style="--partner-bg: #ffffff">
               <img src="assets/partners/ae-law.png" alt="AE Law" loading="lazy" />
               <figcaption>AE Law</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card" style="--partner-bg: #ffffff">
+              <img src="assets/partners/express-funding-of-america.webp" alt="Express Funding of America" loading="lazy" />
               <figcaption>Express Funding of America</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card partner-card-dark" style="--partner-bg: #0e2a33">
+              <img src="assets/partners/realign-chiropractic-center.webp" alt="Realign Chiropractic Center" loading="lazy" />
               <figcaption>Realign Chiropractic Center</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card partner-card-dark" style="--partner-bg: #13263d">
+              <img src="assets/partners/selfcare-chiropractic.webp" alt="Selfcare Chiropractic" loading="lazy" />
               <figcaption>Selfcare Chiropractic</figcaption>
             </figure>
-            <figure class="partner-card">
+            <figure class="partner-card partner-card-dark" style="--partner-bg: #1c2733">
+              <img src="assets/partners/citadelle-law.webp" alt="Citadelle Law" loading="lazy" />
               <figcaption>Citadelle Law</figcaption>
             </figure>
           </div>

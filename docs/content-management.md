@@ -47,6 +47,7 @@ changes are still there; nothing is lost.
 | `name` | Sponsor or partner name. |
 | `id` | **Automatic** — generated from the name, read-only. |
 | `logo` | **Upload only** (no Instagram option) — pick an image file directly. Max 3MB. |
+| `bg` | Colour painted behind the logo. Match the logo image's own background so it blends into the tile — white for a logo saved on white, the brand colour for one saved on colour. A logo drawn in **white** needs a dark colour here, otherwise it disappears. Leave blank for a logo with a transparent background. |
 | `url` | Sponsor website URL. |
 | `tier` | Optional internal label, such as `Gold`. |
 

@@ -260,6 +260,32 @@
         grid-column: 1 / -1;
       }
 
+      .color-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .color-row input[type="text"] {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .color-row input[type="color"] {
+        width: 44px;
+        height: 38px;
+        padding: 2px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .field-hint {
+        margin: 0;
+        color: var(--muted, #7a6a60);
+        font-size: 0.72rem;
+        line-height: 1.4;
+      }
+
       label {
         color: var(--espresso);
         font-size: 0.78rem;
@@ -610,11 +636,12 @@
               ["name", "Name", "text", "Sponsor name"],
               ["id", "ID", "auto-id", ""],
               ["logo", "Sponsor Logo", "upload-image", ""],
+              ["bg", "Logo Background", "color", "#ffffff"],
               ["url", "Website URL", "url", "https://..."],
               ["tier", "Tier", "text", "Gold"],
             ],
             empty: function () {
-              return { id: "", name: "New Sponsor", logo: "", url: "", tier: "" };
+              return { id: "", name: "New Sponsor", logo: "", bg: "", url: "", tier: "" };
             },
           },
         };
@@ -972,6 +999,34 @@
               "</textarea></div>"
             );
           }
+          // Hex colour with a native picker beside it. The text input is the
+          // one that carries the name, so it stays the saved value and can be
+          // cleared to fall back to the default card colour.
+          if (type === "color") {
+            var swatch = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value || "") ? value : "#ffffff";
+            return (
+              '<div class="field" data-color-field><label for="' +
+              key +
+              '">' +
+              label +
+              '</label><div class="color-row"><input id="' +
+              key +
+              '" name="' +
+              key +
+              '" type="text" value="' +
+              escapeHTML(value || "") +
+              '" placeholder="' +
+              escapeHTML(placeholder) +
+              '" data-color-text /><input type="color" value="' +
+              escapeHTML(swatch) +
+              '" data-color-pick aria-label="Pick ' +
+              label +
+              '" /><button class="button small secondary" type="button" data-color-clear>Clear</button></div>' +
+              '<p class="field-hint">Match the logo image’s own background so it blends into the tile. ' +
+              "Leave blank for the default card colour.</p></div>"
+            );
+          }
+
           if (type === "checkbox") {
             return (
               '<div class="field check"><input id="' +
@@ -1035,6 +1090,27 @@
           wireRecapFields();
           wireUploads();
           wireAddNewSelects();
+          wireColorFields();
+        }
+
+        // --- Logo background colour ----------------------------------------
+        function wireColorFields() {
+          formEl.querySelectorAll("[data-color-field]").forEach(function (field) {
+            var text = field.querySelector("[data-color-text]");
+            var pick = field.querySelector("[data-color-pick]");
+            var clear = field.querySelector("[data-color-clear]");
+            pick.addEventListener("input", function () {
+              text.value = pick.value;
+              persistForm();
+            });
+            text.addEventListener("input", function () {
+              if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(text.value.trim())) pick.value = text.value.trim();
+            });
+            clear.addEventListener("click", function () {
+              text.value = "";
+              persistForm();
+            });
+          });
         }
 
         function render() {
