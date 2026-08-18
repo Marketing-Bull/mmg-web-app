@@ -22,6 +22,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `api/admin/status.js` - authenticated: reports which environment variables are set and whether Blob is reachable (presence only, never values)
 - `lib/auth.js` - password check + signed session cookie helpers
 - `lib/rateLimit.js` - per-IP rate limiting shared by the lead and admin endpoints
+- `lib/uploadTypes.js` - accepted upload formats, their file-signature checks, and the size ceiling
 - `lib/http.js` - JSON body parsing, input length caps, `no-store` helper
 - `lib/blobStore.js` - Vercel Blob read/write helpers for content JSON and imported media
 - `data/events.json`, `data/sponsors.json` - initial seed content (used until the first Publish, and as a fallback after)

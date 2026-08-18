@@ -1,6 +1,6 @@
 // Tests for the rate limiting and upload validation added for launch.
 //
-//   node --test scripts/
+//   node --test scripts/*.test.mjs
 //
 // Runs in CI alongside scripts/validate.mjs. These are the pieces where a
 // quiet regression would matter — an upload allowlist that stops rejecting
@@ -10,7 +10,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { clientIp, consume, enforceRateLimit, LIMITS } from "../lib/rateLimit.js";
 import { readJsonBody, cleanString } from "../lib/http.js";
-import { ALLOWED_TYPES, MAX_BYTES } from "../api/admin/upload.js";
+import { ALLOWED_TYPES, MAX_BYTES, MAX_BASE64_LENGTH } from "../lib/uploadTypes.js";
 
 function fakeRes() {
   return {
@@ -116,7 +116,8 @@ test("upload allowlist rejects mislabelled and scriptable files", () => {
 
 test("upload size ceiling stays under the platform body limit", () => {
   // Vercel caps a serverless request body around 4.5MB and base64 inflates by ~33%.
-  assert.ok(Math.ceil(MAX_BYTES / 3) * 4 < 4.5 * 1024 * 1024);
+  assert.ok(MAX_BASE64_LENGTH < 4.5 * 1024 * 1024);
+  assert.ok(MAX_BASE64_LENGTH > MAX_BYTES, "the base64 ceiling must allow for encoding overhead");
 });
 
 test("request helpers normalise input", () => {
