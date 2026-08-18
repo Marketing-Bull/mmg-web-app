@@ -4,7 +4,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import { requireSession } from "../../lib/auth.js";
+import { readJsonBody, noStore } from "../../lib/http.js";
+import { enforceRateLimit, LIMITS } from "../../lib/rateLimit.js";
 import { readEvents, readSponsors, writeEvents, writeSponsors } from "../../lib/blobStore.js";
+
+// A publish that exceeds either of these is a bug or an abuse attempt, not an
+// editing session — Blob is billed by what it stores.
+const MAX_ITEMS = 500;
+const MAX_PAYLOAD_BYTES = 512 * 1024;
 
 function readSeed(file, key) {
   try {
@@ -17,9 +24,13 @@ function readSeed(file, key) {
 }
 
 export default async function handler(req, res) {
+  noStore(res);
+
   if (!requireSession(req)) {
     return res.status(401).json({ error: "Unauthorized" });
   }
+
+  if (!enforceRateLimit(req, res, LIMITS.adminContent)) return;
 
   if (req.method === "GET") {
     try {
@@ -34,21 +45,19 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    let body = req.body;
-    if (typeof body === "string") {
-      try {
-        body = JSON.parse(body);
-      } catch {
-        body = {};
-      }
-    }
-    body = body || {};
+    const body = readJsonBody(req);
     const { type, items } = body;
     if (type !== "events" && type !== "sponsors") {
       return res.status(400).json({ error: "type must be 'events' or 'sponsors'" });
     }
     if (!Array.isArray(items)) {
       return res.status(400).json({ error: "items must be an array" });
+    }
+    if (items.length > MAX_ITEMS) {
+      return res.status(413).json({ error: `Too many items to publish (limit ${MAX_ITEMS}).` });
+    }
+    if (Buffer.byteLength(JSON.stringify(items)) > MAX_PAYLOAD_BYTES) {
+      return res.status(413).json({ error: "That content is too large to publish." });
     }
     try {
       const blob = type === "events" ? await writeEvents(items) : await writeSponsors(items);

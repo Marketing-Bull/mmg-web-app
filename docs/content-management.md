@@ -56,6 +56,19 @@ Files (images and recap videos) go through the site's own server, which has
 a **3MB per-file limit**. For a longer or larger recap video, use the
 Instagram reel pull option instead, or compress the clip before uploading.
 
+Accepted formats:
+
+- **Images:** JPG, PNG, GIF, WebP
+- **Video:** MP4, MOV, WebM
+
+Anything else is refused — including SVG, which browsers can run code from.
+The file picker only offers the formats above, and the server double-checks
+the file's contents rather than trusting its name or extension.
+
+If you are publishing or uploading in quick succession and see a "too many
+requests" message, wait a minute and continue — it's an anti-abuse limit, not
+an error, and nothing you've entered is lost.
+
 ## How publishing works (for reference)
 
 - Publishing writes the current list to the site's storage (Vercel Blob).

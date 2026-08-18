@@ -8,7 +8,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `faq.html` - frequently asked questions
 - `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages
 - `404.html`, `robots.txt`, `sitemap.xml` - launch support files
-- `vercel.json` - permanent redirects from legacy WordPress URLs
+- `vercel.json` - security headers (CSP and friends) and permanent redirects from legacy WordPress URLs
 - `content-manager.html` - password-protected editor for Events and Sponsors, with Instagram-based image import and direct file upload
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
 - `assets/js/site.js` - contact/newsletter form handling and GA4 event tracking (gtag.js itself is loaded from each page's `<head>`)
@@ -19,15 +19,20 @@ Static homepage mockup for Miller's Marketing Group.
 - `api/admin/content.js` - authenticated read/publish of Events and Sponsors (writes to Vercel Blob)
 - `api/admin/instagram.js` - authenticated: resolves a pasted Instagram post/reel URL to its image and copies it to Vercel Blob
 - `api/admin/upload.js` - authenticated: direct file upload (event flyers, sponsor logos, recap video clips) to Vercel Blob, 3MB limit
+- `api/admin/status.js` - authenticated: reports which environment variables are set and whether Blob is reachable (presence only, never values)
 - `lib/auth.js` - password check + signed session cookie helpers
+- `lib/rateLimit.js` - per-IP rate limiting shared by the lead and admin endpoints
+- `lib/http.js` - JSON body parsing, input length caps, `no-store` helper
 - `lib/blobStore.js` - Vercel Blob read/write helpers for content JSON and imported media
 - `data/events.json`, `data/sponsors.json` - initial seed content (used until the first Publish, and as a fallback after)
 - `docs/content-management.md` - editing workflow for Andrew's team
 - `docs/launch-readiness.md` - current verdict, blockers, and pre-launch acceptance requirements
 - `scripts/validate.mjs` - syntax/JSON validation for every JS file, inline page script, and data file
-- `.github/workflows/ci.yml` - runs `scripts/validate.mjs` on every push and pull request
+- `scripts/hardening.test.mjs` - tests for the rate limiter and the upload allowlist
+- `scripts/social-card.html`, `scripts/render-social-card.mjs` - source artwork and renderer for the link-preview image
+- `.github/workflows/ci.yml` - runs the validator and the tests on every push and pull request
 - `package.json` - marks the repo as a Vercel project (Node serverless functions, `@vercel/blob`)
-- `assets/brand/` - brand and relationship imagery
+- `assets/brand/` - brand and relationship imagery, including `social-card.jpg` (the link-preview image)
 - `assets/events/upcoming/` - current event flyers
 - `assets/events/past/` - archived event flyers
 - `assets/events/recaps/` - event-specific video thumbnails and recap imagery
@@ -50,10 +55,69 @@ otherwise reach production unnoticed. Before pushing, run:
 node scripts/validate.mjs
 ```
 
-It parses every `.js` file, every inline `<script>` in the HTML pages, and
-every JSON data file, and exits non-zero on the first problem.
-`.github/workflows/ci.yml` runs the same command on every push and pull
-request.
+It parses every `.js`/`.mjs` file, every inline `<script>` in the HTML pages,
+and every JSON data file, and exits non-zero on the first problem.
+
+There are also tests covering the rate limiter and the upload allowlist:
+
+```bash
+node --test scripts/*.test.mjs
+```
+
+`.github/workflows/ci.yml` runs both on every push and pull request. Both are
+also wired up as `npm run validate` and `npm test`.
+
+## Link previews (the social card)
+
+When someone pastes a millersmarketinggroup.com link into X/Twitter, LinkedIn,
+Facebook, Slack, iMessage, or WhatsApp, they see `assets/brand/social-card.jpg`
+— a 1200x630 branded card — plus the page's title and description. Every page
+carries a full set of Open Graph and `twitter:card` (`summary_large_image`)
+tags, so a shared link never falls back to a random image or a bare URL.
+
+To change the card, edit the copy or layout in `scripts/social-card.html`, then:
+
+```bash
+npm run social-card    # rewrites assets/brand/social-card.jpg
+```
+
+That renders the template in headless Chromium at exactly 1200x630. It needs
+Playwright's Chromium (`npx playwright install chromium`) and network access to
+Google Fonts, which it inlines so the card uses the real brand faces.
+
+Platforms cache preview images hard. After changing the card, re-scrape the URL:
+
+- X/Twitter: <https://cards-dev.twitter.com/validator>
+- Facebook / Instagram: <https://developers.facebook.com/tools/debug/>
+- LinkedIn: <https://www.linkedin.com/post-inspector/>
+
+## Security
+
+| Protection | Where | Notes |
+| --- | --- | --- |
+| Rate limiting | `lib/rateLimit.js` | Per IP. Leads: 5 per 10 min. Content-manager login: 8 per 15 min. Admin content: 60 per 5 min. Uploads + Instagram imports: 30 per 10 min. |
+| Upload allowlist | `api/admin/upload.js` | JPG, PNG, GIF, WebP, MP4, MOV, WebM only — verified against each file's magic bytes, so a script payload labelled `image/png` is rejected. SVG is deliberately excluded (browsers execute script inside it). |
+| Input caps | `api/lead.js`, `api/admin/content.js` | Submitted fields are trimmed and length-capped before reaching GHL; a publish is capped at 500 items / 512KB. |
+| Upstream timeouts | `api/lead.js`, `api/admin/instagram.js` | A stalled third party fails in 10-15s instead of hanging the visitor's request. |
+| SSRF guard | `api/admin/instagram.js` | Only downloads thumbnails from Meta's own CDNs. |
+| Security headers | `vercel.json` | CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy`, and `X-Robots-Tag: noindex` on `/api/*` and the content manager. |
+| No-store on admin | `lib/http.js` | Admin responses are never cached by a browser or by Vercel's edge. |
+
+Two things worth knowing about these:
+
+- **Rate limits are per function instance, not global.** Vercel scales each
+  endpoint independently and the counters live in instance memory, so a burst
+  spread across several warm instances can exceed the nominal limit before
+  anything is rejected. It stops the cases it exists for — a script hammering
+  the lead form, a password-guessing run — but it is not an exact quota. If MMG
+  ever needs one, swap the `Map` in `lib/rateLimit.js` for Vercel KV or Upstash;
+  the API is designed to stay the same.
+- **The CSP allowlists GA4 and GoHighLevel by name.** It was verified against
+  every page in this repo (no violations), but GHL's tracking script can load
+  further hosts at runtime that can only be seen on a real deployment. After
+  the next deploy, open the site with the browser console visible and check for
+  `Refused to load...` messages before changing DNS. Anything legitimate gets
+  added to the relevant directive in `vercel.json`.
 
 ## Repository maintenance
 
@@ -116,6 +180,14 @@ None of these are ever exposed to the browser. Setup notes:
   `IG_APP_ID`/`IG_APP_SECRET`, the "Use this Instagram photo" import fails (a direct image URL can still be pasted
   manually as a fallback). Without `BLOB_READ_WRITE_TOKEN`, Publish fails and the site keeps serving the
   `data/*.json` seed.
+
+**To check what a deployment actually has configured**, log in to
+`content-manager.html` and then open `/api/admin/status` in the same browser.
+It reports which of the six variables are present and whether Blob storage is
+reachable. It never returns a value, and it never confirms that a value is
+correct — only that something is set. Every other endpoint hides a missing
+variable behind a graceful fallback, so this is the only direct way to tell a
+fully configured deployment from a half-configured one.
 
 ### Public identifiers (not env vars — set directly in code)
 

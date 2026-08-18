@@ -1,6 +1,6 @@
 # MMG Launch Readiness
 
-Last reviewed: August 17, 2026
+Last reviewed: August 18, 2026
 
 ## Verdict
 
@@ -35,20 +35,30 @@ Before launch:
 
 ### 2. Production services have not been acceptance-tested
 
-**Status: Open**
+**Status: Partially verified**
 
-Confirm these Production environment variables are configured in Vercel:
+Three of the six Production environment variables were confirmed present by
+probing the deployment (`mmg-web-app.vercel.app`) on August 18, 2026:
 
-- `GHL_WEBHOOK_URL`
-- `CONTENT_ADMIN_PASSWORD`
-- `CONTENT_SESSION_SECRET`
-- `BLOB_READ_WRITE_TOKEN`
-- `IG_APP_ID`
-- `IG_APP_SECRET`
+| Variable | Status | How it was established |
+| --- | --- | --- |
+| `GHL_WEBHOOK_URL` | Confirmed set | `POST /api/lead` with a deliberately invalid email returned `400 A valid email is required.` A missing webhook returns `500 Lead webhook is not configured.` before validation runs. No lead was created. |
+| `CONTENT_ADMIN_PASSWORD` | Confirmed set | `POST /api/admin/login` with a wrong password returned `401 Incorrect password.` If either login variable were missing, it would return `500 Content manager login is not configured yet.` |
+| `CONTENT_SESSION_SECRET` | Confirmed set | Same probe as above — the handler checks both variables together. |
+| `BLOB_READ_WRITE_TOKEN` | Unverified | Not observable without logging in: `/api/events` and `/api/sponsors` fall back to the committed seed silently whether Blob is unreachable or simply has nothing published. Both currently return the seed unchanged. |
+| `IG_APP_ID` | Unverified | Only reachable through an authenticated endpoint. |
+| `IG_APP_SECRET` | Unverified | Only reachable through an authenticated endpoint. |
 
-Test the consultation form, newsletter form, content-manager login, event and
-sponsor publishing, image upload, Instagram import, logout, and session expiry
-against the actual Vercel deployment.
+To settle the remaining three, log in to `content-manager.html` on the
+deployment and open `/api/admin/status` in the same browser. It reports
+presence for all six variables plus whether Blob is reachable and whether
+Events/Sponsors have ever been published. It never returns a value.
+
+Still required: test the consultation form, newsletter form, content-manager
+login, event and sponsor publishing, image upload, Instagram import, logout,
+and session expiry against the actual Vercel deployment. Note that Deployment
+Protection (Vercel Authentication) is currently on for everything except custom
+domains, so the deployment is not publicly reachable yet — see blocker 1.
 
 ### 3. Legacy WordPress redirects
 
@@ -90,7 +100,21 @@ standalone service; otherwise make Marketing Retainers and Sponsorship Packages
 the two primary commercial offers and treat Events as the relationship-building
 program that supports them.
 
-### 7. Florida Bar compliance verification
+### 7. Link previews when the URL is shared
+
+**Status: Implemented in repository; pending deployment verification**
+
+Every page now carries a full Open Graph and Twitter Card set pointing at a
+purpose-built 1200x630 card (`assets/brand/social-card.jpg`, source in
+`scripts/social-card.html`). Previously only the homepage had preview tags, and
+its image was the WebP hero photo — a format several scrapers skip, at an
+aspect ratio no platform crops cleanly.
+
+After deployment, re-scrape the URL in each validator so the platforms drop
+their cached previews: X/Twitter (cards-dev.twitter.com/validator), Facebook
+(developers.facebook.com/tools/debug), LinkedIn (linkedin.com/post-inspector).
+
+### 8. Florida Bar compliance verification
 
 **Status: Documentation and legal approval required**
 
@@ -99,18 +123,55 @@ documentation and have Florida counsel approve the final website and disclaimer
 language. The site must not imply endorsement by The Florida Bar, guarantee
 referrals or cases, or describe MMG as a law firm or medical provider.
 
-### 8. Lead and admin hardening
+### 9. Lead and admin hardening
 
-**Status: Open**
+**Status: Implemented in repository; pending deployment verification**
 
-The lead endpoint currently sends submissions directly to GHL without a
-durable secondary copy or retry queue. If maintaining a backup is a launch
-requirement, add a serverless database such as Turso or Postgres rather than a
-local SQLite file on Vercel.
+Completed:
 
-Before or immediately after launch:
+- Per-IP rate limiting on lead submissions (5 per 10 minutes), the
+  content-manager login (8 per 15 minutes), admin content reads and publishes
+  (60 per 5 minutes), and uploads and Instagram imports (30 per 10 minutes).
+  See `lib/rateLimit.js`. These counters live in each function instance's
+  memory, so they are per-instance rather than an exact global quota — enough
+  to stop a script hammering an endpoint or a password-guessing run, not a
+  substitute for a shared store if exact limits are ever required.
+- Uploads restricted to an explicit MIME allowlist (JPG, PNG, GIF, WebP, MP4,
+  MOV, WebM), each verified against the file's magic bytes. SVG is excluded
+  because browsers execute script inside it. The content manager's file
+  pickers now offer the same list.
+- Submitted lead fields are trimmed and length-capped before being forwarded
+  to GHL; publishes are capped at 500 items and 512KB.
+- Timeouts on both outbound calls (GHL webhook, Instagram oEmbed) so a stalled
+  third party can't hold a request open.
+- The Instagram importer only downloads thumbnails from Meta's own CDNs.
+- Security headers in `vercel.json`: Content-Security-Policy, HSTS,
+  `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`,
+  `Permissions-Policy`, `Cross-Origin-Opener-Policy`, and `X-Robots-Tag:
+  noindex` on `/api/*` and the content manager.
+- Admin responses are marked `no-store`.
+- Tests covering the limiter and the upload allowlist run in CI
+  (`scripts/hardening.test.mjs`).
 
-- Add rate limiting or bot protection to lead submissions.
-- Add rate limiting to the content-manager login.
-- Restrict uploads to an explicit safe MIME-type allowlist.
+Verify after the next deployment:
+
+- **The CSP.** It was checked against every page in this repository with no
+  violations, but GoHighLevel's tracking script may request further hosts at
+  runtime that are only visible on a real deployment. Load the deployed site
+  with the browser console open and look for `Refused to load...` messages
+  before changing DNS. Add any legitimate host to the matching directive in
+  `vercel.json`.
+- The rate limits, by submitting the contact form repeatedly and confirming a
+  429 with a `Retry-After` header.
+
+Still open:
+
+- The lead endpoint still sends submissions directly to GHL without a durable
+  secondary copy or retry queue. If maintaining a backup is a launch
+  requirement, add a serverless database such as Turso or Postgres rather than
+  a local SQLite file on Vercel.
 - Add production monitoring for failed form submissions and server errors.
+- The public `/api/events` and `/api/sponsors` feeds are intentionally not rate
+  limited: they are edge-cached (`s-maxage=60`), so a flood is absorbed by the
+  CDN rather than the origin, and a per-IP limit there would risk blocking
+  legitimate visitors behind shared networks.

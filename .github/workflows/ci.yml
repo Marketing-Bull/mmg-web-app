@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   validate:
-    name: Validate JS + JSON
+    name: Validate JS + JSON, run tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,3 +24,5 @@ jobs:
           node-version: 20
       - name: Validate
         run: node scripts/validate.mjs
+      - name: Test
+        run: node --test scripts/*.test.mjs
