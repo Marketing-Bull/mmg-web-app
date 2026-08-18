@@ -4,14 +4,16 @@
 // Files travel as a base64 JSON body rather than multipart/direct-to-Blob, so
 // there's a hard ceiling here: Vercel serverless functions cap the total
 // request body around 4.5MB, and base64 inflates the raw file by ~33%. The
-// MAX_BYTES below is set with headroom under that ceiling.
+// limits and the accepted formats live in lib/uploadTypes.js.
 import { requireSession } from "../../lib/auth.js";
+import { readJsonBody, noStore } from "../../lib/http.js";
+import { enforceRateLimit, LIMITS } from "../../lib/rateLimit.js";
+import { ALLOWED_TYPES, ALLOWED_PREFIXES, MAX_BYTES, MAX_BASE64_LENGTH } from "../../lib/uploadTypes.js";
 import { writeMedia } from "../../lib/blobStore.js";
 
-const MAX_BYTES = 3 * 1024 * 1024; // 3MB raw file (~4MB once base64-encoded)
-const ALLOWED_PREFIXES = ["flyers", "logos", "recaps"];
-
 export default async function handler(req, res) {
+  noStore(res);
+
   if (!requireSession(req)) {
     return res.status(401).json({ error: "Unauthorized" });
   }
@@ -20,25 +22,29 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  let body = req.body;
-  if (typeof body === "string") {
-    try {
-      body = JSON.parse(body);
-    } catch {
-      body = {};
-    }
-  }
-  body = body || {};
+  if (!enforceRateLimit(req, res, LIMITS.adminMedia)) return;
 
-  const contentType = String(body.contentType || "");
+  const body = readJsonBody(req);
+
+  // Browsers report "image/jpeg; charset=..." on occasion; compare the type only.
+  const contentType = String(body.contentType || "")
+    .split(";")[0]
+    .trim()
+    .toLowerCase();
   const dataBase64 = String(body.dataBase64 || "");
   const prefix = ALLOWED_PREFIXES.includes(body.prefix) ? body.prefix : "uploads";
 
-  if (!/^(image|video)\//.test(contentType)) {
-    return res.status(400).json({ error: "Only image or video files are supported." });
+  const signatureMatches = ALLOWED_TYPES[contentType];
+  if (!signatureMatches) {
+    return res.status(415).json({
+      error: "Unsupported file type. Use JPG, PNG, GIF, or WebP images, or MP4, MOV, or WebM video.",
+    });
   }
   if (!dataBase64) {
     return res.status(400).json({ error: "No file data received." });
+  }
+  if (dataBase64.length > MAX_BASE64_LENGTH) {
+    return res.status(413).json({ error: "File is too large — please keep uploads under 3MB." });
   }
 
   let buffer;
@@ -52,6 +58,9 @@ export default async function handler(req, res) {
   }
   if (!buffer.length) {
     return res.status(400).json({ error: "That file is empty." });
+  }
+  if (!signatureMatches(buffer)) {
+    return res.status(415).json({ error: "That file doesn't look like a valid " + contentType + " file." });
   }
 
   try {

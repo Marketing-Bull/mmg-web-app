@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MMG social share card (source)</title>
+    <!--
+      Source artwork for assets/brand/social-card.jpg — the image X/Twitter,
+      LinkedIn, Facebook, iMessage, Slack, and WhatsApp show when someone
+      pastes a millersmarketinggroup.com link.
+
+      Render it with:  node scripts/render-social-card.mjs
+      Edit the copy below, re-run that command, and commit the new image.
+
+      Opening this file directly in a browser shows the card too (the fonts
+      fall back to system faces until the render script inlines the real ones).
+    -->
+    <style>
+      /* Replaced with inlined @font-face rules by scripts/render-social-card.mjs. */
+      /* __FONT_FACES__ */
+
+      :root {
+        --gold: #f2c94c;
+        --mango: #d99a28;
+        --coral: #d5523f;
+        --cream: #fff7e8;
+        --espresso: #261d19;
+        --serif: "Fraunces", Georgia, serif;
+        --sans: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      /* 1200x630 is the size every major platform crops toward for a large
+         summary card, so the card is authored at exactly that size. */
+      .card {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 46px;
+        padding: 56px 60px;
+        color: var(--cream);
+        background:
+          radial-gradient(circle at 86% 14%, rgba(242, 201, 76, 0.22), transparent 34%),
+          radial-gradient(circle at 6% 92%, rgba(213, 82, 63, 0.2), transparent 38%),
+          var(--espresso);
+        font-family: var(--sans);
+      }
+
+      /* The same oversized ring motif the homepage hero uses. */
+      .card::after {
+        content: "";
+        position: absolute;
+        right: -300px;
+        bottom: -370px;
+        width: 560px;
+        height: 560px;
+        border: 78px solid rgba(242, 201, 76, 0.07);
+        border-radius: 50%;
+      }
+
+      .copy {
+        position: relative;
+        z-index: 1;
+        width: 660px;
+        flex: none;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 30px;
+      }
+
+      /* The logo file carries its own small wordmark under the cube; the crop
+         keeps the cube only, so the wordmark can be set in real type beside it. */
+      .brand-mark {
+        width: 76px;
+        height: 74px;
+        overflow: hidden;
+        flex: none;
+      }
+
+      .brand-mark img {
+        display: block;
+        width: 104px;
+        margin: -3px 0 0 -14px;
+      }
+
+      .brand-name {
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        line-height: 1.25;
+      }
+
+      .brand-name span {
+        display: block;
+        margin-top: 5px;
+        color: rgba(255, 247, 232, 0.6);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: none;
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        color: var(--gold);
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--gold);
+      }
+
+      h1 {
+        margin: 20px 0 20px;
+        font-family: var(--serif);
+        font-size: 74px;
+        font-weight: 600;
+        line-height: 0.94;
+        letter-spacing: -0.045em;
+      }
+
+      /* Matches the homepage: the accent word is colored, not italicised. */
+      h1 em {
+        color: var(--gold);
+        font-style: normal;
+      }
+
+      .sub {
+        margin: 0;
+        max-width: 600px;
+        color: rgba(255, 247, 232, 0.78);
+        font-size: 21px;
+        line-height: 1.5;
+      }
+
+      .mantra {
+        display: flex;
+        gap: 10px;
+        margin-top: 32px;
+      }
+
+      .mantra span {
+        padding: 9px 17px;
+        border: 1px solid rgba(242, 201, 76, 0.4);
+        border-radius: 999px;
+        color: var(--gold);
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .visual {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        height: 100%;
+        border-radius: 26px;
+        overflow: hidden;
+        border: 1px solid rgba(242, 201, 76, 0.3);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.4);
+      }
+
+      .visual img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 58% center;
+      }
+
+      /* Warms the photo into the espresso background instead of letting it sit
+         on the card as a hard rectangle. */
+      .visual::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(200deg, rgba(38, 29, 25, 0) 42%, rgba(38, 29, 25, 0.82) 100%),
+          linear-gradient(90deg, rgba(38, 29, 25, 0.5), rgba(38, 29, 25, 0) 34%);
+      }
+
+      /* A badge rather than bare text, so the URL stays legible wherever it
+         lands on the photo. */
+      .domain {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        z-index: 2;
+        padding: 9px 17px;
+        border: 1px solid rgba(242, 201, 76, 0.38);
+        border-radius: 999px;
+        background: rgba(38, 29, 25, 0.74);
+        color: var(--cream);
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="copy">
+        <div class="brand">
+          <div class="brand-mark"><img src="../assets/brand/mmg-official-logo.png" alt="" /></div>
+          <div class="brand-name">
+            Miller's Marketing Group
+            <span>Good people. Organic connections.</span>
+          </div>
+        </div>
+
+        <div class="eyebrow">Florida's personal injury community</div>
+        <h1>The right <em>room</em> can change everything.</h1>
+        <p class="sub">
+          Curated events, marketing partnerships, and sponsorships that bring attorneys, medical providers, and
+          trusted partners together across Florida.
+        </p>
+        <div class="mantra">
+          <span>Networking mixers</span>
+          <span>Lunch &amp; Learns</span>
+          <span>Sponsorships</span>
+        </div>
+      </div>
+
+      <div class="visual">
+        <img src="../assets/brand/networking-hero.webp" alt="" />
+        <div class="domain">millersmarketinggroup.com</div>
+      </div>
+    </div>
+  </body>
+</html>

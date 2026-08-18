@@ -5,7 +5,7 @@
 //   node scripts/validate.mjs
 //
 // Checks:
-//   1. Every .js file under api/, lib/, scripts/, assets/js/ parses.
+//   1. Every .js/.mjs file under api/, lib/, scripts/, assets/js/ parses.
 //   2. Every inline <script> block in the root .html pages parses.
 //   3. Every .json file under data/ (plus package.json) is well-formed.
 import { execFileSync } from "node:child_process";
@@ -29,18 +29,19 @@ function fail(label, err) {
   failures += 1;
 }
 
-function walk(dir, ext, out = []) {
+function walk(dir, extensions, out = []) {
   if (!existsSync(dir)) return out;
+  const wanted = Array.isArray(extensions) ? extensions : [extensions];
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
-    if (statSync(full).isDirectory()) walk(full, ext, out);
-    else if (extname(full) === ext) out.push(full);
+    if (statSync(full).isDirectory()) walk(full, wanted, out);
+    else if (wanted.includes(extname(full))) out.push(full);
   }
   return out;
 }
 
 console.log("JavaScript files");
-const jsFiles = JS_DIRS.flatMap((dir) => walk(dir, ".js"));
+const jsFiles = JS_DIRS.flatMap((dir) => walk(dir, [".js", ".mjs"]));
 if (!jsFiles.length) console.log("  (none found)");
 for (const file of jsFiles) {
   try {
