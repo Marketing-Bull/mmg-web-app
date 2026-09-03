@@ -17,6 +17,25 @@
       "featured": false
     },
     {
+      "id": "personal-injury-attorneys-and-medical-professionals-mixer",
+      "title": "Personal Injury Attorneys and Medical Professionals Mixer",
+      "status": "past",
+      "date": "2026-08-27",
+      "cadence": "",
+      "city": "Pembroke Pines",
+      "venue": "Agave Bandido",
+      "type": "Networking mixer",
+      "summary": "An evening at Agave Bandido bringing attorneys, medical providers, and sponsors together for relaxed conversation and new introductions.",
+      "image": "",
+      "registerUrl": "",
+      "registerLabel": "",
+      "recapUrl": "",
+      "recapImage": "",
+      "recapLabel": "",
+      "recapMeta": "Sponsor recognition",
+      "featured": false
+    },
+    {
       "id": "seed-pi-mixers",
       "title": "PI Networking Mixers",
       "status": "undated",
