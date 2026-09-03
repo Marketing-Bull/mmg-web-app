@@ -96,9 +96,26 @@ the same artwork the organizer uploaded. It needs the signed URL from the tag �
 `img.evbuc.com` returns 403 for an unsigned one. Eventbrite **delists past events**, so
 this only works while the event is upcoming; grab flyers before the date passes.
 
-**Recap video.** Phone recordings are HEVC in a `.mov`, which **Safari plays and Chrome
-and Firefox do not**. Always transcode, and generate a poster so the section costs
-nothing until play:
+**Recap video — link it, do not host it.** `recapUrl` is an outbound link, not a video
+file. Every past event points at Instagram, and `docs/content-management.md` says to use
+the reel for anything past the content manager's 3MB upload limit — a phone recording of
+a mixer is tens of megabytes, so that is always. Do not commit a transcode into the repo
+to fill this in; it bloats git permanently and breaks the pattern. If someone hands you a
+recap file, ask for the reel URL instead.
+
+When there is no reel for that event yet, use the fallback the bowling and February cards
+already use rather than inventing one: the profile URL
+`https://www.instagram.com/millers_marketing_group34/`, an existing still from
+`assets/events/recaps/`, and the **plural** label `Watch event recaps`. The plural matters
+— it is what keeps a reused still from implying it is that evening's footage. Say in the
+PR that `recapUrl` should be swapped for the real reel when one exists.
+
+A card with a recap and no flyer is single-media; `pastEventCard()` handles that, so let
+it, rather than padding the card with a stand-in flyer.
+
+**Video that genuinely is hosted here** — the MMG Connect promo in `#app`, not recaps —
+is HEVC out of a phone, which **Safari plays and Chrome and Firefox do not**. Transcode
+it and generate a poster so the section costs nothing until play:
 ```bash
 ffmpeg -i in.mov -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 26 -preset slow \
        -c:a aac -b:a 128k -movflags +faststart out.mp4
@@ -114,6 +131,20 @@ contents and do not silently skip it — try a legitimate remote source (the spo
 the Eventbrite `og:image`), and if that fails, say plainly that the file needs attaching
 as an upload. An image pasted into chat is visible to you but is **not** a file you can
 commit; only actual uploads land in the uploads directory.
+
+**Google Drive links.** The Drive connector authenticates fine — `get_file_metadata` and
+`get_file_permissions` work, so read those first to get the real size and sharing before
+deciding anything. The catch is transport, not permission: `download_file_content` returns
+the file **base64 into the conversation**, so it is fine for a logo and unusable for a
+video (50MB of media is ~67MB of base64, past any context window). And a file shared only
+to the `getmarketingbull.com` domain gives an anonymous `curl` a sign-in page, not the
+bytes.
+
+So for anything large: ask them to set link sharing to "Anyone with the link" for a minute
+and fetch it with `curl` straight to disk. `share_file` could flip that yourself, but it
+makes their file reachable by anyone holding the link — never do it without them saying so
+explicitly. Be precise about which of these is the blocker; "I can't access it" is wrong
+and invites a reasonable "can't you use the connector?"
 
 ## Verification checklist
 
