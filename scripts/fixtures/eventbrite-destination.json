@@ -1,0 +1,44 @@
+{
+  "pagination": {
+    "object_count": 1,
+    "continuation": null,
+    "page_count": 1,
+    "page_size": 10,
+    "has_more_items": false,
+    "page_number": 1
+  },
+  "events": [
+    {
+      "id": "1999147508012",
+      "name": "Fall Personal Injury Professionals Mixer",
+      "url": "https://www.eventbrite.com/e/fall-personal-injury-professionals-mixer-tickets-1999147508012",
+      "status": "live",
+      "start_date": "2026-09-24",
+      "start_time": "18:00",
+      "end_date": "2026-09-24",
+      "end_time": "21:00",
+      "timezone": "America/New_York",
+      "summary": "Mix, mingle, and swap stories with injury pros this fall\u2014good vibes and great connections guaranteed!",
+      "primary_organizer_id": "121315094544",
+      "eventbrite_event_id": "1999147508012",
+      "primary_venue": {
+        "name": "JOEY Aventura",
+        "address": {
+          "city": "Miami",
+          "region": "FL",
+          "country": "US",
+          "address_1": "19505 Biscayne Boulevard",
+          "localized_address_display": "19505 Biscayne Boulevard #Suite 1150, Miami, FL 33180"
+        }
+      },
+      "image": {
+        "url": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1192168377%2F273050465793%2F1%2Foriginal.20260829-061810?h=200&auto=format%2Ccompress&q=75&sharp=10&s=19758c94a7350edd737fb45f7a453eb9",
+        "original": {
+          "url": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1192168377%2F273050465793%2F1%2Foriginal.20260829-061810?auto=format%2Ccompress&q=75&sharp=10&s=6fdba7097249e7736bb503ebe6b5f585",
+          "width": 1024,
+          "height": 1536
+        }
+      }
+    }
+  ]
+}

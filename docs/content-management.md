@@ -7,6 +7,8 @@ manager. Publishing is instant — no downloads, no git, no file replacing.
 - Login: one shared password for Andrew's team
 - Media: paste an Instagram URL for auto-import, or upload a file directly —
   either way it's copied to fast site storage automatically, up to 3MB per file
+- Eventbrite: paste an event's Eventbrite link to create the site event from
+  it — title, date, venue, city, summary, flyer and registration link filled in
 
 ## Workflow
 
@@ -15,6 +17,18 @@ manager. Publishing is instant — no downloads, no git, no file replacing.
 3. Add, update, duplicate, or remove items. Changes are saved in your
    browser as you go. The list is sorted **newest first** (recurring/undated
    events sort to the bottom).
+
+   There are two ways to add an event:
+
+   - **Add New** — a blank form; fill in every field yourself.
+   - **Add from Eventbrite** — paste the event's Eventbrite link into the box
+     above the editor and click **Create Event from Eventbrite**. The event is
+     created with its title, date, venue, city, summary, flyer and registration
+     link already filled in from the Eventbrite listing. Look it over, edit
+     anything you like (the summary in particular is worth a read), then publish.
+     Pasting the same link again later **updates** that event with Eventbrite's
+     latest details instead of creating a second one; its recap is kept, and the
+     flyer is only replaced if it has none.
 4. Click **Publish Events** (or **Publish Sponsors**) to make the changes
    live. The homepage picks them up within a minute or two.
 
@@ -36,7 +50,7 @@ changes are still there; nothing is lost.
 | `type` | Dropdown of previously-used categories. Pick **+ Add new type…** to add one on the fly. |
 | `summary` | One or two short sentences. |
 | `image` (Event Flyer Image) | Paste an Instagram post/reel URL and click **Use this Instagram photo**, or use **Upload an image** to pick a file directly. Max 3MB. |
-| `registerUrl` | Eventbrite or organizer URL. |
+| `registerUrl` | Eventbrite or organizer URL. Filled in automatically by **Add from Eventbrite**. |
 | `registerLabel` | Button label. Defaults to Eventbrite wording when blank. |
 | Recap | One combined control: paste an Instagram reel URL and click **Pull from Instagram**, or **upload a video** directly (max 3MB). Whichever is used populates the recap link/thumbnail shown on past-event cards. |
 
@@ -50,6 +64,20 @@ changes are still there; nothing is lost.
 | `bg` | Colour painted behind the logo. Match the logo image's own background so it blends into the tile — white for a logo saved on white, the brand colour for one saved on colour. A logo drawn in **white** needs a dark colour here, otherwise it disappears. Leave blank for a logo with a transparent background. |
 | `url` | Sponsor website URL. |
 | `tier` | Optional internal label, such as `Gold`. |
+
+## Add from Eventbrite: what it needs and what can go wrong
+
+- The event must be **public and published** on Eventbrite. A draft, private,
+  or deleted event can't be read, and the box says so.
+- Paste the **event** page link (`eventbrite.com/e/...`), not the organizer
+  profile link (`eventbrite.com/o/...`).
+- Times are added to the summary in the site's usual style, for example
+  `JOEY Aventura, 6:00-9:00 PM.` — edit freely.
+- The flyer is copied from Eventbrite into site storage. If that copy fails
+  (the status line says so), every other field is still filled in and you can
+  upload the flyer by hand.
+- Nothing is live until you click **Publish Events**, exactly as with any
+  other edit.
 
 ## Upload limits
 
