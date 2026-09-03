@@ -67,12 +67,16 @@
   function eventCard(ev) {
     var img = safeUrl(ev.image);
     var dated = !!parseDate(ev.date);
+    // The "Event flyer" caption is only true when there is a flyer. A date
+    // announced before its artwork exists keeps the date badge on the card's
+    // own backdrop rather than labelling an empty panel.
     var badge = dated
       ? '<div class="event-date"><strong>' +
         esc(dayNumber(ev.date)) +
         "</strong><span>" +
         esc(monthName(ev.date)) +
-        "</span></div><span class=\"flyer-label\">Event flyer</span>"
+        "</span></div>" +
+        (img ? '<span class="flyer-label">Event flyer</span>' : "")
       : '<span class="event-series-label">' + esc(ev.type || "Monthly series") + "</span>";
 
     // Dated events show type • city; recurring events show their cadence.
@@ -115,24 +119,33 @@
       })
       .filter(Boolean);
 
+    var flyer = img
+      ? '<div class="past-flyer"><img src="' + esc(img) + '" alt="' + esc(ev.title) +
+        ' flyer" /><span class="flyer-label">Original flyer</span></div>'
+      : "";
+    var recap = recapUrl
+      ? '<a class="past-video" href="' +
+        esc(recapUrl) +
+        '" target="_blank" rel="noreferrer" aria-label="View recap for ' +
+        esc(ev.title) +
+        '">' +
+        (recapImage ? '<img src="' + esc(recapImage) + '" alt="" />' : "") +
+        '<span class="play-button" aria-hidden="true">▶</span><span class="video-label">' +
+        esc(ev.recapLabel || "Watch event recaps") +
+        "</span></a>"
+      : "";
+    // An event whose flyer or recap hasn't been added yet would otherwise
+    // render an empty dark panel labelled "Original flyer". Drop the media
+    // strip entirely when there is nothing to show, and let a lone flyer or
+    // recap use the full width instead of leaving a gap beside it.
+    var media = flyer || recap
+      ? '<div class="past-event-media' + (flyer && recap ? "" : " past-event-media-single") + '">' +
+        flyer + recap + "</div>"
+      : "";
+
     return (
       '<article class="past-event-card">' +
-      '<div class="past-event-media">' +
-      '<div class="past-flyer">' +
-      (img ? '<img src="' + esc(img) + '" alt="' + esc(ev.title) + ' flyer" />' : "") +
-      '<span class="flyer-label">Original flyer</span></div>' +
-      (recapUrl
-        ? '<a class="past-video" href="' +
-          esc(recapUrl) +
-          '" target="_blank" rel="noreferrer" aria-label="View recap for ' +
-          esc(ev.title) +
-          '">' +
-          (recapImage ? '<img src="' + esc(recapImage) + '" alt="" />' : "") +
-          '<span class="play-button" aria-hidden="true">▶</span><span class="video-label">' +
-          esc(ev.recapLabel || "Watch event recaps") +
-          "</span></a>"
-        : "") +
-      "</div>" +
+      media +
       '<div class="past-event-body">' +
       (meta ? "<small>" + meta + "</small>" : "") +
       "<h3>" + esc(ev.title) + "</h3>" +

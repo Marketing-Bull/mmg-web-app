@@ -21,6 +21,7 @@
     { "id": "express-funding-of-america", "name": "Express Funding of America", "logo": "assets/partners/express-funding-of-america.webp", "bg": "#ffffff", "url": "https://efafunds.com/", "tier": "" },
     { "id": "realign-chiropractic-center", "name": "Realign Chiropractic Center", "logo": "assets/partners/realign-chiropractic-center.webp", "bg": "#0e2a33", "url": "https://realignchiropractic.com/", "tier": "" },
     { "id": "selfcare-chiropractic", "name": "Selfcare Chiropractic", "logo": "assets/partners/selfcare-chiropractic.webp", "bg": "#13263d", "url": "https://selfcarechiro.com/", "tier": "" },
-    { "id": "citadelle-law", "name": "Citadelle Law", "logo": "assets/partners/citadelle-law.webp", "bg": "#1c2733", "url": "https://www.citadellelawfl.com/", "tier": "" }
+    { "id": "citadelle-law", "name": "Citadelle Law", "logo": "assets/partners/citadelle-law.webp", "bg": "#1c2733", "url": "https://www.citadellelawfl.com/", "tier": "" },
+    { "id": "marketing-bull", "name": "Marketing Bull", "logo": "assets/partners/marketing-bull.webp", "bg": "", "url": "https://getmarketingbull.com/", "tier": "" }
   ]
 }
