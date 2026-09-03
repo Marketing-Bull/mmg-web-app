@@ -18,11 +18,13 @@ Static homepage mockup for Miller's Marketing Group.
 - `api/admin/login.js`, `api/admin/logout.js` - shared-password session login for the content manager
 - `api/admin/content.js` - authenticated read/publish of Events and Sponsors (writes to Vercel Blob)
 - `api/admin/instagram.js` - authenticated: resolves a pasted Instagram post/reel URL to its image and copies it to Vercel Blob
+- `api/admin/eventbrite.js` - authenticated: reads a pasted public Eventbrite event URL (title, date, times, venue, city, summary, flyer) so the content manager can create the site event from it; copies the flyer to Vercel Blob
 - `api/admin/upload.js` - authenticated: direct file upload (event flyers, sponsor logos, recap video clips) to Vercel Blob, 3MB limit
 - `api/admin/status.js` - authenticated: reports which environment variables are set and whether Blob is reachable (presence only, never values)
 - `lib/auth.js` - password check + signed session cookie helpers
 - `lib/rateLimit.js` - per-IP rate limiting shared by the lead and admin endpoints
 - `lib/uploadTypes.js` - accepted upload formats, their file-signature checks, and the size ceiling
+- `lib/eventbrite.js` - pure parsing/mapping for the Eventbrite import (URL → event ID, Eventbrite's event data → site event fields), tested on captured fixtures
 - `lib/http.js` - JSON body parsing, input length caps, `no-store` helper
 - `lib/blobStore.js` - Vercel Blob read/write helpers for content JSON and imported media
 - `data/events.json`, `data/sponsors.json` - initial seed content (used until the first Publish, and as a fallback after)
@@ -30,6 +32,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `docs/launch-readiness.md` - current verdict, blockers, and pre-launch acceptance requirements
 - `scripts/validate.mjs` - syntax/JSON validation for every JS file, inline page script, and data file
 - `scripts/hardening.test.mjs` - tests for the rate limiter and the upload allowlist
+- `scripts/eventbrite.test.mjs`, `scripts/fixtures/` - tests for the Eventbrite import mapping, against responses captured from a real MMG event
 - `scripts/social-card.html`, `scripts/render-social-card.mjs` - source artwork and renderer for the link-preview image
 - `.github/workflows/ci.yml` - runs the validator and the tests on every push and pull request
 - `package.json` - marks the repo as a Vercel project (Node serverless functions, `@vercel/blob`)
@@ -96,11 +99,11 @@ Platforms cache preview images hard. After changing the card, re-scrape the URL:
 
 | Protection | Where | Notes |
 | --- | --- | --- |
-| Rate limiting | `lib/rateLimit.js` | Per IP. Leads: 5 per 10 min. Content-manager login: 8 per 15 min. Admin content: 60 per 5 min. Uploads + Instagram imports: 30 per 10 min. |
+| Rate limiting | `lib/rateLimit.js` | Per IP. Leads: 5 per 10 min. Content-manager login: 8 per 15 min. Admin content: 60 per 5 min. Uploads + Instagram/Eventbrite imports: 30 per 10 min. |
 | Upload allowlist | `api/admin/upload.js` | JPG, PNG, GIF, WebP, MP4, MOV, WebM only — verified against each file's magic bytes, so a script payload labelled `image/png` is rejected. SVG is deliberately excluded (browsers execute script inside it). |
 | Input caps | `api/lead.js`, `api/admin/content.js` | Submitted fields are trimmed and length-capped before reaching GHL; a publish is capped at 500 items / 512KB. |
-| Upstream timeouts | `api/lead.js`, `api/admin/instagram.js` | A stalled third party fails in 10-15s instead of hanging the visitor's request. |
-| SSRF guard | `api/admin/instagram.js` | Only downloads thumbnails from Meta's own CDNs. |
+| Upstream timeouts | `api/lead.js`, `api/admin/instagram.js`, `api/admin/eventbrite.js` | A stalled third party fails in 10-15s instead of hanging the visitor's request. |
+| SSRF guard | `api/admin/instagram.js`, `api/admin/eventbrite.js` | Instagram: only downloads thumbnails from Meta's own CDNs. Eventbrite: only ever requests `eventbrite.com` by numeric event ID, and only downloads flyers from Eventbrite's `evbuc.com` image CDN. |
 | Security headers | `vercel.json` | CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy`, and `X-Robots-Tag: noindex` on `/api/*` and the content manager. |
 | No-store on admin | `lib/http.js` | Admin responses are never cached by a browser or by Vercel's edge. |
 
@@ -217,7 +220,7 @@ fully configured deployment from a half-configured one.
 | Item | Where | Notes |
 | --- | --- | --- |
 | Google Analytics 4 measurement ID | gtag.js snippet in the `<head>` of every page (`G-D3DW5X6G2T`) | `assets/js/site.js` sends events (`lead_submit`, `eventbrite_click`, `cta_click`) via the global `gtag`. GA4 measurement IDs are public. |
-| Eventbrite | links in `index.html` | Public event/organizer URLs. |
+| Eventbrite | links in `index.html`; `api/admin/eventbrite.js` | Public event/organizer URLs. The content manager's **Add from Eventbrite** reads public event pages only, so it needs no Eventbrite API key. |
 | Instagram | contact + footer links | Public profile URL. |
 | Contact email | `contact@millersmarketinggroup.com` in `index.html` | Public address; GHL handles lead routing/notifications. |
 
@@ -239,6 +242,15 @@ Images (event flyers, recap thumbnails, sponsor logos) are imported by
 pasting an Instagram post or reel URL — the content manager resolves it via
 the Instagram oEmbed API and copies the image into Vercel Blob automatically,
 so there's no manual resizing or file uploading.
+
+An event can also be created straight from its Eventbrite listing: paste the
+event URL into **Add from Eventbrite** and the title, date, venue, city,
+summary, flyer and registration link are filled in. This reads the same
+public data Eventbrite publishes for search engines (the page's schema.org
+block), preferring the cleaner JSON the event page itself loads when it is
+available, so there is nothing to configure. Pasting the same link again
+updates the existing event (matched on the Eventbrite event ID stored as
+`eventbriteId`) rather than adding a duplicate.
 
 Each sponsor also has a **Logo Background** (`bg`) — a hex colour painted
 behind that logo's tile. Set it to the logo artwork's own backdrop so the

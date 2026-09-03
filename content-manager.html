@@ -186,6 +186,38 @@
         border-color: var(--line);
       }
 
+      /* Add from Eventbrite ---------------------------------------------- */
+      .import {
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        display: grid;
+        gap: 0.7rem;
+        border: 1px dashed var(--line);
+        background: var(--sand-light);
+      }
+
+      .import h2 {
+        font-size: 1.05rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .import p {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .import-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+      }
+
+      .import-form input {
+        flex: 1;
+        min-width: 240px;
+      }
+
       .tab[aria-selected="true"] {
         color: #fff;
         background: var(--red);
@@ -537,6 +569,28 @@
         <button class="button tab" type="button" role="tab" aria-selected="false" data-tab="sponsors">Sponsors</button>
       </div>
 
+      <section class="panel import" data-eventbrite-panel>
+        <div>
+          <h2>Add from Eventbrite</h2>
+          <p>
+            Paste the event's Eventbrite link and the title, date, venue, city, summary, flyer and registration link
+            are filled in for you. Review the new event, adjust anything you like, then publish.
+          </p>
+        </div>
+        <form class="import-form" data-eventbrite-form>
+          <input
+            type="url"
+            name="url"
+            aria-label="Eventbrite event URL"
+            placeholder="https://www.eventbrite.com/e/..."
+            autocomplete="off"
+            required
+          />
+          <button class="button" type="submit">Create Event from Eventbrite</button>
+        </form>
+        <p class="ig-status" data-eventbrite-status></p>
+      </section>
+
       <section class="workspace">
         <aside class="panel list">
           <div class="list-head">
@@ -557,9 +611,11 @@
 
       <div class="hint">
         <p>
-          For images, paste an Instagram post/reel URL and click the fetch button, or use the upload option to pick
-          a file directly — either way the image is copied to fast site storage automatically. ID and Status (Events)
-          are set automatically and can't be edited by hand.
+          To add an event, click <strong>Add New</strong> and fill in the form, or paste its Eventbrite link into
+          <strong>Add from Eventbrite</strong> to have the details and flyer filled in for you. For images, paste an
+          Instagram post/reel URL and click the fetch button, or use the upload option to pick a file directly —
+          either way the image is copied to fast site storage automatically. ID and Status (Events) are set
+          automatically and can't be edited by hand.
         </p>
       </div>
     </main>
@@ -655,6 +711,9 @@
 
         var itemsEl = document.querySelector("[data-items]");
         var formEl = document.querySelector("[data-form]");
+        var eventbritePanel = document.querySelector("[data-eventbrite-panel]");
+        var eventbriteForm = document.querySelector("[data-eventbrite-form]");
+        var eventbriteStatus = document.querySelector("[data-eventbrite-status]");
         var listTitle = document.getElementById("listTitle");
         var listSummary = document.getElementById("listSummary");
         var editorTitle = document.getElementById("editorTitle");
@@ -1115,6 +1174,7 @@
 
         function render() {
           if (publishBtn) publishBtn.textContent = "Publish " + schemas[state.mode].title;
+          if (eventbritePanel) eventbritePanel.hidden = state.mode !== "events";
           // Ensure the list has at least one item before rendering either
           // panel, so the sidebar and the editor never fall out of sync.
           var list = getList();
@@ -1459,6 +1519,147 @@
           render();
         }
 
+        // --- Add from Eventbrite ---------------------------------------------
+        // The Eventbrite event ID is kept on the record so pasting the same
+        // link twice updates that event instead of creating a second card.
+        function eventbriteIdOf(item) {
+          if (!item) return "";
+          if (item.eventbriteId) return String(item.eventbriteId);
+          var m = String(item.registerUrl || "").match(/\/e\/(?:[^/?#]*-)?(\d{6,20})(?:[/?#]|$)/);
+          return m ? m[1] : "";
+        }
+
+        function setEventbriteStatus(message, stateName) {
+          eventbriteStatus.textContent = message;
+          if (stateName) eventbriteStatus.setAttribute("data-state", stateName);
+          else eventbriteStatus.removeAttribute("data-state");
+        }
+
+        function applyEventbriteImport(fetched, warnings) {
+          saveBeforeAction();
+          if (state.mode !== "events") {
+            state.mode = "events";
+            document.querySelectorAll("[data-tab]").forEach(function (btn) {
+              btn.setAttribute("aria-selected", String(btn.getAttribute("data-tab") === "events"));
+            });
+          }
+          var list = state.events;
+          var existingIndex = -1;
+          list.some(function (item, i) {
+            if (fetched.eventbriteId && eventbriteIdOf(item) === String(fetched.eventbriteId)) {
+              existingIndex = i;
+              return true;
+            }
+            return false;
+          });
+
+          var item;
+          var verb;
+          if (existingIndex !== -1) {
+            var existing = list[existingIndex];
+            var ok = window.confirm(
+              "This Eventbrite event is already on the site as “" +
+                (existing.title || existing.id) +
+                "”.\n\nUpdate it with the latest details from Eventbrite? (Its recap and flyer are kept unless Eventbrite has a flyer and this event has none.)"
+            );
+            if (!ok) {
+              setEventbriteStatus("Nothing changed.");
+              return;
+            }
+            item = existing;
+            ["title", "date", "city", "venue", "summary", "registerUrl", "eventbriteId"].forEach(function (key) {
+              if (fetched[key]) item[key] = fetched[key];
+            });
+            if (item.image) {
+              // The flyer already on the site stays, so a flyer problem on
+              // Eventbrite's side is not something the editor needs to act on.
+              warnings = (warnings || []).filter(function (w) {
+                return !/flyer/i.test(w);
+              });
+            } else if (fetched.image) {
+              item.image = fetched.image;
+            }
+            if (!item.registerLabel) item.registerLabel = "Register on Eventbrite";
+            item.id = uniqueSlug(item.title, list, existingIndex);
+            item.status = computeStatus(item.date);
+            state.selected = existingIndex;
+            verb = "updated";
+          } else {
+            item = schemas.events.empty();
+            Object.keys(fetched).forEach(function (key) {
+              if (fetched[key]) item[key] = fetched[key];
+            });
+            // Pick the site's own category from the title, the way the
+            // existing cards are labelled; the dropdown stays editable.
+            if (/lunch/i.test(item.title)) item.type = "Lunch & Learn";
+            else if (/mixer|networking/i.test(item.title)) item.type = "Networking mixer";
+            item.id = uniqueSlug(item.title, list, -1);
+            item.status = computeStatus(item.date);
+            list.push(item);
+            state.selected = list.length - 1;
+            verb = "created";
+          }
+
+          render();
+          var note = "Event " + verb + " from Eventbrite — review it below, then Publish Events.";
+          if (warnings && warnings.length) note += " " + warnings.join(" ");
+          setEventbriteStatus(note, warnings && warnings.length ? "error" : "success");
+          var formStatus = formEl.querySelector("[data-status]");
+          if (formStatus) {
+            formStatus.textContent = "Saved in browser — click Publish to make it live.";
+            formStatus.setAttribute("data-state", "success");
+          }
+          if (eventbriteForm.elements.url) eventbriteForm.elements.url.value = "";
+        }
+
+        function importFromEventbrite(event) {
+          event.preventDefault();
+          var input = eventbriteForm.elements.url;
+          var submitBtn = eventbriteForm.querySelector('[type="submit"]');
+          var url = String(input.value || "").trim();
+          if (!/^https:\/\/(www\.)?eventbrite\.[a-z.]+\/e\//i.test(url)) {
+            setEventbriteStatus("Paste a public Eventbrite event link (eventbrite.com/e/...).", "error");
+            input.focus();
+            return;
+          }
+          submitBtn.disabled = true;
+          setEventbriteStatus("Reading the event from Eventbrite…");
+
+          fetch("/api/admin/eventbrite", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: url }),
+          })
+            .then(function (res) {
+              if (res.status === 401) {
+                showLogin("Your session expired. Log in again to keep editing.");
+                throw new Error("__handled__");
+              }
+              return res
+                .json()
+                .catch(function () {
+                  return {};
+                })
+                .then(function (data) {
+                  return { ok: res.ok, data: data };
+                });
+            })
+            .then(function (result) {
+              if (!result.ok || !result.data || !result.data.event) {
+                setEventbriteStatus((result.data && result.data.error) || "Could not read that Eventbrite event.", "error");
+                return;
+              }
+              applyEventbriteImport(result.data.event, result.data.warnings || []);
+            })
+            .catch(function (err) {
+              if (err.message !== "__handled__") setEventbriteStatus("Could not reach the server. Try again.", "error");
+            })
+            .finally(function () {
+              submitBtn.disabled = false;
+            });
+        }
+
         function duplicateItem() {
           saveBeforeAction();
           var list = getList();
@@ -1564,6 +1765,7 @@
           document.querySelector('[data-action="delete"]').addEventListener("click", deleteItem);
           document.querySelector('[data-action="publish"]').addEventListener("click", publish);
           document.querySelector('[data-action="logout"]').addEventListener("click", logout);
+          eventbriteForm.addEventListener("submit", importFromEventbrite);
           formEl.addEventListener("submit", saveForm);
           formEl.addEventListener("input", updateDraft);
           formEl.addEventListener("change", saveAndRenderList);

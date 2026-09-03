@@ -82,6 +82,12 @@ sync script mirrors that threshold — change one, change both.
 
 ## Adding an event
 
+If Andrew's team is doing it themselves, the fastest route is the content manager's
+**Add from Eventbrite** box: paste the event's Eventbrite link and the event is created
+with title, date, venue, city, summary, flyer and registration link filled in
+(`api/admin/eventbrite.js`, mapping in `lib/eventbrite.js`). The notes below are for
+doing it in the repo.
+
 Same shape, in `data/events.json`. Needs `title` and a `YYYY-MM-DD` `date` to appear at
 all; without a date it is `undated` and shows in neither list, which only suits the
 recurring series. `venue` is stored but never rendered — put the time and venue in
