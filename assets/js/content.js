@@ -112,7 +112,13 @@
     var recapUrl = safeUrl(ev.recapUrl);
     var recapImage = safeUrl(ev.recapImage);
     var meta = [dateLabel(ev.date), ev.city].filter(Boolean).map(esc).join(" &bull; ");
-    var tags = String(ev.recapMeta || "Flyer archive, Community recap, Sponsor recognition")
+    // Without recapMeta the tags used to be a fixed list promising a flyer and
+    // a recap whether or not either existed. Derive the default from what the
+    // event actually has, so a card never advertises something that isn't there.
+    var defaultTags = [img ? "Flyer archive" : "", recapUrl ? "Video recap" : "", "Sponsor recognition"]
+      .filter(Boolean)
+      .join(", ");
+    var tags = String(ev.recapMeta || defaultTags)
       .split(",")
       .map(function (x) {
         return x.trim();

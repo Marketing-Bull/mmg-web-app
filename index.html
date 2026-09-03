@@ -974,10 +974,16 @@
         box-shadow: 0 18px 45px rgba(75, 38, 27, 0.08);
       }
 
+      /* Fixed, not min-height: the flyer image is in normal flow, so with a
+         free-growing row a tall portrait flyer sizes to its own aspect and
+         makes the card several times taller than its neighbours. Pinning the
+         strip keeps every past card the same shape whatever media it has. */
       .past-event-media {
         display: grid;
         grid-template-columns: 0.8fr 1.2fr;
-        min-height: 270px;
+        grid-template-rows: minmax(0, 1fr);
+        height: 270px;
+        overflow: hidden;
       }
 
       /* Only a flyer, or only a recap — take the full width rather than
@@ -986,8 +992,12 @@
         grid-template-columns: 1fr;
       }
 
+      /* min-height: 0 so the flyer image cannot push the grid track past the
+         strip's fixed height — without it a portrait flyer sizes to its own
+         aspect and spills out of the card. */
       .past-flyer {
         position: relative;
+        min-height: 0;
         padding: 0.8rem;
         background: var(--espresso);
       }
@@ -2305,7 +2315,7 @@
 
         .past-event-media {
           grid-template-columns: 0.82fr 1.18fr;
-          min-height: 270px;
+          height: 270px;
         }
 
         .swipe-hint {
