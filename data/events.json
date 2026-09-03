@@ -2,6 +2,21 @@
   "updated": "2026-07-09T00:00:00Z",
   "events": [
     {
+      "id": "fall-personal-injury-professionals-mixer",
+      "title": "Fall Personal Injury Professionals Mixer",
+      "status": "upcoming",
+      "date": "2026-09-24",
+      "cadence": "",
+      "city": "Miami",
+      "venue": "JOEY Aventura",
+      "type": "Networking mixer",
+      "summary": "An evening bringing together top personal injury attorneys, medical professionals, and industry leaders at JOEY Aventura, 6:00-9:00 PM. Refreshments and a raffle with great prizes.",
+      "image": "assets/events/upcoming/fall-mixer-flyer.webp",
+      "registerUrl": "https://www.eventbrite.com/e/fall-personal-injury-professionals-mixer-tickets-1999147508012?aff=oddtdtcreator",
+      "registerLabel": "Register on Eventbrite",
+      "featured": false
+    },
+    {
       "id": "seed-pi-mixers",
       "title": "PI Networking Mixers",
       "status": "undated",
