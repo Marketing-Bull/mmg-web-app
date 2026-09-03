@@ -17,36 +17,6 @@
       "featured": false
     },
     {
-      "id": "pi-networking-mixer-coconut-creek",
-      "title": "PI Networking Mixer — Coconut Creek",
-      "status": "upcoming",
-      "date": "2026-10-22",
-      "cadence": "",
-      "city": "Coconut Creek",
-      "venue": "Parfit",
-      "type": "Networking mixer",
-      "summary": "The October mixer at Parfit in Coconut Creek, 6:00-9:00 PM. Registration opens closer to the date.",
-      "image": "",
-      "registerUrl": "",
-      "registerLabel": "",
-      "featured": false
-    },
-    {
-      "id": "pi-networking-mixer-fort-lauderdale",
-      "title": "PI Networking Mixer — Fort Lauderdale",
-      "status": "upcoming",
-      "date": "2026-11-19",
-      "cadence": "",
-      "city": "Fort Lauderdale",
-      "venue": "The Easton Rooftop",
-      "type": "Networking mixer",
-      "summary": "The November mixer at The Easton Rooftop in Fort Lauderdale, 6:00-9:00 PM. Registration opens closer to the date.",
-      "image": "",
-      "registerUrl": "",
-      "registerLabel": "",
-      "featured": false
-    },
-    {
       "id": "pi-networking-mixer-delray-beach",
       "title": "PI Networking Mixer — Delray Beach",
       "status": "upcoming",

@@ -53,6 +53,39 @@ changes are still there; nothing is lost.
 | `registerUrl` | Eventbrite or organizer URL. Filled in automatically by **Add from Eventbrite**. |
 | `registerLabel` | Button label. Defaults to Eventbrite wording when blank. |
 | Recap | One combined control: paste an Instagram reel URL and click **Pull from Instagram**, or **upload a video** directly (max 3MB). Whichever is used populates the recap link/thumbnail shown on past-event cards. |
+| `recapMeta` | Comma-separated tags under a past-event card. Leave blank and it is built from what the event actually has. |
+
+### What an event needs to look right
+
+**An event moves from Upcoming to Past on its own.** The saved `status` is only a
+hint — both `/api/events` and the homepage recompute it from `date` on every
+load, against Florida time. Nothing to publish or edit on the day; a September 24
+event is in Upcoming on the 24th and in Past on the 25th.
+
+To appear at all, an event needs **`title`** and a **`date`** in `YYYY-MM-DD`.
+Without a date it is `undated` and shows in neither list — only recurring series
+should be undated.
+
+While it is **upcoming**, the card shows the date badge, `type` • `city`, the
+`summary`, and a Register button if `registerUrl` is set. The flyer is optional:
+without one the card shows the date on a plain brand-coloured panel, which reads
+as a date announced before its artwork exists. Time and venue are not fields the
+card renders, so put them in the `summary` if visitors need them.
+
+Once it is **past**, the card switches to the flyer and the recap. All four
+combinations are handled, so nothing looks broken while artwork is still coming:
+
+| Has | Card shows |
+| --- | --- |
+| Flyer + recap | Flyer beside the recap thumbnail |
+| Flyer only | Flyer across the full width |
+| Recap only | Recap thumbnail across the full width |
+| Neither | Clean text card, no media strip |
+
+The badge over the flyer is the `city`, so set it. Leave `recapMeta` blank unless
+you want specific tags — the default is derived from what exists (*Flyer archive*
+only when there is a flyer, *Video recap* only when there is a recap), so a card
+never advertises something it does not have.
 
 ## Sponsor Fields
 

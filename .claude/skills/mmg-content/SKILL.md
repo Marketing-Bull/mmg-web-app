@@ -88,14 +88,37 @@ with title, date, venue, city, summary, flyer and registration link filled in
 (`api/admin/eventbrite.js`, mapping in `lib/eventbrite.js`). The notes below are for
 doing it in the repo.
 
-Same shape, in `data/events.json`. `status` is recomputed from `date` at render time, so
-it is a hint, not the source of truth. `venue` is stored but not displayed — put the time
-and venue in `summary` if visitors need them.
+Same shape, in `data/events.json`. Needs `title` and a `YYYY-MM-DD` `date` to appear at
+all; without a date it is `undated` and shows in neither list, which only suits the
+recurring series. `venue` is stored but never rendered — put the time and venue in
+`summary` if visitors need them.
 
-- **Upcoming**: replace the `.events-empty` block in `index.html` with the card.
-- **Past**: `image` is the flyer, `recapUrl` / `recapImage` the recap link and thumbnail.
-  `pastEventCard()` omits the media strip entirely when there is neither, so a card
-  without artwork renders as clean text rather than an empty dark "Original flyer" panel.
+**Upcoming → past is automatic.** The stored `status` is a hint: `withCurrentStatus()`
+in `api/events.js` and `currentEventStatus()` in `content.js` both recompute it from
+`date` against `America/New_York` on every load. Never hand-edit `status` to move an
+event, and never promise an edit is needed on the day — there isn't one. The exception
+is the static grid in `index.html`, which is frozen markup and cannot recompute; it
+carries whatever was true when it was written.
+
+- **Upcoming**: replace the `.events-empty` block in `index.html` with the card. A flyer
+  is optional — without one the card keeps its date badge on the brand gradient and drops
+  the "Event flyer" caption.
+- **Past**: `image` is the flyer, `recapUrl` / `recapImage` the recap link and thumbnail,
+  and the badge over the flyer is the `city`. All four combinations are handled and each
+  must stay that way — flyer + recap side by side, either one alone at full width via
+  `.past-event-media-single`, and neither dropping the media strip for a clean text card.
+
+**The media strip is a fixed 270px on purpose.** The flyer image is in normal flow, so
+with a free-growing row a portrait flyer sizes to its own aspect — a lone flyer rendered
+704px tall inside a 270px strip and spilled out of the card. It takes all three of
+`height`, `grid-template-rows: minmax(0, 1fr)` and `min-height: 0` on `.past-flyer` to
+hold it; drop any one and the overflow comes back. Check a flyer-only past event after
+touching that CSS.
+
+**Leave `recapMeta` blank unless specific tags are wanted.** The default is derived from
+what the event has — *Flyer archive* only with a flyer, *Video recap* only with a recap —
+so a card never advertises artwork it lacks. It used to be a fixed list that promised both
+regardless.
 
 **Flyer source.** If the flyer is not attached, the Eventbrite listing's `og:image` is
 the same artwork the organizer uploaded. It needs the signed URL from the tag —
