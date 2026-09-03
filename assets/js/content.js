@@ -119,9 +119,14 @@
       })
       .filter(Boolean);
 
+    // The badge over the flyer names the city the event was held in — more
+    // use to a visitor than restating that the image is a flyer. Dropped
+    // entirely when an event has no city rather than falling back to a label.
     var flyer = img
       ? '<div class="past-flyer"><img src="' + esc(img) + '" alt="' + esc(ev.title) +
-        ' flyer" /><span class="flyer-label">Original flyer</span></div>'
+        ' flyer" />' +
+        (ev.city ? '<span class="flyer-label">' + esc(ev.city) + "</span>" : "") +
+        "</div>"
       : "";
     var recap = recapUrl
       ? '<a class="past-video" href="' +
@@ -135,7 +140,7 @@
         "</span></a>"
       : "";
     // An event whose flyer or recap hasn't been added yet would otherwise
-    // render an empty dark panel labelled "Original flyer". Drop the media
+    // render an empty dark panel with a badge over nothing. Drop the media
     // strip entirely when there is nothing to show, and let a lone flyer or
     // recap use the full width instead of leaving a gap beside it.
     var media = flyer || recap
