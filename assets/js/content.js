@@ -67,12 +67,16 @@
   function eventCard(ev) {
     var img = safeUrl(ev.image);
     var dated = !!parseDate(ev.date);
+    // The "Event flyer" caption is only true when there is a flyer. A date
+    // announced before its artwork exists keeps the date badge on the card's
+    // own backdrop rather than labelling an empty panel.
     var badge = dated
       ? '<div class="event-date"><strong>' +
         esc(dayNumber(ev.date)) +
         "</strong><span>" +
         esc(monthName(ev.date)) +
-        "</span></div><span class=\"flyer-label\">Event flyer</span>"
+        "</span></div>" +
+        (img ? '<span class="flyer-label">Event flyer</span>' : "")
       : '<span class="event-series-label">' + esc(ev.type || "Monthly series") + "</span>";
 
     // Dated events show type • city; recurring events show their cadence.
