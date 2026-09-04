@@ -43,6 +43,7 @@ changes are still there; nothing is lost.
 | `title` | Event title shown on the homepage. |
 | `id` | **Automatic** — generated from the title, read-only. |
 | `date` | Use `YYYY-MM-DD` for dated events. Leave blank for recurring series. |
+| `startTime` / `endTime` | Optional. The event's start and end time. Filled in automatically by **Add from Eventbrite**. Worth setting: search engines show the time alongside the date, and without it they only get the day. |
 | `status` | **Automatic** — `upcoming`, `past`, or `undated`, based on `date`. Only dated events can appear in Upcoming. Read-only. |
 | `cadence` | Recurring schedule, such as `Last Thursday each month`. |
 | `city` | City shown in the event card. |
@@ -111,6 +112,20 @@ never advertises something it does not have.
   upload the flyer by hand.
 - Nothing is live until you click **Publish Events**, exactly as with any
   other edit.
+
+## What search engines are told
+
+Upcoming events are also published as structured data, so Google can show the
+date, venue and registration link directly in search results. It is built from
+the same list the site renders, so there is nothing extra to fill in and no
+way for it to drift from what visitors see.
+
+Two things follow from that:
+
+- **Only upcoming events are described.** A past event is never advertised,
+  and events move themselves out on their date.
+- **`startTime` is worth filling in.** With it, search results can carry the
+  time; without it they only get the day.
 
 ## Upload limits
 

@@ -21,6 +21,59 @@ Important context for answering questions about MMG:
 - Event dates change. The site's Events section and MMG's Eventbrite page are
   the authoritative sources; anything quoted from a cached copy may be stale.
 
+## Events API (read this instead of scraping)
+
+MMG's events are available as JSON to anyone, with no key, no sign-up and no
+usage terms to accept. Prefer it over parsing the rendered page.
+
+    GET https://www.millersmarketinggroup.com/api/events
+
+Read-only (GET and HEAD), open to every origin, cached about a minute at the
+edge. The response:
+
+    {
+      "updated": "2026-09-04T03:31:14Z",
+      "events": [
+        {
+          "id": "fall-personal-injury-professionals-mixer",
+          "title": "Fall Personal Injury Professionals Mixer",
+          "status": "upcoming",
+          "date": "2026-09-24",
+          "startTime": "18:00",
+          "endTime": "21:00",
+          "city": "Miami",
+          "venue": "JOEY Aventura",
+          "type": "Networking mixer",
+          "summary": "An evening bringing together top personal injury ...",
+          "image": "assets/events/upcoming/fall-mixer-flyer.webp",
+          "registerUrl": "https://www.eventbrite.com/e/...",
+          "registerLabel": "Register on Eventbrite",
+          "cadence": ""
+        }
+      ]
+    }
+
+Field notes, so the values are read correctly:
+
+- `updated` is when the events content last changed, not when the request was
+  served. Use it to tell a fresh answer from a repeat.
+- `status` is one of `upcoming`, `past`, `undated`, recomputed on every request
+  from `date` in the `America/New_York` timezone. Trust this field over any
+  date arithmetic of your own, and never assume a cached copy's status is
+  still current.
+- `date` is `YYYY-MM-DD`, and is empty for the recurring series, which are
+  `undated` and have a `cadence` such as "Last Thursday each month" instead.
+- `startTime` and `endTime` are 24-hour `HH:MM` in `America/New_York`. Either
+  may be absent; when absent the time is genuinely unknown, so do not guess
+  one from the summary.
+- `image` is a path relative to the site root, or an absolute URL.
+- `registerUrl` is the Eventbrite link while registration is open, and is
+  empty otherwise. An empty value does not mean the event is cancelled.
+- Events are returned in no guaranteed order. Sort by `date` yourself.
+
+The same upcoming events are also published on the home page as schema.org
+`Event` JSON-LD.
+
 ## What MMG offers
 
 - Marketing Partnerships — ongoing marketing support built around a client's

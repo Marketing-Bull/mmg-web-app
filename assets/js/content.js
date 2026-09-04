@@ -219,6 +219,134 @@
     return tryNext();
   }
 
+  /*
+    --- Event structured data ------------------------------------------
+
+    schema.org Event JSON-LD for the upcoming events, so a search engine can
+    read the date, venue and registration link rather than inferring them
+    from the cards.
+
+    It is emitted here rather than written into index.html because the events
+    that matter are published from the content manager straight to Blob,
+    without a deploy. Static markup would describe whatever was last
+    committed, which is exactly the case where the schema would be wrong, and
+    stale structured data is worse than none. Building it from the same list
+    that renders the cards keeps the two in step by construction, and only
+    upcoming events are described, so a past date is never advertised.
+  */
+  var SITE_ORIGIN = "https://www.millersmarketinggroup.com";
+
+  function absoluteUrl(value) {
+    var url = safeUrl(value);
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    return SITE_ORIGIN + "/" + url.replace(/^\/+/, "");
+  }
+
+  // The site's events are all local to one timezone, but the UTC offset for
+  // a date depends on daylight saving, so it is read per event rather than
+  // hard-coded. Returns e.g. "-04:00", or "" if the browser can't say.
+  function zoneOffset(dateKey) {
+    try {
+      var parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/New_York",
+        timeZoneName: "longOffset",
+      }).formatToParts(new Date(dateKey + "T12:00:00Z"));
+      for (var i = 0; i < parts.length; i++) {
+        if (parts[i].type !== "timeZoneName") continue;
+        var match = /GMT([+-]\d{2}:\d{2})/.exec(parts[i].value);
+        return match ? match[1] : "";
+      }
+    } catch (err) {
+      /* fall through to a date-only value */
+    }
+    return "";
+  }
+
+  // A wall-clock time is only worth publishing with its offset attached;
+  // without one it would be read as UTC and land five hours out. Falls back
+  // to the plain date, which schema.org accepts.
+  function eventDateTime(dateKey, time) {
+    if (!/^\d{1,2}:\d{2}$/.test(String(time || ""))) return dateKey;
+    var offset = zoneOffset(dateKey);
+    if (!offset) return dateKey;
+    var padded = String(time).length === 4 ? "0" + time : String(time);
+    return dateKey + "T" + padded + ":00" + offset;
+  }
+
+  function schemaType(event) {
+    var type = String(event.type || "").toLowerCase();
+    if (type.indexOf("lunch") !== -1 || type.indexOf("learn") !== -1 || type.indexOf("educat") !== -1) {
+      return "EducationEvent";
+    }
+    return "BusinessEvent";
+  }
+
+  function eventSchema(event) {
+    var dateKey = eventDateKey(event.date);
+    if (!dateKey || !event.title) return null;
+
+    var node = {
+      "@context": "https://schema.org",
+      "@type": schemaType(event),
+      name: event.title,
+      startDate: eventDateTime(dateKey, event.startTime),
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      organizer: {
+        "@type": "Organization",
+        name: "Miller's Marketing Group",
+        url: SITE_ORIGIN + "/",
+      },
+    };
+
+    var endDate = eventDateTime(dateKey, event.endTime);
+    if (event.endTime && endDate !== dateKey) node.endDate = endDate;
+    if (event.summary) node.description = event.summary;
+
+    var image = absoluteUrl(event.image);
+    if (image) node.image = image;
+
+    var register = safeUrl(event.registerUrl);
+    node.url = /^https?:\/\//i.test(register) ? register : SITE_ORIGIN + "/#events";
+
+    // Only the venue and city are stored, so the address stays at that.
+    // Naming a region we don't hold would be a guess, and a wrong one the
+    // first time MMG runs an event outside Florida.
+    if (event.venue || event.city) {
+      var place = { "@type": "Place", name: event.venue || event.city };
+      var address = { "@type": "PostalAddress", addressCountry: "US" };
+      if (event.city) address.addressLocality = event.city;
+      place.address = address;
+      node.location = place;
+    }
+
+    return node;
+  }
+
+  function renderEventSchema(list) {
+    var nodes = [];
+    list.forEach(function (event) {
+      if (currentEventStatus(event) !== "upcoming") return;
+      var node = eventSchema(event);
+      if (node) nodes.push(node);
+    });
+
+    var el = document.querySelector("[data-event-schema]");
+    if (!nodes.length) {
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+      return;
+    }
+    if (!el) {
+      el = document.createElement("script");
+      el.type = "application/ld+json";
+      el.setAttribute("data-event-schema", "");
+      document.head.appendChild(el);
+    }
+    // Escape "<" so a summary containing markup can't close this script tag.
+    el.textContent = JSON.stringify(nodes.length === 1 ? nodes[0] : nodes).replace(/</g, "\\u003c");
+  }
+
   function renderEvents() {
     var upcomingGrid = document.querySelector(".upcoming-events-grid");
     var pastGrid = document.querySelector(".past-events-grid");
@@ -232,6 +360,7 @@
       });
       if (upcomingGrid) upcomingGrid.innerHTML = up.length ? up.map(eventCard).join("") : upcomingEmptyState();
       if (pastGrid && past.length) pastGrid.innerHTML = past.map(pastEventCard).join("");
+      renderEventSchema(list);
     }, function () {
       /* keep static cards */
     });

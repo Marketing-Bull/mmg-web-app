@@ -129,6 +129,8 @@ export default async function handler(req, res) {
     event: {
       title: event.title,
       date: event.date,
+      startTime: event.startTime,
+      endTime: event.endTime,
       city: event.city,
       venue: event.venue,
       summary: event.summary,

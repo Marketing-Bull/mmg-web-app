@@ -651,6 +651,8 @@
               ["title", "Title", "text", "Personal Injury Networking Mixer"],
               ["id", "ID", "auto-id", ""],
               ["date", "Date", "date", ""],
+              ["startTime", "Start time", "time", ""],
+              ["endTime", "End time", "time", ""],
               ["status", "Status", "auto-status", ""],
               ["cadence", "Cadence", "text", "Last Thursday each month"],
               ["city", "City", "text", "Plantation"],
@@ -668,6 +670,8 @@
                 title: "New Event",
                 status: "upcoming",
                 date: "",
+                startTime: "",
+                endTime: "",
                 cadence: "",
                 city: "",
                 venue: "",
@@ -1567,9 +1571,11 @@
               return;
             }
             item = existing;
-            ["title", "date", "city", "venue", "summary", "registerUrl", "eventbriteId"].forEach(function (key) {
-              if (fetched[key]) item[key] = fetched[key];
-            });
+            ["title", "date", "startTime", "endTime", "city", "venue", "summary", "registerUrl", "eventbriteId"].forEach(
+              function (key) {
+                if (fetched[key]) item[key] = fetched[key];
+              }
+            );
             if (item.image) {
               // The flyer already on the site stays, so a flyer problem on
               // Eventbrite's side is not something the editor needs to act on.

@@ -1,16 +1,37 @@
-// Public Events feed: reads the published Blob content, falling back to the
-// committed seed file if nothing has been published yet (or Blob errors).
+/*
+  Public Events API.
+
+  GET /api/events returns MMG's events as JSON, to anyone, from anywhere. It
+  is the same feed the homepage renders, and it is documented in llms.txt so
+  assistants and other sites can pull the schedule rather than scrape it.
+
+  Reads the published Blob content, falling back to the committed seed file if
+  nothing has been published yet (or Blob errors), so the endpoint answers
+  even when storage is unreachable.
+*/
 import fs from "node:fs";
 import path from "node:path";
-import { readEvents } from "../lib/blobStore.js";
+import { readEventsDocument } from "../lib/blobStore.js";
+
+// Being a read-only feed of already-public information, it is open to every
+// origin; a browser on any site can call it directly.
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Max-Age": "86400",
+};
 
 function readSeed() {
   try {
     const raw = fs.readFileSync(path.join(process.cwd(), "data", "events.json"), "utf8");
     const data = JSON.parse(raw);
-    return Array.isArray(data.events) ? data.events : [];
+    return {
+      events: Array.isArray(data.events) ? data.events : [],
+      updated: typeof data.updated === "string" ? data.updated : "",
+    };
   } catch {
-    return [];
+    return { events: [], updated: "" };
   }
 }
 
@@ -41,11 +62,27 @@ function withCurrentStatus(events) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
-  try {
-    const events = withCurrentStatus((await readEvents()) || readSeed());
-    return res.status(200).json({ updated: new Date().toISOString(), events });
-  } catch {
-    return res.status(200).json({ updated: new Date().toISOString(), events: withCurrentStatus(readSeed()) });
+  for (const [key, value] of Object.entries(CORS)) res.setHeader(key, value);
+
+  if (req.method === "OPTIONS") return res.status(204).end();
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    res.setHeader("Allow", "GET, HEAD, OPTIONS");
+    return res.status(405).json({ error: "Method not allowed. This endpoint is read-only." });
   }
+
+  res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
+
+  // `updated` is when the content last changed, not when it was requested, so
+  // a caller can tell a fresh answer from a repeated one.
+  let document;
+  try {
+    document = (await readEventsDocument()) || readSeed();
+  } catch {
+    document = readSeed();
+  }
+
+  return res.status(200).json({
+    updated: document.updated,
+    events: withCurrentStatus(document.events),
+  });
 }

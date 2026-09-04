@@ -93,6 +93,11 @@ all; without a date it is `undated` and shows in neither list, which only suits 
 recurring series. `venue` is stored but never rendered — put the time and venue in
 `summary` if visitors need them.
 
+**Bump `updated` when you hand-edit `data/events.json`.** It is served as the
+`updated` field of the public `/api/events` feed, meaning "when this content last
+changed", so a stale value tells every consumer the schedule is older than it is.
+Publishing from the content manager stamps it automatically; a commit does not.
+
 **Upcoming → past is automatic.** The stored `status` is a hint: `withCurrentStatus()`
 in `api/events.js` and `currentEventStatus()` in `content.js` both recompute it from
 `date` against `America/New_York` on every load. Never hand-edit `status` to move an
