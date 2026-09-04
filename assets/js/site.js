@@ -132,10 +132,46 @@
     });
   }
 
+  /*
+    --- "Site last updated" ---------------------------------------------------
+
+    Filled from document.lastModified, which reflects the Last-Modified header
+    the host sends for this page. Vercel stamps every static file in a
+    deployment with that deployment's build time, so the date moves on its own
+    each time the site ships — no build step, no endpoint, nothing to remember
+    to bump by hand.
+
+    The markup ships hidden and is only revealed once a date is in hand. When
+    a host sends no Last-Modified header the spec says document.lastModified
+    falls back to the current time, which would quietly render "updated today"
+    forever, so anything within a minute of now is treated as that fallback and
+    the line stays hidden rather than showing a date we cannot stand behind.
+  */
+  function wireLastUpdated() {
+    var wrap = document.querySelector("[data-site-updated]");
+    var slot = document.querySelector("[data-site-updated-time]");
+    if (!wrap || !slot) return;
+
+    var modified = new Date(document.lastModified);
+    if (isNaN(modified.getTime())) return;
+
+    var age = Date.now() - modified.getTime();
+    if (age < 60000 || age < 0) return;
+
+    slot.setAttribute("datetime", modified.toISOString().slice(0, 10));
+    slot.textContent = modified.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+    wrap.hidden = false;
+  }
+
   onReady(function () {
     var forms = document.querySelectorAll("form[data-lead]");
     for (var i = 0; i < forms.length; i++) wireLeadForm(forms[i]);
     wireClickTracking();
     wireCookieConsent();
+    wireLastUpdated();
   });
 })();

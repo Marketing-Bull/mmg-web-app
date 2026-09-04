@@ -8,10 +8,11 @@ Static homepage mockup for Miller's Marketing Group.
 - `faq.html` - frequently asked questions
 - `privacy-policy.html`, `terms-of-service.html`, `disclaimer.html`, `accessibility.html` - legal and accessibility pages
 - `404.html`, `robots.txt`, `sitemap.xml` - launch support files
+- `llms.txt` - plain-text summary of the site for AI assistants and agents, linked from every footer under **For LLMs**
 - `vercel.json` - security headers (CSP and friends) and permanent redirects from legacy WordPress URLs
 - `content-manager.html` - password-protected editor for Events and Sponsors, with Instagram-based image import and direct file upload
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
-- `assets/js/site.js` - contact/newsletter form handling and GA4 event tracking (gtag.js itself is loaded from each page's `<head>`)
+- `assets/js/site.js` - contact/newsletter form handling, GA4 event tracking (gtag.js itself is loaded from each page's `<head>`), and the footer's "Site last updated" date
 - `assets/js/content.js` - renders Events and Sponsors on the homepage: `/api/events`+`/api/sponsors` (live, published) → `data/*.json` (seed) → static cards
 - `api/lead.js` - forwards contact + newsletter submissions to the GHL webhook
 - `api/events.js`, `api/sponsors.js` - public read endpoints; serve published content from Vercel Blob, falling back to the `data/*.json` seed
@@ -70,6 +71,30 @@ node --test scripts/*.test.mjs
 
 `.github/workflows/ci.yml` runs both on every push and pull request. Both are
 also wired up as `npm run validate` and `npm test`.
+
+## "Site last updated" in the footer
+
+Every footer carries a `Site last updated <date>` line. Nothing generates it and
+nothing needs bumping by hand: `wireLastUpdated()` in `assets/js/site.js` reads
+`document.lastModified`, which reflects the `Last-Modified` header the host
+sends for the page. Vercel stamps every static file in a deployment with that
+deployment's build time, so the date advances on its own each time the site
+ships.
+
+Verified against production on September 3, 2026: `index.html` and
+`assets/js/content.js` both came back with `last-modified: Thu, 03 Sep 2026
+20:40:11 GMT`, the time of that deployment, rather than per-file timestamps.
+
+Two things worth knowing:
+
+- **It is the deploy date, not the content date.** Publishing Events or
+  Sponsors from the content manager writes to Vercel Blob without a deploy, so
+  it does not move this date. A code push does.
+- **No header means no date.** Where a host sends no `Last-Modified`, the spec
+  has `document.lastModified` fall back to the current time, which would render
+  "updated today" forever. Anything within a minute of now is treated as that
+  fallback and the line stays hidden instead. That is also why the markup ships
+  with `hidden` and is only revealed once a real date is in hand.
 
 ## Link previews (the social card)
 
