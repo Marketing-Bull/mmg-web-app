@@ -13,7 +13,7 @@ Static homepage mockup for Miller's Marketing Group.
 - `content-manager.html` - password-protected editor for Events and Sponsors, with Instagram-based image import and direct file upload
 - `assets/css/pages.css` - shared styles for the sub-pages (header, footer, buttons, prose, FAQ)
 - `assets/js/site.js` - contact/newsletter form handling, GA4 event tracking (gtag.js itself is loaded from each page's `<head>`), and the footer's "Site last updated" date
-- `assets/js/content.js` - renders Events and Sponsors on the homepage: `/api/events`+`/api/sponsors` (live, published) → `data/*.json` (seed) → static cards
+- `assets/js/content.js` - renders Events and Sponsors on the homepage: `/api/events`+`/api/sponsors` (live, published) → `data/*.json` (seed) → static cards; also emits schema.org Event JSON-LD for the upcoming events and the sponsor-tile scroll reveal
 - `api/lead.js` - forwards contact + newsletter submissions to the GHL webhook
 - `api/events.js`, `api/sponsors.js` - public read endpoints; serve published content from Vercel Blob, falling back to the `data/*.json` seed
 - `api/admin/login.js`, `api/admin/logout.js` - shared-password session login for the content manager
@@ -71,6 +71,35 @@ node --test scripts/*.test.mjs
 
 `.github/workflows/ci.yml` runs both on every push and pull request. Both are
 also wired up as `npm run validate` and `npm test`.
+
+## Event structured data
+
+Upcoming events are published as schema.org `Event` JSON-LD (`BusinessEvent`,
+or `EducationEvent` for Lunch & Learn), built by `renderEventSchema()` in
+`assets/js/content.js` from the same list that renders the cards.
+
+It is emitted from script rather than written into `index.html` on purpose.
+Events are published from the content manager straight to Blob without a
+deploy, so committed markup would describe whatever was last committed —
+exactly the case where the schema would be wrong, and stale structured data is
+worse than none. Google renders JavaScript for structured data; non-rendering
+AI consumers are served `llms.txt` instead.
+
+Details worth knowing:
+
+- **Only upcoming events are described**, so a past date is never advertised.
+  Undated recurring series carry no `startDate` and are skipped.
+- **`startTime`/`endTime` are optional.** With a time, `startDate` carries the
+  UTC offset for that date, read per event via `Intl` so daylight saving is
+  right (`-04:00` in July, `-05:00` in December). Without a usable offset it
+  falls back to the plain date rather than emitting a time that would be read
+  as UTC and land five hours out.
+- **`offers` is deliberately omitted.** Ticket prices are not stored, and
+  Google wants a price whenever offers are present; a guessed one would be a
+  fabricated claim on a live listing.
+- **`addressRegion` is omitted** for the same reason — only venue and city are
+  stored, and hard-coding `FL` would be wrong the first time MMG runs an event
+  elsewhere. Adding a region field to the event record would let this improve.
 
 ## "Site last updated" in the footer
 
