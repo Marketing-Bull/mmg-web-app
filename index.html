@@ -1353,17 +1353,21 @@
         pointer-events: none;
       }
 
+      /* The heading column is sized to the heading rather than to a fraction
+         of the row. A fractional column left the title, capped narrow enough
+         to stack, sitting in a column much wider than itself, so the gap
+         before the copy grew with the viewport instead of staying at `gap`. */
       .partners-intro {
         position: relative;
         display: grid;
-        grid-template-columns: 0.9fr 1.1fr;
-        gap: 4rem;
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 3.5rem;
         align-items: end;
         margin-bottom: 2.4rem;
       }
 
       .partners-intro .section-title {
-        max-width: 8ch;
+        max-width: 13ch;
         margin-bottom: 0;
       }
 
