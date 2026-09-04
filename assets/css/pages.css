@@ -447,8 +447,16 @@ img {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1.1fr;
+  grid-template-columns: 1.5fr 0.95fr 1fr 1fr;
   gap: 2rem;
+}
+
+.footer-note {
+  max-width: 30ch;
+  margin: -0.35rem 0 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+  line-height: 1.6;
 }
 
 .footer .brand-copy small {

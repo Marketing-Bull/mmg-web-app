@@ -1353,17 +1353,21 @@
         pointer-events: none;
       }
 
+      /* The heading column is sized to the heading rather than to a fraction
+         of the row. A fractional column left the title, capped narrow enough
+         to stack, sitting in a column much wider than itself, so the gap
+         before the copy grew with the viewport instead of staying at `gap`. */
       .partners-intro {
         position: relative;
         display: grid;
-        grid-template-columns: 0.9fr 1.1fr;
-        gap: 4rem;
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 3.5rem;
         align-items: end;
         margin-bottom: 2.4rem;
       }
 
       .partners-intro .section-title {
-        max-width: 8ch;
+        max-width: 13ch;
         margin-bottom: 0;
       }
 
@@ -1417,23 +1421,25 @@
            visible rectangle. Falls back to the default card colour. */
         background: var(--partner-bg, rgba(255, 253, 248, 0.86));
         box-shadow: 0 14px 34px rgba(75, 38, 27, 0.08);
-        transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
-      }
-
-      .partner-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(165, 46, 42, 0.25);
-        box-shadow: 0 20px 42px rgba(75, 38, 27, 0.13);
+        /* position + overflow carry the glare sweep in ::before. */
+        position: relative;
+        overflow: hidden;
+        transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1), border-color 280ms ease,
+          box-shadow 280ms ease, opacity 560ms ease,
+          translate 560ms cubic-bezier(0.22, 0.61, 0.36, 1),
+          scale 560ms cubic-bezier(0.22, 0.61, 0.36, 1);
       }
 
       .partner-card img {
         width: 100%;
         height: 76px;
         object-fit: contain;
+        transition: transform 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
       }
 
       .partner-card figcaption {
         overflow: hidden;
+        transition: color 240ms ease;
         color: var(--muted);
         font-size: 0.68rem;
         font-weight: 700;
@@ -1448,14 +1454,123 @@
          Declared after .partner-card figcaption so it wins on source order. */
       .partner-card-dark {
         border-color: rgba(255, 255, 255, 0.14);
+        --partner-sheen: rgba(255, 255, 255, 0.32);
       }
 
       .partner-card-dark figcaption {
         color: rgba(255, 255, 255, 0.86);
       }
 
-      .partner-card-dark:hover {
-        border-color: rgba(255, 255, 255, 0.32);
+      /* --- Sponsor tile motion -------------------------------------------
+         Three separate behaviours, because a sponsor wall is looked at very
+         differently on a desktop and on a phone:
+
+         1. Fine pointers get a hover: the tile lifts, the logo grows a little
+            and a glare sweeps across it.
+         2. Touch devices get a press state instead. :hover on touch either
+            never fires or sticks to the last tapped tile, so every hover rule
+            is fenced behind (hover: hover).
+         3. Everyone whose browser supports scroll-driven animations gets the
+            tiles easing in as the grid scrolls past.
+
+         The glare is tinted per tile: a white sweep is invisible on a white
+         logo panel, and a red one muddies a dark brand colour. */
+      .partner-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 45%;
+        background: linear-gradient(
+          100deg,
+          transparent 0%,
+          var(--partner-sheen, rgba(165, 46, 42, 0.14)) 50%,
+          transparent 100%
+        );
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(-170%) skewX(-14deg);
+      }
+
+      @keyframes partner-glare {
+        from {
+          opacity: 0;
+          transform: translateX(-170%) skewX(-14deg);
+        }
+        30% {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+          transform: translateX(340%) skewX(-14deg);
+        }
+      }
+
+      /* Keyboard users get a ring on the tile itself. The card clips its own
+         overflow for the glare, which would otherwise cut off the focus ring
+         drawn around the inner link. */
+      .partner-card:focus-within {
+        outline: 2px solid var(--red);
+        outline-offset: 3px;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .partner-card:hover {
+          transform: translateY(-6px);
+          border-color: rgba(165, 46, 42, 0.28);
+          box-shadow: 0 24px 48px rgba(75, 38, 27, 0.16);
+        }
+
+        .partner-card:hover img {
+          transform: scale(1.06);
+        }
+
+        .partner-card:hover figcaption {
+          color: var(--red);
+        }
+
+        .partner-card:hover::before {
+          animation: partner-glare 780ms cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        .partner-card-dark:hover {
+          border-color: rgba(255, 255, 255, 0.34);
+        }
+
+        .partner-card-dark:hover figcaption {
+          color: #fff;
+        }
+      }
+
+      @media (hover: none) {
+        .partner-card:active {
+          transform: scale(0.97);
+          box-shadow: 0 10px 24px rgba(75, 38, 27, 0.1);
+        }
+
+        .partner-card:active::before {
+          animation: partner-glare 640ms ease;
+        }
+      }
+
+      /* Entrance start state. Applied by content.js (revealPartners) only to
+         tiles that are still below the fold, and removed a row at a time as
+         the grid scrolls into view.
+
+         It is deliberately not a CSS scroll-driven animation: `body` here
+         computes to overflow-y: auto (a side effect of overflow-x: hidden),
+         which makes it a scroll container that `view()` binds to instead of
+         the viewport, so the timeline never advances. Driving it from
+         script also covers Safari and Firefox.
+
+         `translate`/`scale` rather than `transform`, so the entrance
+         composes with the hover and press transforms instead of fighting
+         them for the same property. */
+      .partner-card-pending {
+        opacity: 0;
+        translate: 0 26px;
+        scale: 0.96;
       }
 
       .community-card {
@@ -1787,8 +1902,16 @@
 
       .footer-grid {
         display: grid;
-        grid-template-columns: 1.45fr 0.75fr 0.9fr 1.1fr;
+        grid-template-columns: 1.35fr 0.7fr 0.85fr 1fr 0.95fr;
         gap: 2rem;
+      }
+
+      .footer-note {
+        max-width: 30ch;
+        margin: -0.35rem 0 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.78rem;
+        line-height: 1.6;
       }
 
       .footer .brand-copy small {
@@ -2591,16 +2714,6 @@
                 <div class="event-actions"><a class="button button-primary" href="https://www.eventbrite.com/e/fall-personal-injury-professionals-mixer-tickets-1999147508012?aff=oddtdtcreator" target="_blank" rel="noreferrer">Register on Eventbrite</a></div>
               </div>
             </article>
-            <article class="event-card">
-              <div class="event-card-image flyer">
-                <div class="event-date"><strong>17</strong><span>December</span></div>
-              </div>
-              <div class="event-card-body">
-                <small>Networking mixer &bull; Delray Beach</small>
-                <h3>PI Networking Mixer — Delray Beach</h3>
-                <p>The December mixer at The Ray in Delray Beach, 6:00-9:00 PM. Registration opens closer to the date.</p>
-              </div>
-            </article>
           </div>
         </div>
 
@@ -3319,6 +3432,17 @@
               <li><a href="accessibility.html">Accessibility</a></li>
             </ul>
           </div>
+          <div>
+            <h3>For LLMs</h3>
+            <p class="footer-note">
+              Plain-text summaries of this site, written for AI assistants and agents that read it on someone's
+              behalf.
+            </p>
+            <ul>
+              <li><a href="llms.txt">llms.txt</a></li>
+              <li><a href="sitemap.xml">Sitemap</a></li>
+            </ul>
+          </div>
         </div>
         <div class="footer-bottom">
           <span>
@@ -3328,6 +3452,9 @@
           <span class="footer-credit">
             © 2026 Miller's Marketing Group ·
             <a href="https://getmarketingbull.com?utm_source=millersmarketinggroup.com">Website by Marketing Bull</a>
+            <span class="footer-updated" data-site-updated hidden>
+              · Site last updated <time data-site-updated-time></time>
+            </span>
           </span>
         </div>
       </div>
