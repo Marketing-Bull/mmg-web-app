@@ -272,6 +272,60 @@
     );
   }
 
+  /*
+    Eases the sponsor tiles in as the grid scrolls into view, a row at a
+    time. Hover does the work on a desktop; this is what gives the wall some
+    life on a phone, where there is no hover at all.
+
+    Only tiles still below the fold are hidden, so nothing the visitor is
+    already looking at flashes out and back. Re-runnable: the grid is
+    replaced wholesale when the live feed arrives, so this is called again
+    on the new tiles.
+  */
+  var partnerObserver = null;
+
+  function revealPartners() {
+    var grid = document.querySelector(".partners-grid");
+    if (!grid || !("IntersectionObserver" in window)) return;
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    if (partnerObserver) partnerObserver.disconnect();
+
+    var pending = [].slice.call(grid.querySelectorAll(".partner-card")).filter(function (card) {
+      return card.getBoundingClientRect().top > window.innerHeight * 0.9;
+    });
+    if (!pending.length) return;
+
+    partnerObserver = new IntersectionObserver(
+      function (entries, observer) {
+        // Stagger within the batch that crossed the line together, rather
+        // than by index in the grid: a fixed per-card delay would make the
+        // last row wait most of a second after it is already on screen.
+        entries
+          .filter(function (entry) {
+            return entry.isIntersecting;
+          })
+          .sort(function (a, b) {
+            return (
+              a.boundingClientRect.top - b.boundingClientRect.top ||
+              a.boundingClientRect.left - b.boundingClientRect.left
+            );
+          })
+          .forEach(function (entry, i) {
+            entry.target.style.transitionDelay = i * 55 + "ms";
+            entry.target.classList.remove("partner-card-pending");
+            observer.unobserve(entry.target);
+          });
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.15 }
+    );
+
+    pending.forEach(function (card) {
+      card.classList.add("partner-card-pending");
+      partnerObserver.observe(card);
+    });
+  }
+
   function renderSponsors() {
     var grid = document.querySelector(".partners-grid");
     if (!grid) return;
@@ -279,7 +333,10 @@
       var s = list.filter(function (x) {
         return x.name;
       });
-      if (s.length) grid.innerHTML = s.map(sponsorCard).join("");
+      if (s.length) {
+        grid.innerHTML = s.map(sponsorCard).join("");
+        revealPartners();
+      }
     }, function () {
       /* keep static cards */
     });
@@ -293,5 +350,8 @@
   ready(function () {
     renderEvents();
     renderSponsors();
+    // Covers the static grid too: if the sponsor feed is unreachable those
+    // cards stay on the page, and they should still animate in.
+    revealPartners();
   });
 })();
