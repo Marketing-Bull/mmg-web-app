@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-04T03:31:14Z",
+  "updated": "2026-09-15T16:02:06Z",
   "events": [
     {
       "id": "fall-personal-injury-professionals-mixer",
@@ -15,6 +15,23 @@
       "summary": "An evening bringing together top personal injury attorneys, medical professionals, and industry leaders at JOEY Aventura, 6:00-9:00 PM. Refreshments and a raffle with great prizes.",
       "image": "assets/events/upcoming/fall-mixer-flyer.webp",
       "registerUrl": "https://www.eventbrite.com/e/fall-personal-injury-professionals-mixer-tickets-1999147508012?aff=oddtdtcreator",
+      "registerLabel": "Register on Eventbrite",
+      "featured": false
+    },
+    {
+      "id": "personal-injury-attorneys-networking-event",
+      "title": "Personal Injury Attorneys Networking Event",
+      "status": "upcoming",
+      "date": "2026-10-08",
+      "startTime": "18:00",
+      "endTime": "20:30",
+      "cadence": "",
+      "city": "Pembroke Pines",
+      "venue": "Brimstone Woodfire Grill",
+      "type": "Networking mixer",
+      "summary": "An attorney-only evening hosted with Med Plus Centers for building relationships and exploring collaboration across the personal injury community, at Brimstone Woodfire Grill, 6:00-8:30 PM. Food and drinks provided.",
+      "image": "",
+      "registerUrl": "https://www.eventbrite.com/e/personal-injury-attorneys-networking-event-tickets-2000154657423?aff=ebdsoporgprofile",
       "registerLabel": "Register on Eventbrite",
       "featured": false
     },
