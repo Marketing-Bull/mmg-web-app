@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-15T16:02:06Z",
+  "updated": "2026-09-15T20:38:30Z",
   "events": [
     {
       "id": "fall-personal-injury-professionals-mixer",
@@ -30,7 +30,7 @@
       "venue": "Brimstone Woodfire Grill",
       "type": "Networking mixer",
       "summary": "An attorney-only evening hosted with Med Plus Centers for building relationships and exploring collaboration across the personal injury community, at Brimstone Woodfire Grill, 6:00-8:30 PM. Food and drinks provided.",
-      "image": "",
+      "image": "assets/events/upcoming/attorney-only-mixer-flyer.webp",
       "registerUrl": "https://www.eventbrite.com/e/personal-injury-attorneys-networking-event-tickets-2000154657423?aff=ebdsoporgprofile",
       "registerLabel": "Register on Eventbrite",
       "featured": false
