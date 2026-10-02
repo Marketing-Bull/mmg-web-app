@@ -66,12 +66,10 @@ def main(argv):
     check = "--check" in argv
     # Inactive sponsors stay in the data but never reach the page; mirror the
     # filter in renderSponsors() in content.js.
-    sponsors = [
-        s
-        for s in json.load(open("data/sponsors.json"))["sponsors"]
-        if s.get("status") != "inactive"
-    ]
-    src = open("index.html").read()
+    with open("data/sponsors.json") as f:
+        sponsors = [s for s in json.load(f)["sponsors"] if s.get("status") != "inactive"]
+    with open("index.html") as f:
+        src = f.read()
     m = GRID.search(src)
     if not m:
         print("could not find the partners grid in index.html", file=sys.stderr)
@@ -83,7 +81,8 @@ def main(argv):
     if check:
         print("index.html sponsor grid is OUT OF DATE -- run without --check", file=sys.stderr)
         return 1
-    open("index.html", "w").write(src[: m.start(2)] + block + src[m.end(2) :])
+    with open("index.html", "w") as f:
+        f.write(src[: m.start(2)] + block + src[m.end(2) :])
     print(f"rewrote {len(sponsors)} active sponsor cards in index.html")
     return 0
 
