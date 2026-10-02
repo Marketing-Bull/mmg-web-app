@@ -102,6 +102,13 @@ all; without a date it is `undated` and shows in neither list, which only suits 
 recurring series. `venue` is stored but never rendered — put the time and venue in
 `summary` if visitors need them.
 
+**Re-run the static event schema after any change to `data/events.json`:**
+`node scripts/sync-static-events.mjs`. `index.html` carries a generated schema.org
+Event block for crawlers that do not run JavaScript, and `npm test` fails if it is
+out of step. Fill in `streetAddress`, `state` (two letters) and `postalCode` for every
+upcoming event: search engines want a full address, and a blank field is left out
+rather than guessed. **Add from Eventbrite** fills them in for you.
+
 **Bump `updated` when you hand-edit `data/events.json`.** It is served as the
 `updated` field of the public `/api/events` feed, meaning "when this content last
 changed", so a stale value tells every consumer the schedule is older than it is.
@@ -194,6 +201,7 @@ and invites a reasonable "can't you use the connector?"
 ```bash
 node scripts/validate.mjs   # fails on a logo path pointing at no file, or a bad bg
 python3 .claude/skills/mmg-content/scripts/sync_static_sponsors.py --check
+node scripts/sync-static-events.mjs --check   # static Event JSON-LD in step with events.json
 ```
 
 Then render the page and confirm:

@@ -226,13 +226,14 @@
     read the date, venue and registration link rather than inferring them
     from the cards.
 
-    It is emitted here rather than written into index.html because the events
-    that matter are published from the content manager straight to Blob,
-    without a deploy. Static markup would describe whatever was last
-    committed, which is exactly the case where the schema would be wrong, and
-    stale structured data is worse than none. Building it from the same list
-    that renders the cards keeps the two in step by construction, and only
-    upcoming events are described, so a past date is never advertised.
+    Two copies are kept. This script rebuilds the markup from the live list
+    on every load, so an event published from the content manager straight to
+    Blob, or one whose date has passed, is described correctly for any client
+    that runs JavaScript. index.html also carries a generated copy (see
+    scripts/sync-static-events.mjs) for crawlers that do not run scripts; it
+    is built by the functions below, so the two cannot disagree about the
+    format, only about how recent the data is. Only upcoming events are
+    described, so a past date is never advertised.
   */
   var SITE_ORIGIN = "https://www.millersmarketinggroup.com";
 
@@ -310,13 +311,17 @@
     var register = safeUrl(event.registerUrl);
     node.url = /^https?:\/\//i.test(register) ? register : SITE_ORIGIN + "/#events";
 
-    // Only the venue and city are stored, so the address stays at that.
-    // Naming a region we don't hold would be a guess, and a wrong one the
-    // first time MMG runs an event outside Florida.
-    if (event.venue || event.city) {
+    // The address is built only from what the record holds. A region or
+    // street that was never entered is left out rather than guessed, and a
+    // wrong one is worse than none the first time MMG runs an event outside
+    // Florida.
+    if (event.venue || event.city || event.streetAddress) {
       var place = { "@type": "Place", name: event.venue || event.city };
       var address = { "@type": "PostalAddress", addressCountry: "US" };
+      if (event.streetAddress) address.streetAddress = event.streetAddress;
       if (event.city) address.addressLocality = event.city;
+      if (event.state) address.addressRegion = event.state;
+      if (event.postalCode) address.postalCode = event.postalCode;
       place.address = address;
       node.location = place;
     }
@@ -324,13 +329,27 @@
     return node;
   }
 
-  function renderEventSchema(list) {
+  // The schema nodes for the events that are still ahead of us. Split out of
+  // renderEventSchema() so the committed copy in index.html can be generated
+  // from this exact code (scripts/sync-static-events.mjs) rather than from a
+  // second implementation that could drift.
+  function eventSchemaNodes(list) {
     var nodes = [];
     list.forEach(function (event) {
       if (currentEventStatus(event) !== "upcoming") return;
       var node = eventSchema(event);
       if (node) nodes.push(node);
     });
+    return nodes;
+  }
+
+  // Escape "<" so a summary containing markup can't close the script tag.
+  function eventSchemaJson(nodes) {
+    return JSON.stringify(nodes.length === 1 ? nodes[0] : nodes).replace(/</g, "\\u003c");
+  }
+
+  function renderEventSchema(list) {
+    var nodes = eventSchemaNodes(list);
 
     var el = document.querySelector("[data-event-schema]");
     if (!nodes.length) {
@@ -343,8 +362,7 @@
       el.setAttribute("data-event-schema", "");
       document.head.appendChild(el);
     }
-    // Escape "<" so a summary containing markup can't close this script tag.
-    el.textContent = JSON.stringify(nodes.length === 1 ? nodes[0] : nodes).replace(/</g, "\\u003c");
+    el.textContent = eventSchemaJson(nodes);
   }
 
   function renderEvents() {
@@ -471,6 +489,13 @@
     }, function () {
       /* keep static cards */
     });
+  }
+
+  // Loaded by Node (scripts/sync-static-events.mjs) rather than a browser:
+  // hand back the schema builders and stop before touching the DOM.
+  if (typeof module === "object" && typeof module.exports === "object") {
+    module.exports = { eventSchemaNodes: eventSchemaNodes, eventSchemaJson: eventSchemaJson };
+    return;
   }
 
   function ready(fn) {

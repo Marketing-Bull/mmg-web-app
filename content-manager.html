@@ -657,6 +657,9 @@
               ["cadence", "Cadence", "text", "Last Thursday each month"],
               ["city", "City", "text", "Plantation"],
               ["venue", "Venue", "text", "Venue name"],
+              ["streetAddress", "Street address", "text", "14575 SW Fifth St"],
+              ["state", "State", "text", "FL"],
+              ["postalCode", "ZIP code", "text", "33027"],
               ["type", "Type", "select-addnew", ""],
               ["summary", "Summary", "textarea", "Short event description"],
               ["image", "Event Flyer Image", "instagram-image", "https://www.instagram.com/p/..."],
@@ -675,6 +678,9 @@
                 cadence: "",
                 city: "",
                 venue: "",
+                streetAddress: "",
+                state: "FL",
+                postalCode: "",
                 type: "Networking event",
                 summary: "",
                 image: "",
@@ -1593,7 +1599,7 @@
               return;
             }
             item = existing;
-            ["title", "date", "startTime", "endTime", "city", "venue", "summary", "registerUrl", "eventbriteId"].forEach(
+            ["title", "date", "startTime", "endTime", "city", "venue", "streetAddress", "state", "postalCode", "summary", "registerUrl", "eventbriteId"].forEach(
               function (key) {
                 if (fetched[key]) item[key] = fetched[key];
               }

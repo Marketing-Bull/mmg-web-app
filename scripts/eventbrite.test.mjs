@@ -96,6 +96,9 @@ test("destination API response maps onto the site's event fields", () => {
   assert.equal(event.date, "2026-09-24");
   assert.equal(event.city, "Miami");
   assert.equal(event.venue, "JOEY Aventura");
+  assert.equal(event.streetAddress, "19505 Biscayne Boulevard");
+  assert.equal(event.state, "FL");
+  assert.equal(event.postalCode, "33180");
   assert.equal(event.eventbriteId, EVENT_ID);
   assert.equal(event.status, "live");
   assert.equal(event.registerUrl, "https://www.eventbrite.com/e/fall-personal-injury-professionals-mixer-tickets-1999147508012");
@@ -124,6 +127,11 @@ test("event page JSON-LD is the fallback and lands on the same fields", () => {
   assert.equal(event.endTime, "21:00");
   assert.equal(event.city, "Miami");
   assert.equal(event.venue, "JOEY Aventura");
+  // The page's JSON-LD writes the whole address into streetAddress; only the
+  // street should survive, with the city, state and ZIP split out.
+  assert.equal(event.streetAddress, "19505 Biscayne Boulevard, Suite 1150");
+  assert.equal(event.state, "FL");
+  assert.equal(event.postalCode, "33180");
   assert.equal(event.eventbriteId, EVENT_ID);
   assert.match(event.summary, /JOEY Aventura, 6:00-9:00 PM\.$/);
   assert.match(event.imageUrl, /^https:\/\/img\.evbuc\.com\//);
@@ -146,7 +154,7 @@ test("mapped fields are trimmed, capped and never carry markup through untouched
           summary: "<b>bold</b>",
           start_date: "not-a-date",
           image: { url: "https://evil.example/x.jpg" },
-          primary_venue: { name: "V".repeat(500), address: { city: "C".repeat(500) } },
+          primary_venue: { name: "V".repeat(500), address: { city: "C".repeat(500), region: "Florida", postal_code: "nope" } },
         },
       ],
     },
@@ -157,6 +165,9 @@ test("mapped fields are trimmed, capped and never carry markup through untouched
   assert.equal(event.imageUrl, "");
   assert.equal(event.venue.length, 120);
   assert.equal(event.city.length, 80);
+  // A free-text region or malformed ZIP would be invalid in structured data.
+  assert.equal(event.state, "");
+  assert.equal(event.postalCode, "");
   // Content is escaped by the renderer on the way out; the mapper just keeps it a string.
   assert.equal(typeof event.summary, "string");
 });
