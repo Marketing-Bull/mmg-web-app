@@ -699,9 +699,10 @@
               ["bg", "Logo Background", "color", "#ffffff"],
               ["url", "Website URL", "url", "https://..."],
               ["tier", "Tier", "text", "Gold"],
+              ["status", "Status", "select-active", ""],
             ],
             empty: function () {
-              return { id: "", name: "New Sponsor", logo: "", bg: "", url: "", tier: "" };
+              return { id: "", name: "New Sponsor", logo: "", bg: "", url: "", tier: "", status: "active" };
             },
           },
         };
@@ -938,6 +939,27 @@
               '" readonly disabled ' +
               attr +
               " /></div>"
+            );
+          }
+
+          // Active sponsors show on the homepage; inactive ones are kept here
+          // (so they can be reinstated) but hidden from the site and the feed.
+          if (type === "select-active") {
+            var inactive = value === "inactive";
+            return (
+              '<div class="field"><label for="' +
+              key +
+              '">' +
+              label +
+              '</label><select id="' +
+              key +
+              '" name="' +
+              key +
+              '"><option value="active"' +
+              (inactive ? "" : " selected") +
+              '>Active (shown on the site)</option><option value="inactive"' +
+              (inactive ? " selected" : "") +
+              ">Inactive (hidden from the site)</option></select></div>"
             );
           }
 

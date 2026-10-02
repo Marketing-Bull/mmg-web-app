@@ -98,6 +98,7 @@ never advertises something it does not have.
 | `bg` | Colour painted behind the logo. Match the logo image's own background so it blends into the tile — white for a logo saved on white, the brand colour for one saved on colour. A logo drawn in **white** needs a dark colour here, otherwise it disappears. Leave blank for a logo with a transparent background. |
 | `url` | Sponsor website URL. |
 | `tier` | Optional internal label, such as `Gold`. |
+| `status` | `active` (the default when blank) or `inactive`. An **inactive** sponsor stays in the list so it can be reinstated, but is hidden from the homepage and from the public `/api/sponsors` feed. Use it for a sponsor that has stepped away rather than deleting the record. |
 
 ## Add from Eventbrite: what it needs and what can go wrong
 

@@ -459,8 +459,10 @@
     var grid = document.querySelector(".partners-grid");
     if (!grid) return;
     loadFirst(["/api/sponsors", "data/sponsors.json"], "sponsors").then(function (list) {
+      // Inactive sponsors stay in the data so they can be reinstated, but are
+      // never shown. A record with no status is active.
       var s = list.filter(function (x) {
-        return x.name;
+        return x.name && x.status !== "inactive";
       });
       if (s.length) {
         grid.innerHTML = s.map(sponsorCard).join("");
