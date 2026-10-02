@@ -1,0 +1,11 @@
+# Files that live in the repo but are not part of the website. Vercel serves
+# every file it deploys, so anything left in would be publicly fetchable at
+# /docs/..., /scripts/..., and so on.
+#
+# Safe to leave out: nothing here is read at runtime. data/ and lib/ are NOT
+# listed on purpose -- the serverless functions import lib/ and read data/.
+docs
+scripts
+.claude
+.github
+README.md

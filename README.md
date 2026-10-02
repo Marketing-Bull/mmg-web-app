@@ -33,6 +33,8 @@ Static homepage mockup for Miller's Marketing Group.
 - `docs/content-management.md` - editing workflow for Andrew's team
 - `docs/launch-readiness.md` - current verdict, blockers, and pre-launch acceptance requirements
 - `scripts/validate.mjs` - syntax/JSON validation for every JS file, inline page script, and data file
+- `scripts/sync-static-events.mjs`, `scripts/static-event-schema.test.mjs` - writes (and `--check`s) the committed schema.org Event JSON-LD in `index.html` from `data/events.json`, using `content.js`'s own builder
+- `.vercelignore` - keeps `docs/`, `scripts/`, `.claude/` and `.github/` out of the deployment, so they are not publicly fetchable
 - `scripts/hardening.test.mjs` - tests for the rate limiter and the upload allowlist
 - `scripts/eventbrite.test.mjs`, `scripts/fixtures/` - tests for the Eventbrite import mapping, against responses captured from a real MMG event
 - `scripts/social-card.html`, `scripts/render-social-card.mjs` - source artwork and renderer for the link-preview image
@@ -110,15 +112,27 @@ it the same treatment if it ever needs to be public too.
 ## Event structured data
 
 Upcoming events are published as schema.org `Event` JSON-LD (`BusinessEvent`,
-or `EducationEvent` for Lunch & Learn), built by `renderEventSchema()` in
-`assets/js/content.js` from the same list that renders the cards.
+or `EducationEvent` for Lunch & Learn), in two places that are built by the
+same code:
 
-It is emitted from script rather than written into `index.html` on purpose.
-Events are published from the content manager straight to Blob without a
-deploy, so committed markup would describe whatever was last committed —
-exactly the case where the schema would be wrong, and stale structured data is
-worse than none. Google renders JavaScript for structured data; non-rendering
-AI consumers are served `llms.txt` instead.
+1. **In the browser.** `renderEventSchema()` in `assets/js/content.js` rebuilds
+   the markup from the same list that renders the cards, on every load. Events
+   published from the content manager straight to Blob (no deploy) and events
+   whose date has passed are therefore described correctly for any client that
+   runs JavaScript, Googlebot included.
+2. **Committed in `index.html`**, for crawlers that read raw HTML and do not run
+   scripts. `node scripts/sync-static-events.mjs` writes it by loading
+   `content.js` and calling the same builder, so the two cannot disagree about
+   the format. The script replaces this block with the live one as soon as it
+   loads.
+
+The committed copy is only as recent as the last commit. Re-run the sync after
+any change to `data/events.json`; `npm test` (and so CI) fails if it is out of
+step. `--check` judges the block against the date it was built for
+(`data-generated`), so an event simply going by never turns CI red, but it does
+leave a past event in the committed copy until the next sync. Only events
+published straight to Blob, which never touch the repo, stay invisible to
+non-JavaScript crawlers until a later sync.
 
 Details worth knowing:
 
@@ -132,9 +146,10 @@ Details worth knowing:
 - **`offers` is deliberately omitted.** Ticket prices are not stored, and
   Google wants a price whenever offers are present; a guessed one would be a
   fabricated claim on a live listing.
-- **`addressRegion` is omitted** for the same reason — only venue and city are
-  stored, and hard-coding `FL` would be wrong the first time MMG runs an event
-  elsewhere. Adding a region field to the event record would let this improve.
+- **The address is built only from what is stored**: `streetAddress`, `city`,
+  `state` (two letters) and `postalCode` on the event record, all filled in by
+  **Add from Eventbrite**. A field left blank is omitted rather than guessed;
+  hard-coding `FL` would be wrong the first time MMG runs an event elsewhere.
 
 ## "Site last updated" in the footer
 

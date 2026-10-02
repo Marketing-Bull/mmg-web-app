@@ -48,6 +48,7 @@ changes are still there; nothing is lost.
 | `cadence` | Recurring schedule, such as `Last Thursday each month`. |
 | `city` | City shown in the event card. |
 | `venue` | Venue name. |
+| `streetAddress` / `state` / `postalCode` | The venue's street, two-letter state (`FL`) and ZIP. Filled in automatically by **Add from Eventbrite**. Worth setting: search engines want a full address before they will show an event, and leaving them blank means none is published (nothing is guessed). |
 | `type` | Dropdown of previously-used categories. Pick **+ Add new type…** to add one on the fly. |
 | `summary` | One or two short sentences. |
 | `image` (Event Flyer Image) | Paste an Instagram post/reel URL and click **Use this Instagram photo**, or use **Upload an image** to pick a file directly. Max 3MB. |
@@ -117,9 +118,11 @@ never advertises something it does not have.
 ## What search engines are told
 
 Upcoming events are also published as structured data, so Google can show the
-date, venue and registration link directly in search results. It is built from
-the same list the site renders, so there is nothing extra to fill in and no
-way for it to drift from what visitors see.
+date, venue, address and registration link directly in search results. It is
+built from the same list the site renders, so there is nothing extra to fill
+in. A copy is also written into the page itself for search engines that do not
+run scripts; that copy is refreshed whenever the site is updated, while the
+live list always wins for anything that does run scripts.
 
 Two things follow from that:
 

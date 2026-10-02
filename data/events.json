@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-02T12:00:00Z",
+  "updated": "2026-10-02T19:00:00Z",
   "events": [
     {
       "id": "fall-personal-injury-professionals-mixer",
@@ -28,6 +28,9 @@
       "cadence": "",
       "city": "Pembroke Pines",
       "venue": "Brimstone Woodfire Grill",
+      "streetAddress": "14575 SW Fifth St",
+      "state": "FL",
+      "postalCode": "33027",
       "type": "Networking mixer",
       "summary": "An attorney-only evening hosted with Med Plus Centers for building relationships and exploring collaboration across the personal injury community, at Brimstone Woodfire Grill, 6:00-8:30 PM. Food and drinks provided.",
       "image": "assets/events/upcoming/attorney-only-mixer-flyer.webp",
@@ -45,6 +48,9 @@
       "cadence": "",
       "city": "Coconut Creek",
       "venue": "Parfit",
+      "streetAddress": "4467 Lyons Rd, Unit 101",
+      "state": "FL",
+      "postalCode": "33073",
       "type": "Networking mixer",
       "summary": "A Halloween-themed indoor golf mixer where attorneys, medical professionals, and industry leaders network over games, contests, and raffles at Parfit, 6:00-10:00 PM. Costumes encouraged.",
       "image": "assets/events/upcoming/halloween-golf-mixer-flyer.webp",
