@@ -493,7 +493,7 @@
 
   // Loaded by Node (scripts/sync-static-events.mjs) rather than a browser:
   // hand back the schema builders and stop before touching the DOM.
-  if (typeof module === "object" && module && module.exports) {
+  if (typeof module === "object" && typeof module.exports === "object") {
     module.exports = { eventSchemaNodes: eventSchemaNodes, eventSchemaJson: eventSchemaJson };
     return;
   }

@@ -29,8 +29,10 @@ const EVENTS = "data/events.json";
 const CONTENT_JS = "assets/js/content.js";
 
 // <script type="application/ld+json" data-event-schema data-generated="...">…</script>
-const BLOCK = /[ \t]*<script type="application\/ld\+json" data-event-schema data-generated="[^"]*">[\s\S]*?<\/script>\n/;
-const FIRST_LD = /([ \t]*<script type="application\/ld\+json">[\s\S]*?<\/script>\n)/;
+// Group 1 is the date it was built for, group 2 the JSON. Case-insensitive and
+// tolerant of whitespace in the closing tag, as HTML itself is.
+const BLOCK = /[ \t]*<script type="application\/ld\+json" data-event-schema data-generated="([^"]*)">([\s\S]*?)<\/script\s*>\n/i;
+const FIRST_LD = /([ \t]*<script type="application\/ld\+json">[\s\S]*?<\/script\s*>\n)/i;
 
 export function floridaDateKey(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -82,9 +84,7 @@ function readEvents() {
 export function readStaticBlock(html) {
   const match = html.match(BLOCK);
   if (!match) return null;
-  const generated = (match[0].match(/data-generated="([^"]*)"/) || [])[1] || "";
-  const body = match[0].replace(/^[\s\S]*?<script[^>]*>/, "").replace(/<\/script>\s*$/, "");
-  return { generated, data: JSON.parse(body) };
+  return { generated: match[1], data: JSON.parse(match[2]) };
 }
 
 // Compares the committed block with a rebuild for the date it was built for.
