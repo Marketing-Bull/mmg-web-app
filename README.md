@@ -348,4 +348,9 @@ drawn in white needs a dark value here or it disappears. Leave it blank for
 logos on a transparent background, which use the default card colour. The
 homepage inverts the caption automatically on dark tiles.
 
+A sponsor can be marked **Inactive** (`status: "inactive"`) instead of deleted. It
+stays in the content manager and in `data/sponsors.json` so it can be reinstated,
+but is left out of the homepage grid (live and static) and the public
+`/api/sponsors` feed. A record with no `status` is active.
+
 When new variables are added, document them and keep this section in sync.

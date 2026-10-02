@@ -64,7 +64,13 @@ def build(sponsors):
 
 def main(argv):
     check = "--check" in argv
-    sponsors = json.load(open("data/sponsors.json"))["sponsors"]
+    # Inactive sponsors stay in the data but never reach the page; mirror the
+    # filter in renderSponsors() in content.js.
+    sponsors = [
+        s
+        for s in json.load(open("data/sponsors.json"))["sponsors"]
+        if s.get("status") != "inactive"
+    ]
     src = open("index.html").read()
     m = GRID.search(src)
     if not m:
@@ -72,13 +78,13 @@ def main(argv):
         return 2
     block = build(sponsors)
     if m.group(2) == block:
-        print(f"index.html already in step with {len(sponsors)} sponsors")
+        print(f"index.html already in step with {len(sponsors)} active sponsors")
         return 0
     if check:
         print("index.html sponsor grid is OUT OF DATE -- run without --check", file=sys.stderr)
         return 1
     open("index.html", "w").write(src[: m.start(2)] + block + src[m.end(2) :])
-    print(f"rewrote {len(sponsors)} sponsor cards in index.html")
+    print(f"rewrote {len(sponsors)} active sponsor cards in index.html")
     return 0
 
 

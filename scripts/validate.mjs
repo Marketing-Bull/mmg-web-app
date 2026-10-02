@@ -106,7 +106,11 @@ for (const sponsor of sponsors) {
   } else if (!/^https?:\/\//i.test(logo) && !existsSync(logo)) {
     fail(label, `logo file not found: ${logo}`);
   } else {
-    ok(`${label} — ${logo}`);
+    ok(`${label} — ${logo}${sponsor.status === "inactive" ? " (inactive)" : ""}`);
+  }
+  const status = sponsor.status;
+  if (status !== undefined && status !== "" && status !== "active" && status !== "inactive") {
+    fail(label, `status must be "active" or "inactive", got: ${status}`);
   }
   const bg = (sponsor.bg || "").trim();
   if (bg && !HEX.test(bg)) fail(label, `bg must be a hex colour like #ffffff, got: ${bg}`);

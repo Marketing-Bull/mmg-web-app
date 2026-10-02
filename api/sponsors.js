@@ -14,12 +14,18 @@ function readSeed() {
   }
 }
 
+// Inactive sponsors are kept in storage so the content manager can reinstate
+// them, but the public feed never lists them. A record with no status is active.
+function activeOnly(sponsors) {
+  return sponsors.filter((sponsor) => !sponsor || sponsor.status !== "inactive");
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
   try {
-    const sponsors = (await readSponsors()) || readSeed();
+    const sponsors = activeOnly((await readSponsors()) || readSeed());
     return res.status(200).json({ updated: new Date().toISOString(), sponsors });
   } catch {
-    return res.status(200).json({ updated: new Date().toISOString(), sponsors: readSeed() });
+    return res.status(200).json({ updated: new Date().toISOString(), sponsors: activeOnly(readSeed()) });
   }
 }

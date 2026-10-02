@@ -62,6 +62,15 @@ step with the data and match the renderer's markup exactly.
 
 6. **Verify** (see the checklist).
 
+## Retiring a sponsor
+
+Do not delete the record. Set `"status": "inactive"` on its line in `data/sponsors.json`
+(the content manager has the same choice as a **Status** dropdown). It stays in the data
+so it can be reinstated, but `renderSponsors()` in `content.js`, `/api/sponsors` and
+`sync_static_sponsors.py` all skip it. A record with no `status` is active. Keep the
+logo file; reinstating is then a one-word change. Run the sync script afterwards so the
+static grid drops the tile.
+
 ## Background colours
 
 A logo either sits on transparency or has a flat backdrop baked into the file. The card
