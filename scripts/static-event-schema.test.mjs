@@ -31,7 +31,7 @@ test("the committed event schema in index.html matches data/events.json", () => 
 });
 
 test("changing the data without re-syncing is caught", () => {
-  const changed = EVENTS().map((e) => (e.title === "Personal Injury Attorneys Networking Event" ? { ...e, venue: "Somewhere Else" } : e));
+  const changed = EVENTS().map((e) => (e.title === "Personal Injury Professionals Halloween Indoor Golf Mixer" ? { ...e, venue: "Somewhere Else" } : e));
   assert.equal(checkStaticEvents(HTML(), changed).inStep, false);
 });
 
@@ -58,7 +58,9 @@ test("with no upcoming events the block is removed rather than left describing t
 
 test("the static copy is built by content.js's own builder", () => {
   const block = readStaticBlock(HTML());
-  assert.deepEqual(block.data, buildSchemaNodes(EVENTS(), block.generated));
+  const nodes = buildSchemaNodes(EVENTS(), block.generated);
+  // content.js writes a lone event as an object rather than a one-item array.
+  assert.deepEqual(block.data, nodes.length === 1 ? nodes[0] : nodes);
 });
 
 test("UTC offset follows daylight saving", () => {
