@@ -414,7 +414,7 @@
       '<div class="events-empty">' +
       "<strong>New event dates are coming soon.</strong>" +
       "<p>Follow MMG on Eventbrite to be the first to see the next gathering.</p>" +
-      '<a class="button button-ghost" href="https://www.eventbrite.com/o/millers-marketing-group-68684991773" target="_blank" rel="noreferrer">View Eventbrite <span class="arrow">→</span></a>' +
+      '<a class="button button-ghost" href="https://www.eventbrite.com/o/andrew-miller-121315094544" target="_blank" rel="noreferrer">View Eventbrite <span class="arrow">→</span></a>' +
       "</div>"
     );
   }
