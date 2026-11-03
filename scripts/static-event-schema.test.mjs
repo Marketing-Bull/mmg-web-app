@@ -31,7 +31,7 @@ test("the committed event schema in index.html matches data/events.json", () => 
 });
 
 test("changing the data without re-syncing is caught", () => {
-  const changed = EVENTS().map((e) => (e.title === "Personal Injury Professionals Halloween Indoor Golf Mixer" ? { ...e, venue: "Somewhere Else" } : e));
+  const changed = EVENTS().map((e) => (e.status === "upcoming" ? { ...e, venue: "Somewhere Else" } : e));
   assert.equal(checkStaticEvents(HTML(), changed).inStep, false);
 });
 
