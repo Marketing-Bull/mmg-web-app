@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-03T17:00:00Z",
+  "updated": "2026-11-03T17:30:00Z",
   "events": [
     {
       "id": "pi-holiday-mixer",
@@ -7,6 +7,7 @@
       "status": "upcoming",
       "date": "2026-12-17",
       "startTime": "18:00",
+      "endTime": "21:00",
       "cadence": "",
       "city": "Delray Beach",
       "venue": "Rosewater Rooftop by Akira Back",
@@ -14,7 +15,7 @@
       "state": "FL",
       "postalCode": "33444",
       "type": "Networking mixer",
-      "summary": "A holiday evening of great conversation and cheer for personal injury attorneys, medical professionals, and industry leaders at Rosewater Rooftop by Akira Back, starting at 6:00 PM. Food, drinks, giveaways, and raffles.",
+      "summary": "A holiday evening of great conversation and cheer for personal injury attorneys, medical professionals, and industry leaders at Rosewater Rooftop by Akira Back, 6:00-9:00 PM. Food, drinks, giveaways, and raffles.",
       "image": "assets/events/upcoming/holiday-mixer-flyer.webp",
       "registerUrl": "https://www.eventbrite.com/e/pi-holiday-mixer-tickets-2003869950966",
       "registerLabel": "Register on Eventbrite",
