@@ -4,15 +4,24 @@ name: Check Eventbrite for new MMG events
 #
 # A plain Node step looks for upcoming events on the organizer page that are not
 # in data/events.json. Most days there are none and the job ends there, free.
-# Only when something is new does it call a model, and it uses Haiku, the
-# cheapest current Claude model, because the work is mechanical (fill in the
-# record, write a short summary, convert the flyer) and scripts/validate.mjs,
-# the tests and the draft PR review catch mistakes.
+# When something is new, scripts/eventbrite-add-events.mjs adds it: the record,
+# flyer conversion and static card are done in code, and Claude Haiku (the
+# cheapest current model) writes only the short summary and checks the flyer.
+# scripts/validate.mjs, the tests and the draft PR review catch mistakes.
+#
+# Claude is called directly with workload identity federation (GitHub OIDC
+# token -> short-lived Anthropic token; repository variables ANTHROPIC_*), not
+# through claude-code-action, because of anthropics/claude-code-action#1888.
 
 on:
   schedule:
     - cron: "45 13 * * *" # 13:45 UTC = 8:45 AM EST / 9:45 AM EDT
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      probe:
+        description: "Only test the Claude sign-in and one request (changes nothing)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -35,15 +44,28 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Probe the Claude sign-in
+        if: inputs.probe
+        env:
+          ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          ANTHROPIC_WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
+          ANTHROPIC_IDENTITY_TOKEN_FILE: ${{ runner.temp }}/anthropic-oidc.jwt
+        run: |
+          curl -fsS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://api.anthropic.com" | jq -r .value > "$ANTHROPIC_IDENTITY_TOKEN_FILE"
+          node scripts/eventbrite-add-events.mjs --probe
+
       - name: Look for new events
         id: scan
+        if: ${{ !inputs.probe }}
         run: node scripts/eventbrite-new-events.mjs new-events.json
 
       # A draft PR from an earlier run may still be open and unmerged. Do not
       # open a second one for the same events.
       - name: Skip if a PR for these events already exists
         id: dedupe
-        if: steps.scan.outputs.count != '0'
+        if: ${{ !inputs.probe && steps.scan.outputs.count != '0' }}
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: eventbrite/${{ steps.scan.outputs.ids }}
@@ -56,7 +78,7 @@ jobs:
           fi
 
       - name: Prepare branch and tools
-        if: steps.scan.outputs.count != '0' && steps.dedupe.outputs.skip == 'false'
+        if: ${{ !inputs.probe && steps.scan.outputs.count != '0' && steps.dedupe.outputs.skip == 'false' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -65,60 +87,32 @@ jobs:
           pip install --quiet pillow
 
       - name: Add the new events
-        if: steps.scan.outputs.count != '0' && steps.dedupe.outputs.skip == 'false'
-        uses: anthropics/claude-code-action@v1
-        with:
-          # Workload identity federation: GitHub OIDC token -> short-lived Anthropic token (no API key)
-          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
-          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
-          anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
-          anthropic_workspace_id: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
-          claude_args: >-
-            --model claude-haiku-5-5
-            --max-turns 30
-            --allowedTools "Read,Write,Edit,Glob,Grep,Bash(node:*),Bash(npm:*),Bash(python3:*),Bash(curl:*),Bash(git add:*),Bash(git commit:*),Bash(git status:*),Bash(git diff:*),Bash(ls:*)"
-          prompt: |
-            new-events.json lists upcoming Eventbrite events that are not yet on
-            the MMG site. Add each one by following .claude/skills/mmg-content/SKILL.md
-            ("Adding an event"):
-
-            1. Add a record to data/events.json for each event (newest-first order
-               as the file already uses; `featured` false; registerLabel
-               "Register on Eventbrite"; registerUrl is the event's `url`). Use the
-               venue, streetAddress, city, state and postalCode from new-events.json
-               and format startTime/endTime as HH:MM. Leave endTime out if it is "".
-            2. Write the `summary` in the same voice as the existing events: one or
-               two sentences, include the venue and the time (e.g. "6:00-8:30 PM").
-               Eventbrite's own summary is only a hint and is often just "Join us".
-               Do not invent details such as food, prizes or sponsors you cannot see.
-            3. Download each flyerUrl with curl (the URL is already signed; do not
-               change it), save it as WebP quality 88 with Pillow under
-               assets/events/upcoming/, and set `image` to that path. Look at the
-               image if you can: if it states a time or venue that differs from
-               Eventbrite, keep Eventbrite's venue, omit the end time, and say so
-               in a file named PR_NOTES.md.
-            4. Bump `updated` in data/events.json to the current UTC time.
-            5. Add the card to the static upcoming grid in index.html, copying the
-               markup of an existing card exactly, newest event last.
-            6. Run: node scripts/sync-static-events.mjs && node scripts/validate.mjs && npm test
-               Fix anything that fails. Do not skip or edit tests to get them to pass.
-            7. git add the changed files (not new-events.json) and commit with
-               the message "Add upcoming Eventbrite event(s)".
-
-            Do not push and do not open a pull request; a later step does that.
-            Do not touch any file the steps above do not call for.
+        if: ${{ !inputs.probe && steps.scan.outputs.count != '0' && steps.dedupe.outputs.skip == 'false' }}
+        env:
+          ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          ANTHROPIC_WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
+          ANTHROPIC_IDENTITY_TOKEN_FILE: ${{ runner.temp }}/anthropic-oidc.jwt
+        run: |
+          # Fresh GitHub OIDC token, exchanged by the script for a short-lived Anthropic token.
+          curl -fsS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://api.anthropic.com" | jq -r .value > "$ANTHROPIC_IDENTITY_TOKEN_FILE"
+          node scripts/eventbrite-add-events.mjs new-events.json
+          node scripts/sync-static-events.mjs
+          git add data/events.json index.html assets/events/upcoming
+          git commit -m "Add upcoming Eventbrite event(s)"
 
       - name: Push and open draft PR
-        if: steps.scan.outputs.count != '0' && steps.dedupe.outputs.skip == 'false'
+        if: ${{ !inputs.probe && steps.scan.outputs.count != '0' && steps.dedupe.outputs.skip == 'false' }}
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: eventbrite/${{ steps.scan.outputs.ids }}
         run: |
           if [ -z "$(git log origin/${{ github.event.repository.default_branch }}..HEAD --oneline)" ]; then
-            echo "::error::The model step made no commit."
+            echo "::error::The add-events step made no commit."
             exit 1
           fi
-          # Fail here, not in review, if the model broke something.
+          # Fail here, not in review, if anything is off.
           node scripts/sync-static-events.mjs --check
           node scripts/validate.mjs
           npm test
