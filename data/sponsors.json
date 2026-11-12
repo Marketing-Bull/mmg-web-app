@@ -20,11 +20,11 @@
     { "id": "medpro-urgent-care", "name": "Medpro Urgent Care", "logo": "assets/partners/medpro-urgent-care.webp", "bg": "#ffffff", "url": "https://medprourgentcarecenter.com/", "tier": "" },
     { "id": "realign-chiropractic-center", "name": "Realign Chiropractic Center", "logo": "assets/partners/realign-chiropractic-center.webp", "bg": "#0e2a33", "url": "https://realignchiropractic.com/", "tier": "" },
     { "id": "citadelle-law", "name": "Citadelle Law", "logo": "assets/partners/citadelle-law.webp", "bg": "#1c2733", "url": "https://www.citadellelawfl.com/", "tier": "" },
+    { "id": "marketing-bull", "name": "Marketing Bull", "logo": "assets/partners/marketing-bull.webp", "bg": "", "url": "https://getmarketingbull.com/", "tier": "" },
     { "id": "sobe-rehab", "name": "SOBE Rehab", "logo": "assets/partners/sobe-rehab.png", "bg": "#ffffff", "url": "https://sobeinnovativerehab.com/", "tier": "", "status": "inactive" },
     { "id": "toti-health-wellness", "name": "TOTI Health & Wellness", "logo": "assets/partners/toti-health-wellness.webp", "bg": "#f0ece8", "url": "https://www.totihaw.com/", "tier": "", "status": "inactive" },
     { "id": "affiliated-healthcare-centers", "name": "Affiliated Healthcare Centers", "logo": "assets/partners/affiliated-healthcare-centers.webp", "bg": "#009ca7", "url": "https://www.ahcpain.com/", "tier": "", "status": "inactive" },
     { "id": "express-funding-of-america", "name": "Express Funding of America", "logo": "assets/partners/express-funding-of-america.webp", "bg": "#ffffff", "url": "https://efafunds.com/", "tier": "", "status": "inactive" },
-    { "id": "selfcare-chiropractic", "name": "Selfcare Chiropractic", "logo": "assets/partners/selfcare-chiropractic.webp", "bg": "#13263d", "url": "https://selfcarechiro.com/", "tier": "", "status": "inactive" },
-    { "id": "marketing-bull", "name": "Marketing Bull", "logo": "assets/partners/marketing-bull.webp", "bg": "", "url": "https://getmarketingbull.com/", "tier": "", "status": "inactive" }
+    { "id": "selfcare-chiropractic", "name": "Selfcare Chiropractic", "logo": "assets/partners/selfcare-chiropractic.webp", "bg": "#13263d", "url": "https://selfcarechiro.com/", "tier": "", "status": "inactive" }
   ]
 }
